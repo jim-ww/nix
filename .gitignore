@@ -1,0 +1,8 @@
+*.save
+*.swp
+*~
+.nix~
+result
+.decrypted~secrets.yaml
+wallpaper
+wallpapers/

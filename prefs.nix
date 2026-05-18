@@ -1,0 +1,567 @@
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
+with lib;
+let
+  gitUsername = "jim-ww";
+  gitEmail = "jim.w2610@proton.me";
+  home = "/home/${config.user}";
+  documents = "${home}/Documents";
+
+  gtkBookmarks = [
+    "file://${home}/Archive"
+    "file://${home}/Documents"
+    "file://${home}/Projects"
+    "file://${home}/Downloads"
+    "file://${home}/Music"
+  ];
+
+  dataHome = "${home}/.local/share";
+  stateHome = "${home}/.local/state";
+  configHome = "${home}/.config";
+
+  umountPersonal = "umount ~/Archive/personal";
+in
+{
+  options = {
+    user = mkOption {
+      type = types.str;
+      default = "jim";
+    };
+    shell = mkOption {
+      type = types.str;
+      default = "fish";
+    };
+    gitUsername = mkOption {
+      type = types.str;
+      default = gitUsername;
+    };
+    gitEmail = mkOption {
+      type = types.str;
+      default = gitEmail;
+    };
+    gpgKeyID = mkOption {
+      type = types.str;
+      default = "84E78B81883125DEF4FFBD7735AE71B304C67013";
+    };
+    packages = mkOption {
+      type = types.listOf types.package;
+      default = import ./pkgs.nix { inherit pkgs; };
+    };
+    font-packages = mkOption {
+      type = types.listOf types.package;
+      default = with pkgs; [
+        nerd-fonts.symbols-only # icons for terminal
+        zpix-pixel-font # pixel japanese font
+        # noto-fonts-cjk-sans # clean/readable japanese font
+        #hachimarupop # cute japanese font
+      ];
+    };
+    wallpaper = {
+      command = mkOption {
+        type = types.str;
+        default = "swaybg -i $NH_FLAKE/wallpaper -m fill & disown";
+      };
+      dir = mkOption {
+        type = types.str;
+        default = "$NH_FLAKE/assets/wallpapers";
+      };
+    };
+    flakeDir = mkOption {
+      type = types.str;
+      default = "${home}/Projects/nix";
+    };
+    backupDir = mkOption {
+      type = types.str;
+      default = "${home}/Archive/backups";
+    };
+    musicDir = mkOption {
+      type = types.str;
+      default = "/home/${config.user}/Music";
+    };
+    term = mkOption {
+      type = types.str;
+      default = "foot";
+    };
+    editor = mkOption {
+      type = types.str;
+      default = "nvim";
+    };
+    file-manager = mkOption {
+      type = types.str;
+      default = "pcmanfm";
+    };
+    file-manager-term = mkOption {
+      type = types.str;
+      default = "${config.term} ${lib.getExe pkgs.lf}";
+    };
+    browser = mkOption {
+      type = types.str;
+      default = "librewolf"; # "helium"; #"librewolf"; # "brave"; # "zen"; # "schizofox";
+    };
+    duckduckgo = mkOption {
+      type = types.str;
+      default = "https://duckduckgo.com/?kp=-2&kl=wt-wt&ka=Terminus&kt=Terminus&kj=1a1b26&kn=1&kx=a9b1d6&k1=-1&k5=2&k7=16161e&k8=a9b1d6&k9=7aa2f7&k18=1&kaa=bb9af7&kaf=s&kaj=m&kak=-1&kae=d&kao=-1&kap=-1&kaq=-1&kau=-1&kav=1&kax=-1&kay=b&kbf=1&duckai=1";
+    };
+    music-player = mkOption {
+      type = types.str;
+      default = "${config.term} rmpc";
+    };
+    passwords = mkOption {
+      type = types.str;
+      default = "${documents}/.vault.kdbx";
+    };
+    clipboard-manager = mkOption {
+      type = types.str;
+      default = "cliphist list | rofi -dmenu | cliphist decode | wl-copy";
+    };
+    notesDir = mkOption {
+      type = types.str;
+      default = documents;
+    };
+    notes = mkOption {
+      type = types.str;
+      default = "${config.term} -D ${config.notesDir} ${config.editor} notes.md";
+    };
+    notes-all = mkOption {
+      type = types.str;
+      default = "${config.term} -D ${config.notesDir} ${config.editor} .";
+    };
+    app-menu = mkOption {
+      type = types.str;
+      default = "${lib.getExe pkgs.rofi} -show drun";
+    };
+    resource-monitor = mkOption {
+      type = types.str;
+      default = "${config.term} btop";
+    };
+    screenshot = mkOption {
+      type = types.str;
+      default = ''${pkgs.busybox}/bin/sh -c 'geometry="$(${lib.getExe pkgs.slurp})" || exit 1; ${lib.getExe pkgs.grim} -g "$geometry" - | ${pkgs.busybox}/bin/tee ${home}/Pictures/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png | ${pkgs.wl-clipboard}/bin/wl-copy' '';
+    };
+    screenshot-full = mkOption {
+      type = types.str;
+      default = "${pkgs.busybox}/bin/sh -c '${lib.getExe pkgs.grim} - | ${pkgs.busybox}/bin/tee ${home}/Pictures/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png | ${pkgs.wl-clipboard}/bin/wl-copy' ";
+    };
+    gtk.bookmarks = mkOption {
+      type = types.listOf types.str;
+      default = gtkBookmarks;
+    };
+    swaylock = mkOption {
+      type = types.str;
+      default = "${lib.getExe pkgs.swaylock} -efkli ${config.flakeDir}/wallpaper && ${umountPersonal}";
+    };
+    env = mkOption {
+      type =
+        with types;
+        lazyAttrsOf (oneOf [
+          str
+          path
+          int
+          float
+        ]);
+      default = {
+        NH_FLAKE = config.flakeDir;
+        REFINED_CHAR_SYMBOL = "ジ";
+        TERM = config.term;
+        EDITOR = "nvim";
+        VISUAL = "nvim";
+        LESS = "-R"; # syntax highlighting
+        SHELL = config.shell;
+        SOPS_AGE_KEY_FILE = "/persistent/etc/sops/age/keys.txt";
+
+        DEFAULT_BROWSER = config.browser;
+        BROWSER = config.browser;
+
+        QT_QPA_PLATFORM = "wayland-egl";
+        QT_AUTO_SCREEN_SCALE_FACTOR = 1;
+        QT_WAYLAND_DISABLE_WINDOWDECORATION = 1;
+        QT_WAYLAND_FORCE_DPI = "physical";
+        _JAVA_AWT_WM_NONREPARENTING = 1; # fix for some Java AWT applications (e.g. Android Studio)
+        MOZ_ENABLE_WAYLAND = 1; # enable wayland support in Firefox
+        XDG_SESSION_TYPE = "wayland";
+        WLR_NO_HARDWARE_CURSORS = 1;
+        CLUTTER_BACKEND = "wayland";
+        GDK_BACKEND = "wayland";
+        NIXOS_OZONE_WL = "1";
+
+        NIXPKGS_ACCEPT_ANDROID_SDK_LICENSE = 1;
+        WINEPREFIX = "~/Games/umu/umu-default";
+        WRANGLER_SEND_METRICS = "false";
+
+        # Unclutter home dir
+        GOPATH = "${dataHome}/go";
+        HISTFILE = "${stateHome}/bash/history";
+        GRADLE_USER_HOME = "${dataHome}/gradle";
+        SONARLINT_USER_HOME = "${dataHome}/sonarlint";
+        ELECTRUMDIR = "${dataHome}/electrum";
+        UNISON = "${dataHome}/unison";
+        RENPY_PATH_TO_SAVES = "${dataHome}";
+        _ZL_DATA = "${dataHome}/zlua";
+        PYTHONSTARTUP = "${home}/python/pythonrc";
+        ANDROID_USER_HOME = "${dataHome}/android";
+        DOCKER_CONFIG = "${configHome}/docker";
+        _JAVA_OPTIONS = "-Djava.util.prefs.userRoot=${configHome}/java";
+        PSQL_HISTORY = "${dataHome}/psql_history";
+
+        LF_ICONS = ''
+          di=:\
+          fi=:\
+          ln=:\
+          or=:\
+          ex=:\
+          *.c=:\
+          *.cc=:\
+          *.clj=:\
+          *.coffee=:\
+          *.cpp=:\
+          *.css=:\
+          *.d=:\
+          *.dart=:\
+          *.erl=:\
+          *.exs=:\
+          *.fs=:\
+          *.go=:\
+          *.h=:\
+          *.hh=:\
+          *.hpp=:\
+          *.hs=:\
+          *.html=:\
+          *.java=:\
+          *.jl=:\
+          *.js=:\
+          *.json=:\
+          *.lua=:\
+          *.md=:\
+          *.php=:\
+          *.pl=:\
+          *.pro=:\
+          *.py=:\
+          *.rb=:\
+          *.rs=:\
+          *.scala=:\
+          *.ts=:\
+          *.vim=:\
+          *.cmd=:\
+          *.ps1=:\
+          *.sh=:\
+          *.bash=:\
+          *.zsh=:\
+          *.fish=:\
+          *.tar=:\
+          *.tgz=:\
+          *.arc=:\
+          *.arj=:\
+          *.taz=:\
+          *.lha=:\
+          *.lz4=:\
+          *.lzh=:\
+          *.lzma=:\
+          *.tlz=:\
+          *.txz=:\
+          *.tzo=:\
+          *.t7z=:\
+          *.zip=:\
+          *.z=:\
+          *.dz=:\
+          *.gz=:\
+          *.lrz=:\
+          *.lz=:\
+          *.lzo=:\
+          *.xz=:\
+          *.zst=:\
+          *.tzst=:\
+          *.bz2=:\
+          *.bz=:\
+          *.tbz=:\
+          *.tbz2=:\
+          *.tz=:\
+          *.deb=:\
+          *.rpm=:\
+          *.jar=:\
+          *.war=:\
+          *.ear=:\
+          *.sar=:\
+          *.rar=:\
+          *.alz=:\
+          *.ace=:\
+          *.zoo=:\
+          *.cpio=:\
+          *.7z=:\
+          *.rz=:\
+          *.cab=:\
+          *.wim=:\
+          *.swm=:\
+          *.dwm=:\
+          *.esd=:\
+          *.jpg=:\
+          *.jpeg=:\
+          *.mjpg=:\
+          *.mjpeg=:\
+          *.gif=:\
+          *.bmp=:\
+          *.pbm=:\
+          *.pgm=:\
+          *.ppm=:\
+          *.tga=:\
+          *.xbm=:\
+          *.xpm=:\
+          *.tif=:\
+          *.tiff=:\
+          *.png=:\
+          *.svg=:\
+          *.svgz=:\
+          *.mng=:\
+          *.pcx=:\
+          *.mov=:\
+          *.mpg=:\
+          *.mpeg=:\
+          *.m2v=:\
+          *.mkv=:\
+          *.webm=:\
+          *.ogm=:\
+          *.mp4=:\
+          *.m4v=:\
+          *.mp4v=:\
+          *.vob=:\
+          *.qt=:\
+          *.nuv=:\
+          *.wmv=:\
+          *.asf=:\
+          *.rm=:\
+          *.rmvb=:\
+          *.flc=:\
+          *.avi=:\
+          *.fli=:\
+          *.flv=:\
+          *.gl=:\
+          *.dl=:\
+          *.xcf=:\
+          *.xwd=:\
+          *.yuv=:\
+          *.cgm=:\
+          *.emf=:\
+          *.ogv=:\
+          *.ogx=:\
+          *.aac=:\
+          *.au=:\
+          *.flac=:\
+          *.m4a=:\
+          *.mid=:\
+          *.midi=:\
+          *.mka=:\
+          *.mp3=:\
+          *.mpc=:\
+          *.ogg=:\
+          *.ra=:\
+          *.wav=:\
+          *.oga=:\
+          *.opus=:\
+          *.spx=:\
+          *.xspf=:\
+          *.pdf=:\
+          *.nix=:
+        '';
+      };
+    };
+    shellAliases = mkOption {
+      type = types.attrsOf types.str;
+      default =
+        let
+          ls = "${lib.getExe pkgs.eza}";
+          fzf = "${lib.getExe pkgs.fzf}";
+          term-editor = "$EDITOR";
+        in
+        {
+          v = "$EDITOR";
+          c = "clear";
+          mv = "mv -v";
+          cp = "cp -v";
+          rm = "rm -v";
+          cc = "cd ${config.flakeDir} && l";
+          ccc = "cd ${config.flakeDir} && ${term-editor} $(${fzf})";
+          l = ls;
+          ls = ls;
+          ll = "${ls} -l";
+          la = "${ls} -a";
+          lla = "${ls} -al";
+          ff = "${lib.getExe pkgs.fastfetch} -s title:separator:os:wm:lm:terminal:shell:packages:uptime:datetime:battery:disk:memory:theme:wmtheme:colors";
+          conf = "cd ${config.flakeDir} && ${term-editor} configuration.nix";
+          prefs = "cd ${config.flakeDir} && ${term-editor} prefs.nix";
+          flake = "cd ${config.flakeDir} && ${term-editor} flake.nix";
+          pkgs = "cd ${config.flakeDir} && ${term-editor} pkgs.nix";
+          ns = "nix-search";
+          nsp = "nix-shell --run ${config.shell} -p";
+          nix-store-fix = "sudo nix-store --repair --verify --check-contents";
+
+          gs = "git status";
+          gc = "git commit";
+          ga = "git add";
+          gaa = "git add --all";
+          gl = "git log";
+          gr = "git remote";
+          grl = "git reflog";
+          gf = "git fetch";
+          gi = "git init";
+          gb = "git branch";
+          gsw = "git switch";
+          gd = "git diff";
+          gcm = "git commit -m";
+          gsm = "git stash -m";
+          gwt = "git worktree";
+          gcp = ''git commit -m "update" && git push'';
+          gcl = "git clone";
+          gco = "git checkout";
+          gps = "git push";
+          gpl = "git pull";
+
+          ani = "ani-cli";
+          umu = "umu-run";
+          http = "curlie";
+          transcribe-translate-jp = "whisperx --device cpu --model base --compute_type int8 --language ja --output_format srt --output_dir . --no_align --task translate";
+          busybox = lib.getExe pkgs.busybox;
+          set-wallpaper = config.wallpaper.command;
+          set-video-wallper = ''mpvpaper  -vf "*" $NH_FLAKE/assets/video-wallpaper --mpv-options -o "--loop=yes" & disown'';
+          nixos-anywhere-echo = "echo 'nixos-anywhere --flake $NH_FLAKE#nixos user@hostname -i ssh-key-path'";
+          mpvsub = "mpv --sub-auto=fuzzy --audio-file-auto=fuzzy";
+          gtt = "gtt --src=English -dst=Russian";
+          firejail-enter = "firejail --private=. --seccomp ${config.shell}";
+          wf-record = ''wf-recorder -a --audio-backend=pipewire --codec h264_vaapi --device /dev/dri/renderD128 -p preset=fast -f "$XDG_VIDEOS_DIR/rec_$(date +%d-%m-%Y-T%H-%M-%S).mkv"'';
+          mount-personal = "mkdir -p ~/Archive/personal && gocryptfs ~/Archive/personal_enc ~/Archive/personal";
+          umount-personal = umountPersonal;
+
+          gomod2nix-init = "nix flake init -t github:nix-community/gomod2nix#app";
+
+          # unclutter home dir
+          wget = ''wget --hsts-file="${dataHome}/wget-hsts"'';
+          adb = ''HOME="${dataHome}"/android adb'';
+          monerod = ''monerod --data-dir "${dataHome}"/bitmonero'';
+        };
+    };
+    mimeApps = mkOption {
+      type =
+        with types;
+        attrsOf (coercedTo (either (listOf str) str) (x: concatStringsSep ";" (toList x)) str);
+      default =
+        let
+          editor = "nvim.desktop";
+          code-editor = "nvim.desktop"; # "dev.zed.Zed.desktop";
+          fileManager = "${config.file-manager}.desktop";
+          web-browser = "${config.browser}.desktop";
+          video-player = [ "mpv.desktop" ];
+          audio-player = "mpv.desktop";
+          image-viewer = [
+            "imv-dir.desktop"
+            # "gimp.desktop"
+          ];
+          document-viewer = "org.pwmt.zathura.desktop";
+          archive-manager = "org.gnome.FileRoller.desktop";
+        in
+        {
+          "inode/directory" = fileManager;
+
+          "image/gif" = video-player;
+          "image/jpeg" = image-viewer;
+          "image/png" = image-viewer;
+          "image/webp" = video-player;
+          "image/svg+xml" = image-viewer;
+          "image/avif" = image-viewer;
+
+          "audio/mp3" = audio-player;
+          "audio/mp4" = audio-player;
+          "audio/flac" = audio-player;
+          "audio/wav" = audio-player;
+          "audio/ogg" = audio-player;
+          "audio/x-flac" = audio-player;
+          "audio/x-wav" = audio-player;
+          "audio/x-vorbis+ogg" = audio-player;
+          "audio/x-mpegurl" = audio-player;
+          "audio/webm" = audio-player;
+
+          "video/vnd.avi" = video-player;
+          "video/x-matroska" = video-player;
+          "video/mp4" = video-player;
+          "video/webm" = video-player;
+
+          "application/pdf" = document-viewer;
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" = [
+            "writer.desktop"
+            document-viewer
+          ];
+          "application/epub+zip" = document-viewer;
+
+          "text/plain" = editor;
+          "text/markdown" = editor;
+          "text/csv" = editor;
+          "text/css" = [
+            editor
+            code-editor
+          ];
+          "text/html" = [
+            web-browser
+            code-editor
+          ];
+          "text/x-go" = code-editor;
+          "text/x-python" = code-editor;
+          "text/x-java" = code-editor;
+          "text/javascript" = code-editor;
+          "text/vnd.trolltech.linguist" = code-editor;
+
+          "application/json" = editor;
+          "application/yaml" = editor;
+          "application/toml" = editor;
+          "application/xml" = editor;
+          "application/x-zerosize" = editor;
+          "application/x-spss-sav" = editor;
+          "application/octet-stream" = editor;
+          "application/vnd.ms-publisher" = [
+            "libreoffice-writer.desktop"
+            editor
+          ];
+          "application/zip" = archive-manager;
+          "application/sql" = [
+            editor
+            code-editor
+          ];
+
+          "x-scheme-handler/http" = web-browser;
+          "x-scheme-handler/https" = web-browser;
+          "x-scheme-handler/chrome" = web-browser;
+          "x-scheme-handler/about" = web-browser;
+          "x-scheme-handler/unknown" = web-browser;
+          "x-scheme-handler/mailto" = web-browser;
+          "application/x-extension-htm" = web-browser;
+          "application/x-extension-html" = web-browser;
+          "application/x-extension-shtml" = web-browser;
+          "application/rdf+xml" = web-browser;
+          "application/rss+xml" = web-browser;
+          "application/xhtml+xml" = web-browser;
+          "application/xhtml_xml" = web-browser;
+          "application/x-extension-xht" = web-browser;
+          "application/x-extension-xhtml" = web-browser;
+          "application/x-partial-download" = video-player;
+
+          "x-scheme-handler/freetube" = "freetube.desktop";
+          "x-scheme-handler/tg" = [
+            "com.ayugram.desktop.desktop"
+            "org.telegram.desktop.desktop"
+          ];
+          "x-scheme-handler/tonsite" = [
+            "com.ayugram.desktop.desktop"
+            "org.telegram.desktop.desktop"
+          ];
+          "x-scheme-handler/viber" = "viber.desktop";
+          "application/x-bittorrent" = "transmission.desktop"; # "transmission-gtk.desktop"
+
+          "hoppscotch" = "hoppscotch-handler.desktop";
+          "application/vnd.comicbook+zip" = [ document-viewer ];
+          "x-scheme-handler/ror2mm" = "r2modman.desktop";
+          "x-scheme-handler/sgnl" = "signal.desktop";
+          "x-scheme-handler/signalcaptcha" = "signal.desktop";
+        };
+    };
+  };
+}
