@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-let
+{pkgs, ...}: let
   myTokyoNight = {
     base00 = "24283b";
     base01 = "1f2335";
@@ -18,8 +17,7 @@ let
     base0E = "bb9af7";
     base0F = "ff007c";
   };
-in
-{
+in {
   stylix.enable = true;
   #stylix.image = "${../assets/wallpaper}";
   stylix.base16Scheme = myTokyoNight;
@@ -29,16 +27,14 @@ in
     package = pkgs.bibata-cursors; # pkgs.vimix-cursor-theme;
     size = 20;
   };
-  stylix.opacity =
-    let
-      opacity = 0.95; # 0.8; # 1.0e-3;
-    in
-    {
-      applications = opacity;
-      desktop = opacity;
-      popups = opacity;
-      terminal = opacity;
-    };
+  stylix.opacity = let
+    opacity = 0.95; # 0.8; # 1.0e-3;
+  in {
+    applications = opacity;
+    desktop = opacity;
+    popups = opacity;
+    terminal = opacity;
+  };
   stylix.fonts = {
     monospace = {
       name = "JetBrains Mono";

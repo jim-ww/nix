@@ -4,8 +4,7 @@
   lib,
   ...
 }:
-with lib;
-let
+with lib; let
   gitUsername = "jim-ww";
   gitEmail = "jim.w2610@proton.me";
   home = "/home/${config.user}";
@@ -24,8 +23,7 @@ let
   configHome = "${home}/.config";
 
   umountPersonal = "umount ~/Archive/personal";
-in
-{
+in {
   options = {
     user = mkOption {
       type = types.str;
@@ -49,7 +47,7 @@ in
     };
     packages = mkOption {
       type = types.listOf types.package;
-      default = import ./pkgs.nix { inherit pkgs; };
+      default = import ./pkgs.nix {inherit pkgs;};
     };
     font-packages = mkOption {
       type = types.listOf types.package;
@@ -155,8 +153,7 @@ in
       default = "${lib.getExe pkgs.swaylock} -efkli ${config.flakeDir}/wallpaper && ${umountPersonal}";
     };
     env = mkOption {
-      type =
-        with types;
+      type = with types;
         lazyAttrsOf (oneOf [
           str
           path
@@ -369,199 +366,195 @@ in
     };
     shellAliases = mkOption {
       type = types.attrsOf types.str;
-      default =
-        let
-          ls = "${lib.getExe pkgs.eza}";
-          fzf = "${lib.getExe pkgs.fzf}";
-          term-editor = "$EDITOR";
-        in
-        {
-          v = "$EDITOR";
-          c = "clear";
-          mv = "mv -v";
-          cp = "cp -v";
-          rm = "rm -v";
-          cc = "cd ${config.flakeDir} && l";
-          ccc = "cd ${config.flakeDir} && ${term-editor} $(${fzf})";
-          l = ls;
-          ls = ls;
-          ll = "${ls} -l";
-          la = "${ls} -a";
-          lla = "${ls} -al";
-          ff = "${lib.getExe pkgs.fastfetch} -s title:separator:os:wm:lm:terminal:shell:packages:uptime:datetime:battery:disk:memory:theme:wmtheme:colors";
-          conf = "cd ${config.flakeDir} && ${term-editor} configuration.nix";
-          prefs = "cd ${config.flakeDir} && ${term-editor} prefs.nix";
-          flake = "cd ${config.flakeDir} && ${term-editor} flake.nix";
-          pkgs = "cd ${config.flakeDir} && ${term-editor} pkgs.nix";
-          ns = "nix-search";
-          nsp = "nix-shell --run ${config.shell} -p";
-          nix-store-fix = "sudo nix-store --repair --verify --check-contents";
+      default = let
+        ls = "${lib.getExe pkgs.eza}";
+        fzf = "${lib.getExe pkgs.fzf}";
+        term-editor = "$EDITOR";
+      in {
+        v = "$EDITOR";
+        c = "clear";
+        mv = "mv -v";
+        cp = "cp -v";
+        rm = "rm -v";
+        cc = "cd ${config.flakeDir} && l";
+        ccc = "cd ${config.flakeDir} && ${term-editor} $(${fzf})";
+        l = ls;
+        ls = ls;
+        ll = "${ls} -l";
+        la = "${ls} -a";
+        lla = "${ls} -al";
+        ff = "${lib.getExe pkgs.fastfetch} -s title:separator:os:wm:lm:terminal:shell:packages:uptime:datetime:battery:disk:memory:theme:wmtheme:colors";
+        conf = "cd ${config.flakeDir} && ${term-editor} configuration.nix";
+        prefs = "cd ${config.flakeDir} && ${term-editor} prefs.nix";
+        flake = "cd ${config.flakeDir} && ${term-editor} flake.nix";
+        pkgs = "cd ${config.flakeDir} && ${term-editor} pkgs.nix";
+        ns = "nix-search";
+        nsp = "nix-shell --run ${config.shell} -p";
+        nix-store-fix = "sudo nix-store --repair --verify --check-contents";
 
-          gs = "git status";
-          gc = "git commit";
-          ga = "git add";
-          gaa = "git add --all";
-          gl = "git log";
-          gr = "git remote";
-          grl = "git reflog";
-          gf = "git fetch";
-          gi = "git init";
-          gb = "git branch";
-          gsw = "git switch";
-          gd = "git diff";
-          gcm = "git commit -m";
-          gsm = "git stash -m";
-          gwt = "git worktree";
-          gcp = ''git commit -m "update" && git push'';
-          gcl = "git clone";
-          gco = "git checkout";
-          gps = "git push";
-          gpl = "git pull";
+        gs = "git status";
+        gc = "git commit";
+        ga = "git add";
+        gaa = "git add --all";
+        gl = "git log";
+        gr = "git remote";
+        grl = "git reflog";
+        gf = "git fetch";
+        gi = "git init";
+        gb = "git branch";
+        gsw = "git switch";
+        gd = "git diff";
+        gcm = "git commit -m";
+        gsm = "git stash -m";
+        gwt = "git worktree";
+        gcp = ''git commit -m "update" && git push'';
+        gcl = "git clone";
+        gco = "git checkout";
+        gps = "git push";
+        gpl = "git pull";
 
-          ani = "ani-cli";
-          umu = "umu-run";
-          http = "curlie";
-          transcribe-translate-jp = "whisperx --device cpu --model base --compute_type int8 --language ja --output_format srt --output_dir . --no_align --task translate";
-          busybox = lib.getExe pkgs.busybox;
-          set-wallpaper = config.wallpaper.command;
-          set-video-wallper = ''mpvpaper  -vf "*" $NH_FLAKE/assets/video-wallpaper --mpv-options -o "--loop=yes" & disown'';
-          nixos-anywhere-echo = "echo 'nixos-anywhere --flake $NH_FLAKE#nixos user@hostname -i ssh-key-path'";
-          mpvsub = "mpv --sub-auto=fuzzy --audio-file-auto=fuzzy";
-          gtt = "gtt --src=English -dst=Russian";
-          firejail-enter = "firejail --private=. --seccomp ${config.shell}";
-          wf-record = ''wf-recorder -a --audio-backend=pipewire --codec h264_vaapi --device /dev/dri/renderD128 -p preset=fast -f "$XDG_VIDEOS_DIR/rec_$(date +%d-%m-%Y-T%H-%M-%S).mkv"'';
-          mount-personal = "mkdir -p ~/Archive/personal && gocryptfs ~/Archive/personal_enc ~/Archive/personal";
-          umount-personal = umountPersonal;
+        ani = "ani-cli";
+        umu = "umu-run";
+        http = "curlie";
+        "7z" = "7z";
+        transcribe-translate-jp = "whisperx --device cpu --model base --compute_type int8 --language ja --output_format srt --output_dir . --no_align --task translate";
+        busybox = lib.getExe pkgs.busybox;
+        set-wallpaper = config.wallpaper.command;
+        set-video-wallper = ''mpvpaper  -vf "*" $NH_FLAKE/assets/video-wallpaper --mpv-options -o "--loop=yes" & disown'';
+        nixos-anywhere-echo = "echo 'nixos-anywhere --flake $NH_FLAKE#nixos user@hostname -i ssh-key-path'";
+        mpvsub = "mpv --sub-auto=fuzzy --audio-file-auto=fuzzy";
+        gtt = "gtt --src=English -dst=Russian";
+        firejail-enter = "firejail --private=. --seccomp ${config.shell}";
+        wf-record = ''wf-recorder -a --audio-backend=pipewire --codec h264_vaapi --device /dev/dri/renderD128 -p preset=fast -f "$XDG_VIDEOS_DIR/rec_$(date +%d-%m-%Y-T%H-%M-%S).mkv"'';
+        mount-personal = "mkdir -p ~/Archive/personal && gocryptfs ~/Archive/personal_enc ~/Archive/personal";
+        umount-personal = umountPersonal;
 
-          gomod2nix-init = "nix flake init -t github:nix-community/gomod2nix#app";
+        gomod2nix-init = "nix flake init -t github:nix-community/gomod2nix#app";
 
-          # unclutter home dir
-          wget = ''wget --hsts-file="${dataHome}/wget-hsts"'';
-          adb = ''HOME="${dataHome}"/android adb'';
-          monerod = ''monerod --data-dir "${dataHome}"/bitmonero'';
-        };
+        # unclutter home dir
+        wget = ''wget --hsts-file="${dataHome}/wget-hsts"'';
+        adb = ''HOME="${dataHome}"/android adb'';
+        monerod = ''monerod --data-dir "${dataHome}"/bitmonero'';
+      };
     };
     mimeApps = mkOption {
-      type =
-        with types;
+      type = with types;
         attrsOf (coercedTo (either (listOf str) str) (x: concatStringsSep ";" (toList x)) str);
-      default =
-        let
-          editor = "nvim.desktop";
-          code-editor = "nvim.desktop"; # "dev.zed.Zed.desktop";
-          fileManager = "${config.file-manager}.desktop";
-          web-browser = "${config.browser}.desktop";
-          video-player = [ "mpv.desktop" ];
-          audio-player = "mpv.desktop";
-          image-viewer = [
-            "imv-dir.desktop"
-            # "gimp.desktop"
-          ];
-          document-viewer = "org.pwmt.zathura.desktop";
-          archive-manager = "org.gnome.FileRoller.desktop";
-        in
-        {
-          "inode/directory" = fileManager;
+      default = let
+        editor = "nvim.desktop";
+        code-editor = "nvim.desktop"; # "dev.zed.Zed.desktop";
+        fileManager = "${config.file-manager}.desktop";
+        web-browser = "${config.browser}.desktop";
+        video-player = ["mpv.desktop"];
+        audio-player = "mpv.desktop";
+        image-viewer = [
+          "imv-dir.desktop"
+          # "gimp.desktop"
+        ];
+        document-viewer = "org.pwmt.zathura.desktop";
+        archive-manager = "org.gnome.FileRoller.desktop";
+      in {
+        "inode/directory" = fileManager;
 
-          "image/gif" = video-player;
-          "image/jpeg" = image-viewer;
-          "image/png" = image-viewer;
-          "image/webp" = video-player;
-          "image/svg+xml" = image-viewer;
-          "image/avif" = image-viewer;
+        "image/gif" = video-player;
+        "image/jpeg" = image-viewer;
+        "image/png" = image-viewer;
+        "image/webp" = video-player;
+        "image/svg+xml" = image-viewer;
+        "image/avif" = image-viewer;
 
-          "audio/mp3" = audio-player;
-          "audio/mp4" = audio-player;
-          "audio/flac" = audio-player;
-          "audio/wav" = audio-player;
-          "audio/ogg" = audio-player;
-          "audio/x-flac" = audio-player;
-          "audio/x-wav" = audio-player;
-          "audio/x-vorbis+ogg" = audio-player;
-          "audio/x-mpegurl" = audio-player;
-          "audio/webm" = audio-player;
+        "audio/mp3" = audio-player;
+        "audio/mp4" = audio-player;
+        "audio/flac" = audio-player;
+        "audio/wav" = audio-player;
+        "audio/ogg" = audio-player;
+        "audio/x-flac" = audio-player;
+        "audio/x-wav" = audio-player;
+        "audio/x-vorbis+ogg" = audio-player;
+        "audio/x-mpegurl" = audio-player;
+        "audio/webm" = audio-player;
 
-          "video/vnd.avi" = video-player;
-          "video/x-matroska" = video-player;
-          "video/mp4" = video-player;
-          "video/webm" = video-player;
+        "video/vnd.avi" = video-player;
+        "video/x-matroska" = video-player;
+        "video/mp4" = video-player;
+        "video/webm" = video-player;
 
-          "application/pdf" = document-viewer;
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" = [
-            "writer.desktop"
-            document-viewer
-          ];
-          "application/epub+zip" = document-viewer;
+        "application/pdf" = document-viewer;
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" = [
+          "writer.desktop"
+          document-viewer
+        ];
+        "application/epub+zip" = document-viewer;
 
-          "text/plain" = editor;
-          "text/markdown" = editor;
-          "text/csv" = editor;
-          "text/css" = [
-            editor
-            code-editor
-          ];
-          "text/html" = [
-            web-browser
-            code-editor
-          ];
-          "text/x-go" = code-editor;
-          "text/x-python" = code-editor;
-          "text/x-java" = code-editor;
-          "text/javascript" = code-editor;
-          "text/vnd.trolltech.linguist" = code-editor;
+        "text/plain" = editor;
+        "text/markdown" = editor;
+        "text/csv" = editor;
+        "text/css" = [
+          editor
+          code-editor
+        ];
+        "text/html" = [
+          web-browser
+          code-editor
+        ];
+        "text/x-go" = code-editor;
+        "text/x-python" = code-editor;
+        "text/x-java" = code-editor;
+        "text/javascript" = code-editor;
+        "text/vnd.trolltech.linguist" = code-editor;
 
-          "application/json" = editor;
-          "application/yaml" = editor;
-          "application/toml" = editor;
-          "application/xml" = editor;
-          "application/x-zerosize" = editor;
-          "application/x-spss-sav" = editor;
-          "application/octet-stream" = editor;
-          "application/vnd.ms-publisher" = [
-            "libreoffice-writer.desktop"
-            editor
-          ];
-          "application/zip" = archive-manager;
-          "application/sql" = [
-            editor
-            code-editor
-          ];
+        "application/json" = editor;
+        "application/yaml" = editor;
+        "application/toml" = editor;
+        "application/xml" = editor;
+        "application/x-zerosize" = editor;
+        "application/x-spss-sav" = editor;
+        "application/octet-stream" = editor;
+        "application/vnd.ms-publisher" = [
+          "libreoffice-writer.desktop"
+          editor
+        ];
+        "application/zip" = archive-manager;
+        "application/sql" = [
+          editor
+          code-editor
+        ];
 
-          "x-scheme-handler/http" = web-browser;
-          "x-scheme-handler/https" = web-browser;
-          "x-scheme-handler/chrome" = web-browser;
-          "x-scheme-handler/about" = web-browser;
-          "x-scheme-handler/unknown" = web-browser;
-          "x-scheme-handler/mailto" = web-browser;
-          "application/x-extension-htm" = web-browser;
-          "application/x-extension-html" = web-browser;
-          "application/x-extension-shtml" = web-browser;
-          "application/rdf+xml" = web-browser;
-          "application/rss+xml" = web-browser;
-          "application/xhtml+xml" = web-browser;
-          "application/xhtml_xml" = web-browser;
-          "application/x-extension-xht" = web-browser;
-          "application/x-extension-xhtml" = web-browser;
-          "application/x-partial-download" = video-player;
+        "x-scheme-handler/http" = web-browser;
+        "x-scheme-handler/https" = web-browser;
+        "x-scheme-handler/chrome" = web-browser;
+        "x-scheme-handler/about" = web-browser;
+        "x-scheme-handler/unknown" = web-browser;
+        "x-scheme-handler/mailto" = web-browser;
+        "application/x-extension-htm" = web-browser;
+        "application/x-extension-html" = web-browser;
+        "application/x-extension-shtml" = web-browser;
+        "application/rdf+xml" = web-browser;
+        "application/rss+xml" = web-browser;
+        "application/xhtml+xml" = web-browser;
+        "application/xhtml_xml" = web-browser;
+        "application/x-extension-xht" = web-browser;
+        "application/x-extension-xhtml" = web-browser;
+        "application/x-partial-download" = video-player;
 
-          "x-scheme-handler/freetube" = "freetube.desktop";
-          "x-scheme-handler/tg" = [
-            "com.ayugram.desktop.desktop"
-            "org.telegram.desktop.desktop"
-          ];
-          "x-scheme-handler/tonsite" = [
-            "com.ayugram.desktop.desktop"
-            "org.telegram.desktop.desktop"
-          ];
-          "x-scheme-handler/viber" = "viber.desktop";
-          "application/x-bittorrent" = "transmission.desktop"; # "transmission-gtk.desktop"
+        "x-scheme-handler/freetube" = "freetube.desktop";
+        "x-scheme-handler/tg" = [
+          "com.ayugram.desktop.desktop"
+          "org.telegram.desktop.desktop"
+        ];
+        "x-scheme-handler/tonsite" = [
+          "com.ayugram.desktop.desktop"
+          "org.telegram.desktop.desktop"
+        ];
+        "x-scheme-handler/viber" = "viber.desktop";
+        "application/x-bittorrent" = "transmission.desktop"; # "transmission-gtk.desktop"
 
-          "hoppscotch" = "hoppscotch-handler.desktop";
-          "application/vnd.comicbook+zip" = [ document-viewer ];
-          "x-scheme-handler/ror2mm" = "r2modman.desktop";
-          "x-scheme-handler/sgnl" = "signal.desktop";
-          "x-scheme-handler/signalcaptcha" = "signal.desktop";
-        };
+        "hoppscotch" = "hoppscotch-handler.desktop";
+        "application/vnd.comicbook+zip" = [document-viewer];
+        "x-scheme-handler/ror2mm" = "r2modman.desktop";
+        "x-scheme-handler/sgnl" = "signal.desktop";
+        "x-scheme-handler/signalcaptcha" = "signal.desktop";
+      };
     };
   };
 }
