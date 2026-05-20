@@ -53,9 +53,9 @@ in {
       type = types.listOf types.package;
       default = with pkgs; [
         nerd-fonts.symbols-only # icons for terminal
-        zpix-pixel-font # pixel japanese font
-        # noto-fonts-cjk-sans # clean/readable japanese font
-        #hachimarupop # cute japanese font
+        noto-fonts-cjk-sans # clean/readable japanese font
+        # zpix-pixel-font # pixel japanese font
+        # hachimarupop # cute japanese font
       ];
     };
     wallpaper = {
@@ -71,6 +71,10 @@ in {
     flakeDir = mkOption {
       type = types.str;
       default = "${home}/Projects/nix";
+    };
+    configHome = mkOption {
+      type = types.str;
+      default = configHome;
     };
     backupDir = mkOption {
       type = types.str;
@@ -416,7 +420,7 @@ in {
         ani = "ani-cli";
         umu = "umu-run";
         http = "curlie";
-        "7z" = "7z";
+        "7z" = "7zz";
         transcribe-translate-jp = "whisperx --device cpu --model base --compute_type int8 --language ja --output_format srt --output_dir . --no_align --task translate";
         busybox = lib.getExe pkgs.busybox;
         set-wallpaper = config.wallpaper.command;
@@ -428,6 +432,7 @@ in {
         wf-record = ''wf-recorder -a --audio-backend=pipewire --codec h264_vaapi --device /dev/dri/renderD128 -p preset=fast -f "$XDG_VIDEOS_DIR/rec_$(date +%d-%m-%Y-T%H-%M-%S).mkv"'';
         mount-personal = "mkdir -p ~/Archive/personal && gocryptfs ~/Archive/personal_enc ~/Archive/personal";
         umount-personal = umountPersonal;
+        transmission-remote-srv = ''transmission-remote $(cat /run/secrets/transmission-rpc-addr) -n "$(cat /run/secrets/transmission-rpc-user):$(cat /run/secrets/transmission-rpc-pass)"'';
 
         gomod2nix-init = "nix flake init -t github:nix-community/gomod2nix#app";
 

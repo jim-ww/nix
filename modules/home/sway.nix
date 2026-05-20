@@ -38,7 +38,6 @@ in {
     playerctl
     libsForQt5.qt5.qtwayland
     swayosd
-    autotiling-rs
     swaybg
     grim
     slurp
@@ -80,7 +79,7 @@ in {
       terminal = term;
       window.titlebar = false;
       startup = [
-        {command = "autotiling-rs";}
+        {command = lib.getExe pkgs.autotiling-rs;}
         {command = wallpaper-command;}
         {command = "cliphist wipe";}
         {command = "wl-clip-persist --clipboard regular";}

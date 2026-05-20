@@ -64,7 +64,7 @@
       ./modules/nix-ld.nix
       ./modules/earlyoom.nix
       ./modules/games.nix
-      # ./modules/wireguard.nix
+      ./modules/wireguard.nix
       nur.modules.nixos.default
       stylix.nixosModules.stylix
       sops-nix.nixosModules.sops
@@ -97,7 +97,6 @@
               ./modules/home/fish.nix
               ./modules/home/lf.nix
               ./modules/home/battery-low.nix
-              ./modules/home/nom.nix
               ./modules/home/librewolf
               ./modules/home/distrobox.nix
               ./modules/home/jujutsu.nix

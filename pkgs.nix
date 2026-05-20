@@ -1,6 +1,5 @@
-{ pkgs, ... }:
-with pkgs;
-[
+{pkgs, ...}:
+with pkgs; [
   fd
   jq
   lf
@@ -33,6 +32,7 @@ with pkgs;
   tree
   bluetuith
   nixfmt
+  nom
   ani-cli
   transmission_4
   imagemagick
@@ -52,6 +52,7 @@ with pkgs;
   file-roller
   anki-bin
   lorien # infinite canvas
+  tor-browser
 
   ## dev
   go
