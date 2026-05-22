@@ -23,6 +23,7 @@
   clipboard-manager = config.clipboard-manager;
   exit-command = "exit";
   code-editor = "${config.term} ${config.editor}";
+  bookmarks = config.bookmarks-menu;
   # code-editor-alt = "zeditor";
 in {
   imports = [
@@ -222,6 +223,7 @@ in {
         "${mod}+a" = "exec anki";
         "${mod}+w" = "exec freetube";
         "${mod}+b" = "exec keepassxc ${passwords}";
+        "${mod}+Shift+b" = "exec ${bookmarks}";
         "${mod}+j" = "exec ${emoji}";
         "${mod}+x" = "exec ${notes}";
         "${mod}+Shift+x" = "exec ${notes-all}";

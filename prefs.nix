@@ -108,6 +108,10 @@ in {
       type = types.str;
       default = "https://duckduckgo.com/?kp=-2&kl=wt-wt&ka=Terminus&kt=Terminus&kj=1a1b26&kn=1&kx=a9b1d6&k1=-1&k5=2&k7=16161e&k8=a9b1d6&k9=7aa2f7&k18=1&kaa=bb9af7&kaf=s&kaj=m&kak=-1&kae=d&kao=-1&kap=-1&kaq=-1&kau=-1&kav=1&kax=-1&kay=b&kbf=1&duckai=1";
     };
+    bookmarks-menu = mkOption {
+      type = types.str;
+      default = ''${lib.getExe pkgs.yq-go} -r '.[]' /run/secrets/bookmarks | ${lib.getExe pkgs.rofi} -dmenu -p 'search bookmarks...' '';
+    };
     music-player = mkOption {
       type = types.str;
       default = "${config.term} rmpc";
@@ -387,7 +391,7 @@ in {
         ll = "${ls} -l";
         la = "${ls} -a";
         lla = "${ls} -al";
-        ff = "${lib.getExe pkgs.fastfetch} -s title:separator:os:wm:lm:terminal:shell:packages:uptime:datetime:battery:disk:memory:theme:wmtheme:colors";
+        ff = "fastfetch -s title:separator:os:wm:lm:terminal:shell:packages:uptime:datetime:battery:disk:memory:theme:wmtheme:colors";
         conf = "cd ${config.flakeDir} && ${term-editor} configuration.nix";
         prefs = "cd ${config.flakeDir} && ${term-editor} prefs.nix";
         flake = "cd ${config.flakeDir} && ${term-editor} flake.nix";
@@ -432,7 +436,8 @@ in {
         wf-record = ''wf-recorder -a --audio-backend=pipewire --codec h264_vaapi --device /dev/dri/renderD128 -p preset=fast -f "$XDG_VIDEOS_DIR/rec_$(date +%d-%m-%Y-T%H-%M-%S).mkv"'';
         mount-personal = "mkdir -p ~/Archive/personal && gocryptfs ~/Archive/personal_enc ~/Archive/personal";
         umount-personal = umountPersonal;
-        transmission-remote-srv = ''transmission-remote $(cat /run/secrets/transmission-rpc-addr) -n "$(cat /run/secrets/transmission-rpc-user):$(cat /run/secrets/transmission-rpc-pass)"'';
+        trcli = "transmission-cli";
+        trcli-rmt = ''transmission-remote $(cat /run/secrets/transmission-rpc-addr) -n "$(cat /run/secrets/transmission-rpc-user):$(cat /run/secrets/transmission-rpc-pass)"'';
 
         gomod2nix-init = "nix flake init -t github:nix-community/gomod2nix#app";
 

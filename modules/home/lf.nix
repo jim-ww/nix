@@ -2,13 +2,11 @@
   pkgs,
   config,
   ...
-}:
-let
+}: let
   gum-confirm = ''gum confirm --unselected.background="#${config.stylix.base16Scheme.base02}" --selected.background="#${config.stylix.base16Scheme.base0D}" --prompt.foreground="#${config.stylix.base16Scheme.base05}" '';
   gum-input = ''gum input --prompt.foreground="#${config.stylix.base16Scheme.base0D}" --cursor.foreground="#${config.stylix.base16Scheme.base05}" '';
   gum-choose = ''gum choose --header.foreground="#${config.stylix.base16Scheme.base03}" --cursor.foreground="#${config.stylix.base16Scheme.base0D}" --item.foreground="#${config.stylix.base16Scheme.base05}" --selected.foreground="#${config.stylix.base16Scheme.base01}" --selected.background="#${config.stylix.base16Scheme.base0D}" '';
-in
-{
+in {
   home.packages = with pkgs; [
     trashy
     patool
@@ -16,10 +14,7 @@ in
     jq
     poppler-utils # pdftotext
     highlight
-    unzip
-    unar
     chafa # sixel images
-    fzf
     ffmpegthumbnailer # video thumbnails
   ];
 

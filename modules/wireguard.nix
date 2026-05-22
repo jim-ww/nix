@@ -1,11 +1,18 @@
-{config, ...}: let
+{
+  lib,
+  config,
+  ...
+}: let
   serverPublicKey = "XvAXj8d5JYRNjaW32RZONkWlEoHgVPkzBLqosnZm6XM=";
   ip = "";
 in {
   sops.secrets.wireguard-private-key = {};
 
-  networking.firewall.allowedUDPPorts = [51820];
-  networking.wireguard.interfaces = {
+  networking.firewall.allowedUDPPorts = lib.mkIf (ip
+    != "")
+  [51820];
+  networking.wireguard.interfaces = lib.mkIf (ip
+    != "") {
     wg0 = {
       ips = ["10.252.1.2/32"];
       mtu = 1280;

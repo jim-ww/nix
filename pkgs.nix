@@ -36,6 +36,7 @@ with pkgs; [
   ani-cli
   transmission_4
   imagemagick
+  steam-run-free
 
   # music
   rmpc
@@ -83,6 +84,7 @@ with pkgs; [
   cobra-cli
   gh
   devbox
+  graphviz # go prof
   hyprpicker
   #kubectl
   codex # ai

@@ -12,4 +12,5 @@
     owner = config.user;
     path = "${config.configHome}/nom/config.yml";
   };
+  sops.secrets.bookmarks.owner = config.user;
 }
