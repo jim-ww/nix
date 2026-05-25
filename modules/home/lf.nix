@@ -49,7 +49,7 @@ in {
       a = "create";
       w = "$" + config.shell;
       x = "cut";
-      Y = "$wl-copy $f";
+      Y = "copy-file";
       E = "extract";
       C = "compress";
       # B = "bulk-rename";
@@ -63,6 +63,7 @@ in {
     };
 
     commands = {
+      copy-file = ''$wl-copy -t text/uri-list "file://$(realpath $f)"'';
       on-init = "";
 
       compress = ''
