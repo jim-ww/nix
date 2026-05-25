@@ -110,7 +110,7 @@ in {
     };
     bookmarks-menu = mkOption {
       type = types.str;
-      default = ''${lib.getExe pkgs.yq-go} -r '.[]' /run/secrets/bookmarks | ${lib.getExe pkgs.rofi} -dmenu -p 'search bookmarks...' '';
+      default = ''${lib.getExe pkgs.yq-go} -r '.[]' /run/secrets/bookmarks | ${lib.getExe pkgs.rofi} -dmenu -p 'search bookmarks...' | wl-copy '';
     };
     music-player = mkOption {
       type = types.str;
