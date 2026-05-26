@@ -74,7 +74,6 @@
         # with stablePkgs;
         environment.systemPackages = [
           inputs.nihongo.packages.${system}.default
-          (pkgs.callPackage ./modules/pkgs/ani-cli.nix {})
         ];
       }
       home-manager.nixosModules.home-manager

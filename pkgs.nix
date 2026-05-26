@@ -13,6 +13,7 @@ with pkgs; [
   age
   gtt # translator. C-J C-S Esc
   _7zz
+  unrar # todo find alt
   ncdu
   sops
   btop
@@ -23,7 +24,7 @@ with pkgs; [
   trashy
   unison
   testdisk # disk recovery
-  fastfetch
+  fastfetchMinimal
   gocryptfs
   openssl
   nix-search-cli
@@ -53,6 +54,7 @@ with pkgs; [
   file-roller
   anki-bin
   lorien # infinite canvas
+  proton-vpn-cli
   tor-browser
 
   ## dev
@@ -85,6 +87,7 @@ with pkgs; [
   gh
   devbox
   graphviz # go prof
+  ghz # grpc load test
   hyprpicker
   #kubectl
   codex # ai
