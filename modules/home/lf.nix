@@ -1,6 +1,7 @@
 {
   pkgs,
   config,
+  lib,
   ...
 }: let
   gum-confirm = ''gum confirm --unselected.background="#${config.stylix.base16Scheme.base02}" --selected.background="#${config.stylix.base16Scheme.base0D}" --prompt.foreground="#${config.stylix.base16Scheme.base05}" '';
@@ -9,7 +10,6 @@
 in {
   home.packages = with pkgs; [
     trashy
-    patool
     gum
     jq
     poppler-utils # pdftotext
@@ -73,10 +73,10 @@ in {
           [ -z "$format" ] && exit 0
           name=$(${gum-input} --placeholder="archive name:")
           [ -z "$name" ] && exit 0
-          patool create "$name$format" $fx
+          ${lib.getExe pkgs._7zz} a "$name$format" $fx
         }}'';
 
-      extract = ''''$${gum-confirm} "extract '$fx'?" && patool extract -- "$fx" || echo 'extraction canceled' '';
+      extract = ''''$${gum-confirm} "extract '$fx'?" && ${lib.getExe pkgs._7zz} x "$fx" || echo'';
       trash = ''''$${gum-confirm} "trash '$fx'?"   && trash $fx'';
       delete = ''''$${gum-confirm} "delete '$fx'?"  && rm -rf $fx'';
 
@@ -181,7 +181,7 @@ in {
 
       case "$file" in
         *.tar* | *.tgz | *.tbz | *.txz | *.zip | *.rar | *.7z)
-          patool list "$file" --password 0 2>/dev/null || echo "(could not list archive)"
+          ${lib.getExe pkgs._7zz} l "$file" --password 0 2>/dev/null || echo "(could not list archive)"
           ;;
         *.pdf)
           pdftotext "$file" - 2>/dev/null || echo "(pdf text extraction failed)"
