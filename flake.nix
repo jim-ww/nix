@@ -104,6 +104,7 @@
               ./modules/home/tmux.nix
               ./modules/home/fzf.nix
               ./modules/home/tealdeer.nix
+              ./modules/home/protonvpn.nix
             ];
             stylix.targets.fzf.enable = false;
             dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
