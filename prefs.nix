@@ -130,11 +130,11 @@ in {
     };
     notes = mkOption {
       type = types.str;
-      default = "${config.term} -D ${config.notesDir} ${config.editor} notes.md";
+      default = "${config.term} -D ${config.notesDir} vim notes.md";
     };
     notes-all = mkOption {
       type = types.str;
-      default = "${config.term} -D ${config.notesDir} ${config.editor} .";
+      default = "${config.term} -D ${config.notesDir} vim .";
     };
     app-menu = mkOption {
       type = types.str;

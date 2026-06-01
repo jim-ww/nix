@@ -65,6 +65,7 @@
       ./modules/earlyoom.nix
       ./modules/games.nix
       ./modules/wireguard.nix
+      ./modules/keyring.nix
       nur.modules.nixos.default
       stylix.nixosModules.stylix
       sops-nix.nixosModules.sops
@@ -85,7 +86,6 @@
           users.${user} = {config, ...}: {
             imports = [
               ./prefs.nix
-              ./modules/home/pass.nix
               ./modules/stylix.nix
               ./modules/home/git.nix
               ./modules/home/sway.nix

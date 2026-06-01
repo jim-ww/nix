@@ -56,6 +56,7 @@ with pkgs; [
   lorien # infinite canvas
   proton-vpn-cli
   tor-browser
+  freetube
 
   ## dev
   go

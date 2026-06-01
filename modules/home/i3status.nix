@@ -2,9 +2,8 @@
   pkgs,
   config,
   ...
-}:
-{
-  home.packages = with pkgs; [ pavucontrol ];
+}: {
+  home.packages = with pkgs; [pavucontrol];
 
   # https://github.com/greshake/i3status-rust/blob/master/doc/themes.md
   programs.i3status-rust = {
@@ -67,10 +66,10 @@
               }
             ];
           }
-          {
-            block = "net";
-            format = " $icon $signal_strength ";
-          }
+          # {
+          #   block = "net";
+          #   format = " $icon $signal_strength ";
+          # }
           {
             block = "cpu";
             interval = 5;
