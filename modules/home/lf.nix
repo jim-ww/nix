@@ -76,7 +76,7 @@ in {
           ${lib.getExe pkgs._7zz} a "$name$format" $fx
         }}'';
 
-      extract = ''''$${gum-confirm} "extract '$fx'?" && ${lib.getExe pkgs._7zz} x "$fx" || echo'';
+      extract = ''''$${gum-confirm} "extract '$fx'?" && ([[ "$fx" == *.rar ]] && ${lib.getExe pkgs.unrar} x "$fx" || ${lib.getExe pkgs._7zz} x "$fx") || echo'';
       trash = ''''$${gum-confirm} "trash '$fx'?"   && trash $fx'';
       delete = ''''$${gum-confirm} "delete '$fx'?"  && rm -rf $fx'';
 
