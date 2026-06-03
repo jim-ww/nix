@@ -31,6 +31,7 @@
       url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    ani-cli.url = "path:./modules/pkgs/ani-cli";
   };
   outputs = {
     self,
@@ -85,10 +86,8 @@
           users.${user} = {config, ...}: {
             imports = [
               ./prefs.nix
-              ./modules/stylix.nix
               ./modules/home/git.nix
               ./modules/home/sway.nix
-              ./modules/home/gtk.nix
               ./modules/home/xdg.nix
               ./modules/home/gpg.nix
               ./modules/home/mpd.nix
@@ -121,6 +120,7 @@
         };
         nixpkgs.overlays = [
           nur.overlays.default
+          inputs.ani-cli.overlays.default
         ];
       }
     ];

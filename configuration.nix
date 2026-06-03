@@ -3,7 +3,11 @@
   config,
   ...
 }: {
-  environment.pathsToLink = ["/share/applications" "/share/xdg-desktop-portal"]; # needed fpr xdg portals
+  environment.pathsToLink = ["/share/applications" "/share/xdg-desktop-portal"]; # needed fpr xdg portals in home manager
+
+  systemd.user.extraConfig = ''
+    DefaultEnvironment="PATH=/run/wrappers/bin:/etc/profiles/per-user/%u/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin"
+  ''; # fix urls not openning
 
   security.polkit.enable = true;
   security.pam.services.swaylock = {};

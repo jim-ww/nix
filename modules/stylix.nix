@@ -39,4 +39,13 @@
       terminal = 10;
     };
   };
+
+  stylix.icons = {
+    enable = true;
+    package = pkgs.paper-icon-theme; #pkgs.papirus-icon-theme; # pkgs.adwaita-icon-theme;
+    dark = "Paper"; # "Papirus-Dark"; # "Adwaita";
+    light = "Paper"; # "Papirus-Light";
+  };
+
+  stylix.targets.kmscon.enable = false;
 }

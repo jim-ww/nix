@@ -1,5 +1,4 @@
-{ config, ... }:
-{
+{config, ...}: {
   preservation = {
     enable = true;
 
@@ -111,11 +110,6 @@
 
           {
             directory = ".local/share/keyrings";
-            mode = "0700";
-          }
-
-          {
-            directory = ".local/share/password-store";
             mode = "0700";
           }
 

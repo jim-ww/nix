@@ -24,7 +24,7 @@ with pkgs; [
   trashy
   unison
   testdisk # disk recovery
-  fastfetchMinimal
+  fastfetch.minimal
   gocryptfs
   openssl
   nix-search-cli
