@@ -181,7 +181,9 @@ in {
       bindkeysToCode = true;
       keybindings = {
         # basic
-        "${mod}+c" = ''exec [[ $(${swayPkg}/bin/swaymsg -t get_tree | ${pkgs.jq}/bin/jq -r '.. | objects | select(.focused==true) | .app_id') == "im.dino.Dino" ]] || ${swayPkg}/bin/swaymsg kill''; # kill anything focused, except dino
+        "${mod}+c" = let
+          swayMsg = "${swayPkg}/bin/swaymsg";
+        in ''exec [[ $(${swayMsg} -t get_tree | ${pkgs.jq}/bin/jq -r '.. | objects | select(.focused==true) | .app_id') == "im.dino.Dino" ]] && ${swayMsg} scratchpad show && ${swayMsg} focus || ${swayMsg} kill''; # kill anything focused, but hide dino
         "${mod}+Shift+m" = "exit";
         "${mod}+v" = "floating toggle";
         "${mod}+Shift+f" = "fullscreen toggle";
