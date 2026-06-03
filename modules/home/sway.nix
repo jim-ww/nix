@@ -3,9 +3,7 @@
   config,
   lib,
   ...
-}: let
-  swayPkg = pkgs.swayfx;
-in {
+}: {
   imports = [
     ./i3status.nix
     ./foot.nix
@@ -42,7 +40,7 @@ in {
     mod = "Mod4";
   in {
     enable = true;
-    package = swayPkg;
+    package = pkgs.swayfx;
     checkConfig = false;
     xwayland = true;
     wrapperFeatures = {
@@ -182,7 +180,7 @@ in {
       keybindings = {
         # basic
         "${mod}+c" = let
-          swayMsg = "${swayPkg}/bin/swaymsg";
+          swayMsg = "${config.wayland.windowManager.sway.package}/bin/swaymsg";
         in ''exec [[ $(${swayMsg} -t get_tree | ${pkgs.jq}/bin/jq -r '.. | objects | select(.focused==true) | .app_id') == "im.dino.Dino" ]] && ${swayMsg} scratchpad show && ${swayMsg} focus || ${swayMsg} kill''; # kill anything focused, but hide dino
         "${mod}+Shift+m" = "exit";
         "${mod}+v" = "floating toggle";
