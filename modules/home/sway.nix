@@ -4,27 +4,7 @@
   lib,
   ...
 }: let
-  term = config.term;
-  wallpaper-command = config.wallpaper.command;
-  browser = config.browser;
-  screenshot = config.screenshot;
-  screenshot-full = config.screenshot-full;
-
-  music-player = config.music-player;
-  resource-monitor = config.resource-monitor;
-  file-manager = config.file-manager;
-  file-manager-term = config.file-manager-term;
-  app-menu = config.app-menu;
-  passwords = config.passwords;
-  emoji = "rofi -show emoji";
-  notes = config.notes;
-  notes-all = config.notes-all;
-  swaylock = config.swaylock;
-  clipboard-manager = config.clipboard-manager;
-  exit-command = "exit";
-  code-editor = "${config.term} ${config.editor}";
-  bookmarks = config.bookmarks-menu;
-  # code-editor-alt = "zeditor";
+  swayPkg = pkgs.swayfx;
 in {
   imports = [
     ./i3status.nix
@@ -62,7 +42,7 @@ in {
     mod = "Mod4";
   in {
     enable = true;
-    package = pkgs.swayfx;
+    package = swayPkg;
     checkConfig = false;
     xwayland = true;
     wrapperFeatures = {
@@ -74,17 +54,19 @@ in {
       corner_radius 10
       smart_corner_radius enable
       shadows on
+
+      for_window [app_id="im.dino.Dino"] move scratchpad
     '';
     config = {
       modifier = mod;
-      terminal = term;
+      terminal = config.term;
       window.titlebar = false;
       startup = [
         {command = lib.getExe pkgs.autotiling-rs;}
-        {command = wallpaper-command;}
+        {command = config.wallpaper.command;}
         {command = "cliphist wipe";}
         {command = "wl-clip-persist --clipboard regular";}
-        {command = "element-desktop --hidden --no-update";}
+        {command = "dino";} # "element-desktop --hidden --no-update";}
         {command = "keepassxc --minimized";}
         {command = "lf -server";}
         {command = "fcitx5";}
@@ -199,8 +181,8 @@ in {
       bindkeysToCode = true;
       keybindings = {
         # basic
-        "${mod}+c" = "kill";
-        "${mod}+Shift+m" = exit-command;
+        "${mod}+c" = ''exec [[ $(${swayPkg}/bin/swaymsg -t get_tree | ${pkgs.jq}/bin/jq -r '.. | objects | select(.focused==true) | .app_id') == "im.dino.Dino" ]] || ${swayPkg}/bin/swaymsg kill''; # kill anything focused, except dino
+        "${mod}+Shift+m" = "exit";
         "${mod}+v" = "floating toggle";
         "${mod}+Shift+f" = "fullscreen toggle";
         "${mod}+Up" = "focus up";
@@ -213,59 +195,52 @@ in {
         "${mod}+Shift+Up" = "move up";
         "${mod}+Shift+Down" = "move down";
         # programs
-        "${mod}+q" = "exec ${term}";
+        "${mod}+q" = "exec ${config.term}";
         "${mod}+Shift+q" = "exec nix-shell -p st --run st bash";
-        "${mod}+t" = "exec ${term} --title=term-float";
-        "${mod}+e" = "exec ${file-manager-term}";
-        "${mod}+Shift+e" = "exec ${file-manager}";
-        "${mod}+f" = "exec ${browser}";
-        "${mod}+s" = "exec ${music-player}";
-        "${mod}+Shift+a" = "exec ${resource-monitor}";
+        "${mod}+t" = "exec ${config.term} --title=term-float";
+        "${mod}+e" = "exec ${config.file-manager-term}";
+        "${mod}+Shift+e" = "exec ${config.file-manager}";
+        "${mod}+f" = "exec ${config.browser}";
+        "${mod}+s" = "exec ${config.music-player}";
+        "${mod}+Shift+a" = "exec ${config.resource-monitor}";
         "${mod}+a" = "exec anki";
         "${mod}+w" = "exec freetube";
-        "${mod}+b" = "exec keepassxc ${passwords}";
-        "${mod}+Shift+b" = "exec ${bookmarks}";
-        "${mod}+j" = "exec ${emoji}";
-        "${mod}+x" = "exec ${notes}";
-        "${mod}+Shift+x" = "exec ${notes-all}";
-        "${mod}+d" = "exec ${code-editor}";
-        # "${mod}+Shift+d" = "exec ${code-editor-alt}";
-        "${mod}+z" = "exec unison-gui";
+        "${mod}+b" = "exec ${config.passwords}";
+        "${mod}+Shift+b" = "exec ${config.bookmarks-menu}";
+        "${mod}+j" = "exec rofi -show emoji";
+        "${mod}+x" = "exec ${config.notes}";
+        "${mod}+Shift+x" = "exec ${config.notes-all}";
+        "${mod}+d" = "exec ${config.term} ${config.editor}";
+        "${mod}+z" = ''[app_id="im.dino.Dino"]scratchpad show; focus'';
         "${mod}+p" = "exec ${lib.getExe pkgs.rofi-pulse-select} sink";
-        "${mod}+l" = "exec ${swaylock}";
-        "${mod}+Shift+c" = "exec ${clipboard-manager}";
-
-        "Print" = "exec ${screenshot} ";
-        "${mod}+Print" = "exec ${screenshot-full}";
-
-        "${mod}+r" = "exec ${app-menu}";
-
+        "${mod}+r" = "exec ${config.app-menu}";
+        "${mod}+l" = "exec ${config.swaylock}";
+        "${mod}+Shift+c" = "exec ${config.clipboard-manager}";
+        "Print" = "exec ${config.screenshot} ";
+        "${mod}+Print" = "exec ${config.screenshot-full}";
         # toggle screen
         "${mod}+F1" = "output eDP-1 enable";
         "${mod}+F2" = "output eDP-1 disable";
-
         # sway-specific
         "${mod}+Shift+r" = "reload";
         "${mod}+Shift+t" = "exec swaymsg reload_config";
         "${mod}+Escape" = "exec swaymsg input type:touchpad events toggle enabled disabled";
-
+        # volume
         "XF86AudioRaiseVolume" = "exec swayosd-client --output-volume 2"; # "exec pamixer -i 5";
         "XF86AudioLowerVolume" = "exec swayosd-client --output-volume -2"; # "exec pamixer -d 5";
-
         "XF86AudioMute" = "exec swayosd-client --output-volume mute-toggle"; # "exec pamixer -t";
         "XF86AudioMicMute" = "exec swayosd-client --input-volume mute-toggle"; # "exec pamixer -t";
-
+        # playback control
         "XF86AudioPlay" = "exec playerctl play-pause";
         "XF86AudioPause" = "exec playerctl play-pause";
         "XF86AudioNext" = "exec playerctl next";
         "XF86AudioPrev" = "exec playerctl previous";
-
+        # brightness
         "XF86MonBrightnessUp" = "exec brightnessctl s +10 && swayosd-client --brightness raise";
         "XF86MonBrightnessDown" = "exec brightnessctl s 10- && swayosd-client --brightness lower";
-
+        # other
         #"--release Caps_Lock" = "exec swayosd-client --caps-lock";
         "--release Num_Lock" = "exec swayosd-client --num-lock";
-
         # switch workspaces
         "${mod}+1" = "workspace number 1";
         "${mod}+2" = "workspace number 2";
@@ -277,7 +252,6 @@ in {
         "${mod}+8" = "workspace number 8";
         "${mod}+9" = "workspace number 9";
         "${mod}+0" = "workspace number 10";
-
         # move to workspaces
         "${mod}+Shift+1" = "move container to workspace number 1";
         "${mod}+Shift+2" = "move container to workspace number 2";

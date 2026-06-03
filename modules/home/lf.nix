@@ -4,9 +4,9 @@
   lib,
   ...
 }: let
-  gum-confirm = ''gum confirm --unselected.background="#${config.stylix.base16Scheme.base02}" --selected.background="#${config.stylix.base16Scheme.base0D}" --prompt.foreground="#${config.stylix.base16Scheme.base05}" '';
-  gum-input = ''gum input --prompt.foreground="#${config.stylix.base16Scheme.base0D}" --cursor.foreground="#${config.stylix.base16Scheme.base05}" '';
-  gum-choose = ''gum choose --header.foreground="#${config.stylix.base16Scheme.base03}" --cursor.foreground="#${config.stylix.base16Scheme.base0D}" --item.foreground="#${config.stylix.base16Scheme.base05}" --selected.foreground="#${config.stylix.base16Scheme.base01}" --selected.background="#${config.stylix.base16Scheme.base0D}" '';
+  gum-confirm = ''gum confirm --unselected.background="#${config.lib.stylix.colors.base02}" --selected.background="#${config.lib.stylix.colors.base0D}" --prompt.foreground="#${config.lib.stylix.colors.base05}" '';
+  gum-input = ''gum input --prompt.foreground="#${config.lib.stylix.colors.base0D}" --cursor.foreground="#${config.lib.stylix.colors.base05}" '';
+  gum-choose = ''gum choose --header.foreground="#${config.lib.stylix.colors.base03}" --cursor.foreground="#${config.lib.stylix.colors.base0D}" --item.foreground="#${config.lib.stylix.colors.base05}" --selected.foreground="#${config.lib.stylix.colors.base01}" --selected.background="#${config.lib.stylix.colors.base0D}" '';
 in {
   home.packages = with pkgs; [
     trashy
@@ -76,7 +76,7 @@ in {
           ${lib.getExe pkgs._7zz} a "$name$format" $fx
         }}'';
 
-      extract = ''''$${gum-confirm} "extract '$fx'?" && ([[ "$fx" == *.rar ]] && ${lib.getExe pkgs.unrar} x "$fx" || ${lib.getExe pkgs._7zz} x "$fx") || echo'';
+      extract = ''''$${gum-confirm} "extract '$fx'?" && ([[ "$fx" == *.rar ]] && ${lib.getExe pkgs.unar} "$fx" || ${lib.getExe pkgs._7zz} x "$fx") || echo'';
       trash = ''''$${gum-confirm} "trash '$fx'?"   && trash $fx'';
       delete = ''''$${gum-confirm} "delete '$fx'?"  && rm -rf $fx'';
 

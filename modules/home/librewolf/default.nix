@@ -1,6 +1,5 @@
-{ pkgs, ... }:
-{
-  stylix.targets.librewolf.profileNames = [ "default" ];
+{pkgs, ...}: {
+  stylix.targets.librewolf.profileNames = ["default"];
 
   programs.librewolf = {
     enable = true;
@@ -11,8 +10,8 @@
         ublock-origin
         keepassxc-browser
         darkreader
-        proton-vpn
         single-file
+        # proton-vpn
         # yomitan # Japanese
         # disabled:
         #ipfs-companion

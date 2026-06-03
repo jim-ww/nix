@@ -2,10 +2,11 @@
   pkgs,
   config,
   ...
-}:
-{
+}: {
+  environment.pathsToLink = ["/share/applications" "/share/xdg-desktop-portal"]; # needed fpr xdg portals
+
   security.polkit.enable = true;
-  security.pam.services.swaylock = { };
+  security.pam.services.swaylock = {};
   security.sudo.extraConfig = ''
     Defaults lecture = never
   '';
@@ -24,7 +25,7 @@
   services.openssh.enable = true;
   services.dbus = {
     enable = true;
-    packages = [ pkgs.dconf ];
+    packages = [pkgs.dconf];
   };
   services.upower.enable = true;
   services.gvfs.enable = true;
@@ -32,7 +33,7 @@
 
   environment.systemPackages = config.packages;
   environment.variables = config.env;
-  environment.sessionVariables.PATH = [ "${config.env.GOPATH}/bin" ];
+  environment.sessionVariables.PATH = ["${config.env.GOPATH}/bin"];
   fonts.packages = config.font-packages;
 
   nixpkgs.config.allowUnfree = true;

@@ -7,7 +7,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     stylix = {
-      url = "github:danth/stylix";
+      url = "github:danth/stylix"; # TODO: moved to nix-community
       inputs.nixpkgs.follows = "nixpkgs";
     };
     disko = {
@@ -48,7 +48,6 @@
     #stablePkgs = nixpkgs-stable.legacyPackages.${system};
     commonModules = [
       ./prefs.nix
-      ./modules/xdg.nix # TODO
       ./modules/bluetooth.nix
       ./modules/docker.nix
       ./modules/earlyoom.nix
@@ -61,7 +60,7 @@
       ./modules/user.nix
       ./modules/sops.nix
       ./modules/tlp.nix
-      # ./modules/nix-ld.nix
+      ./modules/nix-ld.nix
       ./modules/earlyoom.nix
       ./modules/games.nix
       ./modules/wireguard.nix

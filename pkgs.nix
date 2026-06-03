@@ -13,7 +13,7 @@ with pkgs; [
   age
   gtt # translator. C-J C-S Esc
   _7zz
-  unrar # todo find alt
+  unar
   ncdu
   sops
   btop
