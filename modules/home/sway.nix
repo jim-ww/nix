@@ -212,6 +212,8 @@
         "${mod}+Shift+x" = "exec ${config.notes-all}";
         "${mod}+d" = "exec ${config.term} ${config.editor}";
         "${mod}+z" = ''[app_id="im.dino.Dino"]scratchpad show; focus'';
+        "${mod}+Shift+z" = ''[app_id="im.dino.Dino"]move scratchpad'';
+
         "${mod}+p" = "exec ${lib.getExe pkgs.rofi-pulse-select} sink";
         "${mod}+r" = "exec ${config.app-menu}";
         "${mod}+l" = "exec ${config.swaylock}";
