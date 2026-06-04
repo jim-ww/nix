@@ -11,6 +11,10 @@
         width = 40;
       };
       filesystem = {
+        follow_current_file = {
+          enabled = true;
+          leave_dirs_open = false;
+        };
         filtered_items = {
           visible = false;
           hide_dotfiles = true;
@@ -34,13 +38,13 @@
       };
     };
     /*
-      filesystem = {
-        window = {
-          mappings = {
-            "\\" = "close_window";
-          };
+    filesystem = {
+      window = {
+        mappings = {
+          "\\" = "close_window";
         };
       };
+    };
     */
   };
 
