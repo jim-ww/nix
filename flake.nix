@@ -66,6 +66,7 @@
       ./modules/games.nix
       ./modules/wireguard.nix
       ./modules/keyring.nix
+      ./modules/xdg.nix
       nur.modules.nixos.default
       stylix.nixosModules.stylix
       sops-nix.nixosModules.sops
