@@ -160,6 +160,14 @@ in {
       mime=$(file -Lb --mime-type -- "$file")
 
       case "$mime" in
+        image/webp)
+          webp_tmp=$(mktemp /tmp/lf-webp.XXXXXX.png)
+          ffmpeg -i "$file" -y "$webp_tmp" 2>/dev/null \
+            && chafa --clear -f sixel -s "''${width}x''${height}" \
+              --animate off --polite on --scale max "$webp_tmp"
+          rm -f "$webp_tmp"
+          exit 0
+          ;;
         image/*)
           chafa --clear -f sixel -s "''${width}x''${height}" \
             --animate off --polite on --scale max "$file"
