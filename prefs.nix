@@ -130,11 +130,11 @@ in {
     };
     notes = mkOption {
       type = types.str;
-      default = "${config.term} -D ${config.notesDir} vim notes.md";
+      default = "${config.term} -D ${config.notesDir} nvim notes.md";
     };
     notes-all = mkOption {
       type = types.str;
-      default = "${config.term} -D ${config.notesDir} vim .";
+      default = "${config.term} -D ${config.notesDir} nvim .";
     };
     app-menu = mkOption {
       type = types.str;
@@ -438,6 +438,8 @@ in {
         umount-personal = umountPersonal;
         trcli = "transmission-cli";
         trcli-rmt = ''transmission-remote $(cat /run/secrets/transmission-rpc-addr) -n "$(cat /run/secrets/transmission-rpc-user):$(cat /run/secrets/transmission-rpc-pass)"'';
+        wg-update-ip = ''sed -i "s/ip = \"[^\"]*\"/ip = \"$(wl-paste)\"/" $NH_FLAKE/modules/wireguard.nix'';
+        wg-clear-ip = ''sed -i "s/ip = \"[^\"]*\"/ip = \"\"/" $NH_FLAKE/modules/wireguard.nix'';
 
         gomod2nix-init = "nix flake init -t github:nix-community/gomod2nix#app";
 
