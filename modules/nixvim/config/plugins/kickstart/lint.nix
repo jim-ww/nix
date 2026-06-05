@@ -41,6 +41,22 @@
     };
 
     customLinters = {
+      # fixes 'golangci-lint exited with code: 5' error
+      # https://github.com/mfussenegger/nvim-lint/issues/760
+      golangcilint = {
+        cmd = "golangci-lint";
+        stdin = false;
+        stream = "stdout";
+        ignore_exitcode = false;
+        parser.__raw = ''
+          require('lint.linters.golangcilint').parser
+        '';
+        args = [
+          "run"
+          "--output.json.path=stdout"
+          "--show-stats=false"
+        ];
+      };
       go_arch_lint = {
         cmd = "go-arch-lint";
         args = ["check" "--project-path" "." "--output-type" "json"];
