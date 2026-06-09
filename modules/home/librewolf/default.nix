@@ -9,8 +9,8 @@
       extensions.packages = with pkgs.nur.repos.rycee.firefox-addons; [
         ublock-origin
         keepassxc-browser
-        darkreader
         single-file
+        # darkreader
         # proton-vpn
         # yomitan # Japanese
         # disabled:

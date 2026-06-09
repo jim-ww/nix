@@ -114,7 +114,7 @@ in {
     };
     music-player = mkOption {
       type = types.str;
-      default = "${config.term} rmpc";
+      default = "${config.term} rmpc --clean";
     };
     passwords = mkOption {
       type = types.str;
@@ -194,8 +194,9 @@ in {
         NIXOS_OZONE_WL = "1";
 
         NIXPKGS_ACCEPT_ANDROID_SDK_LICENSE = 1;
-        WINEPREFIX = "~/Games/umu/umu-default";
         WRANGLER_SEND_METRICS = "false";
+        WINEPREFIX = "~/Games/umu/umu-default";
+        PROTONPATH = "${pkgs.proton-ge-bin.steamcompattool}";
 
         # Unclutter home dir
         GOPATH = "${dataHome}/go";

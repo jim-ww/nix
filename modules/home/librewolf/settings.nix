@@ -8,7 +8,7 @@
   "network.IDN_show_punycode" = true;
   "image.jxl.enabled" = true;
 
-  #"layout.css.prefers-color-scheme.content-override" = 0; # Dark mode
+  "layout.css.prefers-color-scheme.content-override" = 0; # Dark mode
 
   "privacy.clearOnShutdown.history" = false;
   "privacy.clearOnShutdown.cookies" = false;

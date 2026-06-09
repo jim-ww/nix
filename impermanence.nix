@@ -174,6 +174,7 @@
           ".local/share/pnpm"
           ".local/share/berg-cli"
           ".local/share/nihongo"
+          ".local/share/anitui"
           ".local/share/zathura"
           ".local/share/tealdeer"
           ".config/nom"
