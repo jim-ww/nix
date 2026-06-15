@@ -18,6 +18,7 @@ with pkgs; [
   sops
   btop
   tmux
+  groff
   ripgrep
   ffmpeg
   tealdeer
