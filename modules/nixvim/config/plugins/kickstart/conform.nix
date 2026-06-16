@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   # Dependencies
   #
   # https://nix-community.github.io/nixvim/NeovimOptions/index.html#extrapackages
@@ -11,6 +10,7 @@
     alejandra
     templ
     biome # or prettier
+    prettierd
     #prettier-plugin-go-template
   ];
 
@@ -94,9 +94,9 @@
         svelte = {
           lsp_format = "first";
         };
-        html = [ "biome" ];
-        css = [ "biome" ];
-        json = [ "biome" ]; # jq
+        html = ["prettierd"]; # biome
+        css = ["biome"];
+        json = ["biome"]; # jq
         #sql = ["sqlfluff"];
         #terraform = [ "terraform_fmt"]; # opentofu?
         #toml = [ "taplo" ];

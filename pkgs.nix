@@ -13,12 +13,11 @@ with pkgs; [
   age
   gtt # translator. C-J C-S Esc
   _7zz
-  unar
+  unrar #   unar
   ncdu
   sops
   btop
   tmux
-  groff
   ripgrep
   ffmpeg
   tealdeer
@@ -39,6 +38,8 @@ with pkgs; [
   transmission_4
   imagemagick
   steam-run-free
+  groff
+  (pkgs.writeShellScriptBin "ms2pdf" ''${lib.getExe pkgs.groff} -mms -Kutf8 -Tps "$1" | ${pkgs.ghostscript}/bin/ps2pdf - "$2"'')
 
   # music
   rmpc
@@ -63,6 +64,7 @@ with pkgs; [
   go
   air
   tinygo
+  garble
   gnumake
   gcc
   python3Minimal

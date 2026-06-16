@@ -24,7 +24,7 @@
       library = [
         {
           path = "\${3rd}/luv/library";
-          words = [ "vim%.uv" ];
+          words = ["vim%.uv"];
         }
       ];
     };
@@ -83,7 +83,7 @@
       docker_compose_language_service.enable = true;
       dockerls.enable = true;
       eslint.enable = true;
-      #emmet_ls.enable = true;
+      # emmet_ls.enable = true;
 
       # ...etc. See `https://nix-community.github.io/nixvim/plugins/lsp` for a list of pre-configured LSPs
       #

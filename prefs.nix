@@ -441,12 +441,11 @@ in {
         trcli-rmt = ''transmission-remote $(cat /run/secrets/transmission-rpc-addr) -n "$(cat /run/secrets/transmission-rpc-user):$(cat /run/secrets/transmission-rpc-pass)"'';
         wg-update-ip = ''sed -i "s/ip = \"[^\"]*\"/ip = \"$(wl-paste)\"/" $NH_FLAKE/modules/wireguard.nix'';
         wg-clear-ip = ''sed -i "s/ip = \"[^\"]*\"/ip = \"\"/" $NH_FLAKE/modules/wireguard.nix'';
-        ms2pdf = "groff -ms -Tpdf -Kutf8 -P-e";
 
         gomod2nix-init = "nix flake init -t github:nix-community/gomod2nix#app";
 
         # unclutter home dir
-        wget = ''wget --hsts-file="${dataHome}/wget-hsts"'';
+        wget = ''${lib.getExe pkgs.wget} --hsts-file="${dataHome}/wget-hsts"'';
         adb = ''HOME="${dataHome}"/android adb'';
         monerod = ''monerod --data-dir "${dataHome}"/bitmonero'';
       };
