@@ -19,10 +19,6 @@
       url = "github:mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nihongo = {
-      url = "github:jim-ww/nihongo";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     kickstart-nixvim = {
       url = "path:./modules/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,6 +28,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     ani-cli.url = "path:./modules/pkgs/ani-cli";
+    nihongo = {
+      url = "github:jim-ww/nihongo";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    pomodoro-go = {
+      url = "github:jim-ww/pomodoro-go";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    shiraberu = {
+      url = "github:jim-ww/shiraberu";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs = {
     self,
@@ -67,6 +75,7 @@
       ./modules/wireguard.nix
       ./modules/keyring.nix
       ./modules/xdg.nix
+      ./modules/ollama.nix
       nur.modules.nixos.default
       stylix.nixosModules.stylix
       sops-nix.nixosModules.sops
@@ -76,6 +85,8 @@
         # with stablePkgs;
         environment.systemPackages = [
           inputs.nihongo.packages.${system}.default
+          inputs.pomodoro-go.packages.${system}.default
+          inputs.shiraberu.packages.${system}.default
         ];
       }
       home-manager.nixosModules.home-manager

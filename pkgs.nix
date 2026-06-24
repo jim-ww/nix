@@ -59,6 +59,7 @@ with pkgs; [
   proton-vpn-cli
   tor-browser
   freetube
+  imhex
 
   ## dev
   go
@@ -76,6 +77,7 @@ with pkgs; [
   protobuf
   protoc-gen-go
   protoc-gen-go-grpc
+  grpcurl
   grpcui
   lazydocker
   goose
@@ -95,4 +97,5 @@ with pkgs; [
   hyprpicker
   #kubectl
   codex # ai
+  ayugram-desktop
 ]

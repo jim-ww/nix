@@ -24,6 +24,12 @@
           directory = "/var/lib/tor";
           mode = "0700";
         }
+        {
+          directory = "/var/lib/ollama";
+          mode = "0700";
+          group = "ollama";
+          user = "ollama";
+        }
         # {
         #   directory = "/var/lib/i2pd";
         #   mode = "0700";
@@ -163,6 +169,7 @@
           "Videos"
           ".bitmonero"
           ".steam"
+          ".npm"
           ".shared-ringdb"
           ".config/FreeTube"
           ".config/obs-studio"
@@ -177,6 +184,7 @@
           ".local/share/anitui"
           ".local/share/zathura"
           ".local/share/tealdeer"
+          ".local/share/AyuGramDesktop"
           ".config/nom"
           ".config/distrobox"
 
