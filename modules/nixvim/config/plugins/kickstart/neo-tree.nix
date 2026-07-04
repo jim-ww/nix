@@ -3,9 +3,6 @@
   # https://nix-community.github.io/nixvim/plugins/neo-tree/index.html?highlight=neo-tree#pluginsneo-treepackage
   plugins.neo-tree = {
     enable = true;
-
-    popup_border_style = "rounded";
-
     settings = {
       window = {
         width = 40;

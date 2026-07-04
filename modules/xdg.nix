@@ -1,7 +1,8 @@
 {pkgs, ...}: {
-  systemd.user.extraConfig = ''
-    DefaultEnvironment="PATH=/run/wrappers/bin:/etc/profiles/per-user/%u/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin"
-  ''; # fix urls not openning
+  # fix urls not openning
+  systemd.user.settings.Manager = {
+    DefaultEnvironment = "PATH=/run/wrappers/bin:/etc/profiles/per-user/%u/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin";
+  };
 
   xdg.portal = {
     enable = true;

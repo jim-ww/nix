@@ -15,7 +15,7 @@
 
   home.packages = with pkgs; [
     playerctl
-    libsForQt5.qt5.qtwayland
+    qt5.qtwayland
     swayosd
     swaybg
     grim

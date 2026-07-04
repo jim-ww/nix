@@ -98,4 +98,5 @@ with pkgs; [
   #kubectl
   codex # ai
   ayugram-desktop
+  csvq
 ]
