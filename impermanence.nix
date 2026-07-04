@@ -187,10 +187,17 @@
           ".local/share/AyuGramDesktop"
           ".config/nom"
           ".config/distrobox"
+          ".claude/"
 
           # ".local/share/osu"
           # ".local/share/zed"
           # ".local/share/distrobox"
+        ];
+        files = [
+          {
+            file = ".claude.json";
+            mode = "0600";
+          }
         ];
       };
     };

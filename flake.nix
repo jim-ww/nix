@@ -40,6 +40,10 @@
       url = "github:jim-ww/shiraberu";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    charshare = {
+      url = "github:jim-ww/charshare";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs = {
     self,
@@ -87,6 +91,7 @@
           inputs.nihongo.packages.${system}.default
           inputs.pomodoro-go.packages.${system}.default
           inputs.shiraberu.packages.${system}.default
+          inputs.charshare.packages.${system}.default
         ];
       }
       home-manager.nixosModules.home-manager
@@ -120,6 +125,17 @@
             stylix.targets.fzf.enable = false;
             dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
             programs.btop.enable = true;
+
+            # to be able to use claude in firejail
+            home.file.".private/.claude.json".source = config.lib.file.mkOutOfStoreSymlink "/persistent/home/jim/.claude.json";
+            home.file.".private/.claude".source =
+              config.lib.file.mkOutOfStoreSymlink "/persistent/home/jim/.claude";
+            home.file."work/.keep".text = "";
+
+            # TODO why stylix doesnt set that?
+            gtk.gtk3.extraConfig = {
+              gtk-application-prefer-dark-theme = 1;
+            };
 
             home.packages = config.packages;
             home.sessionVariables = config.env;

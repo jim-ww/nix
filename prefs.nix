@@ -23,6 +23,27 @@ with lib; let
   configHome = "${home}/.config";
 
   umountPersonal = "umount ~/Archive/personal";
+
+  firejailBaseArgs = [
+    "--quiet"
+    "--private=${home}/.private"
+    "--private-tmp"
+    "--private-dev"
+    "--caps.drop=all"
+    "--nonewprivs"
+    "--noroot"
+    "--nogroups"
+    "--whitelist=/persistent${home}/.claude.json"
+    "--whitelist=/persistent${home}/.claude"
+    "--whitelist=${home}/.private/"
+    "--dbus-user=filter"
+    "--dbus-user.talk=org.freedesktop.Notifications"
+    "--dbus-user.talk=org.freedesktop.portal.Desktop"
+    "--dbus-system=none"
+    "--seccomp"
+  ];
+  firejailCmd = extra:
+    "firejail " + lib.concatStringsSep " " (firejailBaseArgs ++ extra) + " 2>/dev/null";
 in {
   options = {
     user = mkOption {
@@ -197,6 +218,7 @@ in {
         WRANGLER_SEND_METRICS = "false";
         WINEPREFIX = "~/Games/umu/umu-default";
         PROTONPATH = "${pkgs.proton-ge-bin.steamcompattool}";
+        OLLAMA_NOHISTORY = 1;
 
         # Unclutter home dir
         GOPATH = "${dataHome}/go";
@@ -433,7 +455,19 @@ in {
         nixos-anywhere-echo = "echo 'nixos-anywhere --flake $NH_FLAKE#nixos user@hostname -i ssh-key-path'";
         mpvsub = "mpv --sub-auto=fuzzy --audio-file-auto=fuzzy";
         gtt = "gtt --src=English -dst=Russian";
-        firejail-enter = "firejail --private=. --seccomp ${config.shell}";
+        jail =
+          firejailCmd ["--private-cwd=${home}/work"]
+          + " fish -c 'set -g fish_greeting; exec fish -i'";
+        jail-cwd = ''
+          set WORKDIR /persistent(pwd)
+          set DIRNAME (basename (pwd))
+          set TMPSYMLINK ${home}/.private/$DIRNAME
+          test -L $TMPSYMLINK; and rm $TMPSYMLINK
+          ln -s $WORKDIR $TMPSYMLINK
+          and cd ~
+          and ${firejailCmd ["--whitelist=$WORKDIR"]} fish -c "cd ${home}/$DIRNAME; fish -c 'set -g fish_greeting; exec fish -i'"
+          cd -
+          rm $TMPSYMLINK'';
         wf-record = ''wf-recorder -a --audio-backend=pipewire --codec h264_vaapi --device /dev/dri/renderD128 -p preset=fast -f "$XDG_VIDEOS_DIR/rec_$(date +%d-%m-%Y-T%H-%M-%S).mkv"'';
         mount-personal = "mkdir -p ~/Archive/personal && gocryptfs ~/Archive/personal_enc ~/Archive/personal";
         umount-personal = umountPersonal;
@@ -442,6 +476,7 @@ in {
         wg-update-ip = ''sed -i "s/ip = \"[^\"]*\"/ip = \"$(wl-paste)\"/" $NH_FLAKE/modules/wireguard.nix'';
         wg-clear-ip = ''sed -i "s/ip = \"[^\"]*\"/ip = \"\"/" $NH_FLAKE/modules/wireguard.nix'';
         http-fs-serve = ''goeval 'log.Fatal(http.ListenAndServe(":8000", http.FileServer(http.Dir("."))))' '';
+        yt-dlp = "yt-dlp --write-subs";
 
         gomod2nix-init = "nix flake init -t github:nix-community/gomod2nix#app";
 
