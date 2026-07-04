@@ -108,11 +108,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1783791326,
-        "narHash": "sha256-TBoby2hfbbx2BKtgeY5zLdC+feqPvftuCH5G3Kd74lA=",
+        "lastModified": 1783988584,
+        "narHash": "sha256-NN0kF6yX13IU6H9/JamYPFvbPcWR5mwEjN2j6Pg4lWE=",
         "owner": "jim-ww",
         "repo": "charshare",
-        "rev": "9791f023dedde7a851873096132547b38d5c48c1",
+        "rev": "73822d09498f243d7eebb636965ac2f46f0cd856",
         "type": "github"
       },
       "original": {

@@ -33,8 +33,8 @@
       name = "Noto Color Emoji";
     };
     sizes = {
-      applications = 14;
-      desktop = 12;
+      applications = 18; #16
+      desktop = 18; #12;
       popups = 12;
       terminal = 10;
     };
