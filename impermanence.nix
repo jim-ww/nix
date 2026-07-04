@@ -184,6 +184,7 @@
           ".local/share/anitui"
           ".local/share/zathura"
           ".local/share/tealdeer"
+          ".local/share/charshare"
           ".local/share/AyuGramDesktop"
           ".config/nom"
           ".config/distrobox"

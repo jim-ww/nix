@@ -130,7 +130,8 @@
             home.file.".private/.claude.json".source = config.lib.file.mkOutOfStoreSymlink "/persistent/home/jim/.claude.json";
             home.file.".private/.claude".source =
               config.lib.file.mkOutOfStoreSymlink "/persistent/home/jim/.claude";
-            home.file.".work/.keep".text = "";
+            home.file.".private/work/.keep".text = "";
+            home.file.".private/.config/jj/config.toml".source = config.home.file."${config.xdg.configHome}/jj/config.toml".source;
 
             # TODO why stylix doesnt set that?
             gtk.gtk3.extraConfig = {

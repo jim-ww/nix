@@ -10,7 +10,7 @@
         ublock-origin
         keepassxc-browser
         single-file
-        # darkreader
+        darkreader
         # proton-vpn
         # yomitan # Japanese
         # disabled:

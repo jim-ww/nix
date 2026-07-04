@@ -455,9 +455,13 @@ in {
         nixos-anywhere-echo = "echo 'nixos-anywhere --flake $NH_FLAKE#nixos user@hostname -i ssh-key-path'";
         mpvsub = "mpv --sub-auto=fuzzy --audio-file-auto=fuzzy";
         gtt = "gtt --src=English -dst=Russian";
-        jail =
-          firejailCmd ["--private-cwd=${home}/work"]
-          + " fish -c 'set -g fish_greeting; exec fish -i'";
+        jail = ''
+          if test (count $argv) -gt 0
+            ${firejailCmd ["--private-cwd=${home}/work"]} fish -c "$argv"
+          else
+            ${firejailCmd ["--private-cwd=${home}/work"]} fish -c 'set -g fish_greeting; exec fish -i'
+          end
+          true'';
         jail-cwd = ''
           set WORKDIR /persistent(pwd)
           set DIRNAME (basename (pwd))
