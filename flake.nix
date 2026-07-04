@@ -130,7 +130,7 @@
             home.file.".private/.claude.json".source = config.lib.file.mkOutOfStoreSymlink "/persistent/home/jim/.claude.json";
             home.file.".private/.claude".source =
               config.lib.file.mkOutOfStoreSymlink "/persistent/home/jim/.claude";
-            home.file."work/.keep".text = "";
+            home.file.".work/.keep".text = "";
 
             # TODO why stylix doesnt set that?
             gtk.gtk3.extraConfig = {

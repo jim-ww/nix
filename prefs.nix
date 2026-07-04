@@ -465,9 +465,14 @@ in {
           test -L $TMPSYMLINK; and rm $TMPSYMLINK
           ln -s $WORKDIR $TMPSYMLINK
           and cd ~
-          and ${firejailCmd ["--whitelist=$WORKDIR"]} fish -c "cd ${home}/$DIRNAME; fish -c 'set -g fish_greeting; exec fish -i'"
+          and if test (count $argv) -gt 0
+                ${firejailCmd ["--whitelist=$WORKDIR"]} fish -c "cd ${home}/$DIRNAME; $argv"
+              else
+                ${firejailCmd ["--whitelist=$WORKDIR"]} fish -c "cd ${home}/$DIRNAME; fish -C 'set -g fish_greeting' -i"
+              end
           cd -
-          rm $TMPSYMLINK'';
+          rm $TMPSYMLINK
+          true'';
         wf-record = ''wf-recorder -a --audio-backend=pipewire --codec h264_vaapi --device /dev/dri/renderD128 -p preset=fast -f "$XDG_VIDEOS_DIR/rec_$(date +%d-%m-%Y-T%H-%M-%S).mkv"'';
         mount-personal = "mkdir -p ~/Archive/personal && gocryptfs ~/Archive/personal_enc ~/Archive/personal";
         umount-personal = umountPersonal;

@@ -99,6 +99,7 @@ with pkgs; [
   codex # ai
   ayugram-desktop
   csvq
+
   claude-code
   ungoogled-chromium
   wails
