@@ -1,12 +1,11 @@
-{ config, ... }:
-let
+{config, ...}: let
   username = config.gitUsername;
   email = config.gitEmail;
-in
-{
+in {
   programs.git = {
     enable = true;
     signing.format = "openpgp";
+    ignores = ["CLAUDE.md" "CLAUDE.local.md"];
     settings = {
       user.name = username;
       user.email = email;
@@ -15,7 +14,7 @@ in
       color.ui = true;
       push.autoSetupRemote = true;
       init.defaultBranch = "main";
-      safe.directory = [ config.flakeDir ];
+      safe.directory = [config.flakeDir];
       url."ssh://git@github.com/${username}".insteadOf = "https://github.com/${username}";
 
       user.signingkey = config.gpgKeyID;

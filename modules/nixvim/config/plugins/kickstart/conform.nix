@@ -1,4 +1,19 @@
-{pkgs, ...}: {
+{pkgs, ...}: let
+  # Nursery/unstable: sorts Tailwind-style classes but can't read a
+  # project's tailwind.config.js, so this uses biome's hardcoded default
+  # Tailwind preset only.
+  biomeSortClassesConfigDir = pkgs.writeTextDir "biome.jsonc" ''
+    {
+      "linter": {
+        "rules": {
+          "nursery": {
+            "useSortedClasses": "warn"
+          }
+        }
+      }
+    }
+  '';
+in {
   # Dependencies
   #
   # https://nix-community.github.io/nixvim/NeovimOptions/index.html#extrapackages
@@ -12,6 +27,7 @@
     biome # or prettier
     prettierd
     #prettier-plugin-go-template
+    google-java-format
   ];
 
   # Autoformat
@@ -67,29 +83,35 @@
           "trim_whitespace"
           "trim_newlines"
         ];
+        java = [
+          "google-java-format"
+          "trim_whitespace"
+          "trim_newlines"
+        ];
+        python = [
+          "ruff_format"
+          "trim_whitespace"
+          "trim_newlines"
+        ];
         javascript = {
           __unkeyed-1 = "biome";
-          # __unkeyed-2 = "prettierd";
+          __unkeyed-2 = "biome-sort-classes";
           timeout_ms = 2000;
-          stop_after_first = true;
         };
         typescript = {
           __unkeyed-1 = "biome";
-          # __unkeyed-2 = "prettierd";
+          __unkeyed-2 = "biome-sort-classes";
           timeout_ms = 2000;
-          stop_after_first = true;
         };
         javascriptreact = {
           __unkeyed-1 = "biome";
-          # __unkeyed-2 = "prettierd";
+          __unkeyed-2 = "biome-sort-classes";
           timeout_ms = 2000;
-          stop_after_first = true;
         };
         typescriptreact = {
           __unkeyed-1 = "biome";
-          # __unkeyed-2 = "prettierd";
+          __unkeyed-2 = "biome-sort-classes";
           timeout_ms = 2000;
-          stop_after_first = true;
         };
         svelte = {
           lsp_format = "first";
@@ -112,7 +134,6 @@
         #"biome"
         # ];
         # Conform can also run multiple formatters sequentially
-        # python = [ "isort "black" ];
         #
         # You can use 'stop_after_first' to run the first available formatter from this list
         #javascript = {
@@ -128,6 +149,20 @@
           args = [
             "format"
             "--write"
+            "--stdin-file-path"
+            "$FILENAME"
+          ];
+          require_cwd = false;
+        };
+        biome-sort-classes = {
+          command = "biome";
+          args = [
+            "check"
+            "--write"
+            "--unsafe"
+            "--only=nursery/useSortedClasses"
+            "--config-path"
+            "${biomeSortClassesConfigDir}"
             "--stdin-file-path"
             "$FILENAME"
           ];

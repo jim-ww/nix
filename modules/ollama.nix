@@ -14,7 +14,8 @@
     #syncModels = true;  # remove models not specified below
     loadModels = [
       "hf.co/bartowski/L3-8B-Stheno-v3.2-GGUF:Q4_K_M" # RP, load 15.2-15.4s | prefill 38.1 t/s | gen 5.42 t/s
-      "hf.co/mradermacher/Huihui-Qwen3.5-9B-abliterated-GGUF:Q4_K_M" # general purpose
+      "hf.co/mradermacher/Huihui-Qwen3.5-9B-abliterated-GGUF:Q4_K_M" # general purpose, thinking
+      "mannix/llama3.1-8b-abliterated" # general purpose, no thinking
     ];
     environmentVariables = {
       OLLAMA_NUM_THREADS = "8";

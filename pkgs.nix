@@ -130,8 +130,9 @@ in
     claude-code
     ungoogled-chromium
     wails
-    voicevox # voicevox-engine
     godot
+    godot-mcp
+    android-tools
 
     (buildGoFromGitHub {
       owner = "mattn";

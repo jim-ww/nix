@@ -45,7 +45,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     itpec-sensei = {
-      url = "git+ssh://git@github.com/jim-ww/itpec-sensei.git";
+      url = "github:jim-ww/itpec-sensei";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    ollama-local-websearch = {
+      url = "git+ssh://git@github.com/jim-ww/ollama-local-websearch.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -78,12 +82,12 @@
       ./modules/sops.nix
       ./modules/tlp.nix
       ./modules/nix-ld.nix
-      ./modules/earlyoom.nix
       ./modules/games.nix
       ./modules/wireguard.nix
       ./modules/keyring.nix
       ./modules/xdg.nix
       ./modules/ollama.nix
+      ./modules/waydroid.nix
       nur.modules.nixos.default
       stylix.nixosModules.stylix
       sops-nix.nixosModules.sops
@@ -91,7 +95,7 @@
       {
         programs.nixvim.enable = true;
         # with stablePkgs;
-        environment.systemPackages = [
+        packages = [
           inputs.nihongo.packages.${system}.default
           inputs.pomodoro-go.packages.${system}.default
           inputs.shiraberu.packages.${system}.default
@@ -159,6 +163,7 @@
         nixpkgs.overlays = [
           nur.overlays.default
           inputs.ani-cli.overlays.default
+          inputs.ollama-local-websearch.overlays.default
         ];
       }
     ];

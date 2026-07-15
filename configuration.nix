@@ -18,8 +18,10 @@
 
   programs.firejail.enable = true;
   programs.dconf.enable = true;
+  programs.fish.enable = true;
 
-  services.vnstat.enable = true; # network usage
+  # TODO
+  # services.vnstat.enable = true; # network usage
   services.openssh.enable = true;
   services.dbus = {
     enable = true;

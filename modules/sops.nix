@@ -11,6 +11,9 @@
   sops.secrets.ngrok-token.owner = config.user;
   sops.secrets.ngrok-url.owner = config.user;
   sops.secrets.gh-token = {};
+  sops.secrets.cloudflare-token = {};
+  sops.secrets.cloudflare-account-id = {};
+  sops.secrets.auth-payments-micro-priv-key = {};
 
   sops.secrets.nom-cfg = {
     owner = config.user;

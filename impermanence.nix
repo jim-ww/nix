@@ -30,6 +30,10 @@
           group = "ollama";
           user = "ollama";
         }
+        {
+          directory = "/tmp"; # to avoid large blobs taking all RAM
+          mode = "1777";
+        }
         # {
         #   directory = "/var/lib/i2pd";
         #   mode = "0700";
@@ -170,9 +174,11 @@
           ".bitmonero"
           ".steam"
           ".npm"
+          ".barony"
           ".shared-ringdb"
           ".config/FreeTube"
           ".config/obs-studio"
+          ".config/Proton"
           ".local/share/go"
           ".local/share/Anki2"
           ".local/share/direnv"
