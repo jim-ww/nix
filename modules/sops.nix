@@ -8,6 +8,10 @@
   sops.secrets.transmission-rpc-addr.owner = config.user;
   sops.secrets.transmission-rpc-user.owner = config.user;
   sops.secrets.transmission-rpc-pass.owner = config.user;
+  sops.secrets.ngrok-token.owner = config.user;
+  sops.secrets.ngrok-url.owner = config.user;
+  sops.secrets.gh-token = {};
+
   sops.secrets.nom-cfg = {
     owner = config.user;
     path = "${config.configHome}/nom/config.yml";

@@ -116,6 +116,7 @@ in
     opentofu
     goreleaser
     cobra-cli
+    cloudflared
     gh
     devbox
     graphviz # go prof

@@ -185,10 +185,12 @@
           ".local/share/zathura"
           ".local/share/tealdeer"
           ".local/share/charshare"
+          ".local/share/itpec-sensei"
           ".local/share/AyuGramDesktop"
           ".config/nom"
           ".config/distrobox"
-          ".claude/"
+          ".claude"
+          ".cache" # to avoid large blobs taking all RAM
 
           # ".local/share/osu"
           # ".local/share/zed"

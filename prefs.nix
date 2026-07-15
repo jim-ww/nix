@@ -35,6 +35,8 @@ with lib; let
     "--nogroups"
     "--whitelist=/persistent${home}/.claude.json"
     "--whitelist=/persistent${home}/.claude"
+    "--whitelist=/persistent${home}/.local/share/itpec-sensei"
+    "--blacklist=/run/secrets"
     "--whitelist=${home}/.private/"
     "--dbus-user=filter"
     "--dbus-user.talk=org.freedesktop.Notifications"
@@ -486,6 +488,7 @@ in {
         wg-clear-ip = ''sed -i "s/ip = \"[^\"]*\"/ip = \"\"/" $NH_FLAKE/modules/wireguard.nix'';
         http-fs-serve = ''goeval 'log.Fatal(http.ListenAndServe(":8000", http.FileServer(http.Dir("."))))' '';
         yt-dlp = "yt-dlp --write-subs";
+        itpec-sensei-mcp = "tmux new-session -s itpec-sensei-mcp 'NGROK_AUTHTOKEN=$(cat /run/secrets/ngrok-token) NGROK_RESERVED_URL=$(cat /run/secrets/ngrok-url) itpec-sensei serve --ngrok --remote'";
 
         gomod2nix-init = "nix flake init -t github:nix-community/gomod2nix#app";
 

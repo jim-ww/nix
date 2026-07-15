@@ -22,5 +22,7 @@
       OLLAMA_IGPU_ENABLE = "1";
       OLLAMA_CLOUD_BASE_URL = "http://localhost:9080";
     };
+    # host = "0.0.0.0";
   };
+  # networking.firewall.allowedTCPPorts = [11434];
 }
