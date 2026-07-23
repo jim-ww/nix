@@ -27,7 +27,7 @@
       url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    ani-cli.url = "path:./modules/pkgs/ani-cli";
+    ani-cli.url = "path:./pkgs/ani-cli";
     nihongo = {
       url = "github:jim-ww/nihongo";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -178,19 +178,9 @@
       };
       modules =
         [
-          ./hardware-config.nix
-          ./configuration.nix
-          {
-            networking.hostName = "nixos";
-            networking.networkmanager.wifi.powersave = true;
-            services.libinput.touchpad.disableWhileTyping = true;
-            #services.geoclue2.enable = true;
-          }
+          ./hosts/nixos
           inputs.disko.nixosModules.disko
           inputs.preservation.nixosModules.default
-          ./disko.nix
-          ./impermanence.nix
-          {_module.args.device = "/dev/nvme0n1";}
         ]
         ++ commonModules;
     };

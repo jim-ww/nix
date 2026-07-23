@@ -314,7 +314,7 @@ in {
       la = "${ls} -a";
       lla = "${ls} -al";
       ff = "fastfetch -s title:separator:os:wm:lm:terminal:shell:packages:uptime:datetime:battery:disk:memory:theme:wmtheme:colors";
-      conf = "cd ${config.flakeDir} && ${term-editor} configuration.nix";
+      conf = "cd ${config.flakeDir}/hosts/nixos && ${term-editor} configuration.nix";
       prefs = "cd ${config.flakeDir} && ${term-editor} prefs.nix";
       flake = "cd ${config.flakeDir} && ${term-editor} flake.nix";
       pkgs = "cd ${config.flakeDir} && ${term-editor} pkgs.nix";
