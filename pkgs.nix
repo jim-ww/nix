@@ -89,6 +89,8 @@ in
     ## dev
     go
     air
+    gopls
+    golint
     tinygo
     garble
     gnumake

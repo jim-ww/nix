@@ -4,6 +4,7 @@
   programs.librewolf = {
     enable = true;
     settings = import ./settings.nix;
+    policies.SecurityDevices."eID Belgium" = "${pkgs.eid-mw}/lib/libbeidpkcs11.so";
     profiles.default = {
       search = import ./search.nix;
       extensions.packages = with pkgs.nur.repos.rycee.firefox-addons; [

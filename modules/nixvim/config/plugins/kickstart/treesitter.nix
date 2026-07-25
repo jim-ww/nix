@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   # Highlight, edit, and navigate code
   # https://nix-community.github.io/nixvim/plugins/treesitter/index.html
   plugins.treesitter = {
@@ -15,7 +14,7 @@
       make
       c
       # sway
-      tmux
+      # tmux # removed
 
       # Nix, Nixvim
       nix
@@ -83,7 +82,7 @@
       # Installing tree-sitter grammars from nvim-treesitter
       # (can be combined with grammarPackages from Nixpkgs)
       # https://nix-community.github.io/nixvim/plugins/treesitter/index.html#installing-tree-sitter-grammars-from-nvim-treesitter
-      ensureInstalled = [ ];
+      ensureInstalled = [];
 
       highlight = {
         enable = true;

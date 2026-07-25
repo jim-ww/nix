@@ -3,6 +3,8 @@
   config,
   ...
 }: {
+  #services.pcscd.enable = true; # card reader
+
   # aarch64 emulation for cross-compiling
   boot.binfmt.emulatedSystems = ["aarch64-linux"];
 

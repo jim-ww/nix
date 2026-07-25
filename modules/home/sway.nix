@@ -25,6 +25,7 @@
     brightnessctl
     wf-recorder
     wl-clip-persist
+    libnotify
     # mpvpaper
     # morewaita-icon-theme
     # qt5.qtwayland # for QT_QPA_PLATFORM

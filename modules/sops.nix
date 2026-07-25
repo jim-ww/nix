@@ -18,6 +18,9 @@
     hcloud-token = {};
     oa-server.owner = config.user;
     oa-db-url = {};
+    kage-key.owner = config.user;
+    kage-acc1-passw.owner = config.user;
+    kage-acc2-passw.owner = config.user;
 
     nom-cfg = {
       owner = config.user;
