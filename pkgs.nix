@@ -37,7 +37,6 @@ in
     mpv
     git
     age
-    gtt # translator. C-J C-S Esc
     _7zz
     unrar #   unar
     ncdu
@@ -123,16 +122,19 @@ in
     ghz # grpc load test
     hyprpicker
     #kubectl
-    codex # ai
     ayugram-desktop
     csvq
 
     claude-code
+    devin-cli
+    cursor-cli
+    # codex
+
     ungoogled-chromium
     wails
-    godot
-    godot-mcp
+    godot # godot-mcp
     android-tools
+    eid-mw
 
     (buildGoFromGitHub {
       owner = "mattn";
@@ -141,4 +143,12 @@ in
       githubHash = "sha256-6Y0Gwxmae1Py1eM3w9hSVk9Xc9yb6XB4V6CfIi1MWbQ=";
       vendorHash = "sha256-rM1cOGGrzZ9yNf+vscB5KHX+oiIULRAOt7T3rgDHRZg=";
     })
+
+    postgresql
+    (go-migrate.overrideAttrs (old: {
+      tags = [
+        "pgx5"
+        "postgres"
+      ];
+    }))
   ]

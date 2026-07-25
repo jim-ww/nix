@@ -48,8 +48,24 @@
       url = "github:jim-ww/itpec-sensei";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    gtr = {
+      url = "github:jim-ww/gtr";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    gowebwrap = {
+      url = "github:jim-ww/gowebwrap";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     ollama-local-websearch = {
       url = "git+ssh://git@github.com/jim-ww/ollama-local-websearch.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    anitui = {
+      url = "github:jim-ww/anitui";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    kage = {
+      url = "github:jim-ww/kage";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -101,6 +117,10 @@
           inputs.shiraberu.packages.${system}.default
           inputs.charshare.packages.${system}.default
           inputs.itpec-sensei.packages.${system}.default
+          inputs.gowebwrap.packages.${system}.default
+          inputs.gtr.packages.${system}.default
+          inputs.anitui.packages.${system}.default
+          inputs.kage.packages.${system}.default
         ];
       }
       home-manager.nixosModules.home-manager

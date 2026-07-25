@@ -3,6 +3,9 @@
   config,
   ...
 }: {
+  # aarch64 emulation for cross-compiling
+  boot.binfmt.emulatedSystems = ["aarch64-linux"];
+
   security.polkit.enable = true;
   security.pam.services.swaylock = {};
   security.sudo.extraConfig = ''

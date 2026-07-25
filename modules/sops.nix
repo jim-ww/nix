@@ -3,21 +3,27 @@
   sops.defaultSopsFormat = "yaml";
   sops.age.keyFile = "/persistent/etc/sops/age/keys.txt";
 
-  sops.secrets.lastfm_password.owner = config.user;
-  sops.secrets.server1-url.owner = config.user;
-  sops.secrets.transmission-rpc-addr.owner = config.user;
-  sops.secrets.transmission-rpc-user.owner = config.user;
-  sops.secrets.transmission-rpc-pass.owner = config.user;
-  sops.secrets.ngrok-token.owner = config.user;
-  sops.secrets.ngrok-url.owner = config.user;
-  sops.secrets.gh-token = {};
-  sops.secrets.cloudflare-token = {};
-  sops.secrets.cloudflare-account-id = {};
-  sops.secrets.auth-payments-micro-priv-key = {};
+  sops.secrets = {
+    lastfm_password.owner = config.user;
+    server1-url.owner = config.user;
+    transmission-rpc-addr.owner = config.user;
+    transmission-rpc-user.owner = config.user;
+    transmission-rpc-pass.owner = config.user;
+    ngrok-token.owner = config.user;
+    ngrok-url.owner = config.user;
+    gh-token = {};
+    cloudflare-token = {};
+    cloudflare-account-id = {};
+    auth-payments-micro-priv-key = {};
+    hcloud-token = {};
+    oa-server.owner = config.user;
+    oa-db-url = {};
 
-  sops.secrets.nom-cfg = {
-    owner = config.user;
-    path = "${config.configHome}/nom/config.yml";
+    nom-cfg = {
+      owner = config.user;
+      path = "${config.configHome}/nom/config.yml";
+    };
+
+    bookmarks.owner = config.user;
   };
-  sops.secrets.bookmarks.owner = config.user;
 }

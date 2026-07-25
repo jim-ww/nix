@@ -23,6 +23,7 @@
           hide_by_pattern = [
             "*.tfstate"
             "*.tfstate.backup"
+            "*_templ.go"
             # "crash.log"
           ];
           # never_show = [

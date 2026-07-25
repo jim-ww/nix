@@ -104,11 +104,6 @@
           }
 
           {
-            directory = ".codex";
-            mode = "0700";
-          }
-
-          {
             directory = ".config/turso";
             mode = "0700";
           }
@@ -176,10 +171,15 @@
           ".npm"
           ".barony"
           ".shared-ringdb"
+          ".config/kage"
+          ".private/.config/devin"
+          ".private/.config/cursor"
           ".config/FreeTube"
           ".config/obs-studio"
           ".config/Proton"
+          ".config/gowebwrap"
           ".local/share/go"
+          ".private/.local/share/devin"
           ".local/share/Anki2"
           ".local/share/direnv"
           ".local/share/umu"
@@ -193,6 +193,7 @@
           ".local/share/charshare"
           ".local/share/itpec-sensei"
           ".local/share/AyuGramDesktop"
+          ".local/share/gowebwrap"
           ".config/nom"
           ".config/distrobox"
           ".claude"

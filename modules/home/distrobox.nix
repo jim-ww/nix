@@ -1,4 +1,4 @@
-{
+{pkgs, ...}: {
   programs.distrobox = {
     enable = true;
     containers = {
@@ -20,4 +20,12 @@
       #container_image_default = "registry.opensuse.org/opensuse/toolbox:latest";
     };
   };
+
+  # system.activationScripts.pin-distrobox-gcroot = {
+  #   text = ''
+  #     mkdir -p /nix/var/nix/gcroots/manual
+  #     ln -sfn ${pkgs.distrobox} /nix/var/nix/gcroots/manual/distrobox-current
+  #   '';
+  #   deps = [];
+  # };
 }

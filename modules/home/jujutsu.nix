@@ -3,15 +3,21 @@
     enable = true;
     settings = {
       signing = {
-        behavior = "own";
+        behavior = "keep";
         backend = "gpg";
         key = config.gpgKeyID;
+      };
+      revsets = {
+        sign = "mine() & mutable() & ~trunk()";
       };
       user = {
         name = config.programs.git.settings.user.name;
         email = config.programs.git.settings.user.email;
       };
-      ui.default-command = "status";
+      ui = {
+        default-command = "status";
+        show-cryptographic-signatures = true;
+      };
     };
   };
 }

@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   programs.nix-ld = {
     enable = true;
     libraries = with pkgs; [
@@ -35,6 +34,8 @@
       libice
       liberation_ttf
       freetype
+
+      gtk3
     ];
   };
 }

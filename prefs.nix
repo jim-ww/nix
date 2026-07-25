@@ -53,6 +53,9 @@ in {
       "--whitelist=/persistent${home}/.claude"
       "--whitelist=/persistent${home}/.local/share/itpec-sensei"
       "--whitelist=/persistent${home}/.cache"
+      "--whitelist=/persistent${home}/.private/.config/devin"
+      "--whitelist=/persistent${home}/.private/.config/cursor"
+      "--whitelist=/persistent${home}/.private/.local/share/devin"
       "--blacklist=/run/secrets"
       "--blacklist=${pkgs.tmux}/bin/tmux"
       "--blacklist=/run/user/$(id -u)/tmux-$(id -u)"
@@ -353,7 +356,6 @@ in {
       set-video-wallper = ''mpvpaper  -vf "*" $NH_FLAKE/assets/video-wallpaper --mpv-options -o "--loop=yes" & disown'';
       nixos-anywhere-echo = "echo 'nixos-anywhere --flake $NH_FLAKE#nixos user@hostname -i ssh-key-path'";
       mpvsub = "mpv --sub-auto=fuzzy --audio-file-auto=fuzzy";
-      gtt = "gtt --src=English -dst=Russian";
       jail = ''
         if test (count $argv) -gt 0
           ${firejailCmd ["--private-cwd=${home}/work"]} fish -c "$argv"

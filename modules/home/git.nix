@@ -5,7 +5,7 @@ in {
   programs.git = {
     enable = true;
     signing.format = "openpgp";
-    ignores = ["CLAUDE.md" "CLAUDE.local.md"];
+    ignores = ["CLAUDE.md" "CLAUDE.local.md" ".claude/settings.local.json"];
     settings = {
       user.name = username;
       user.email = email;

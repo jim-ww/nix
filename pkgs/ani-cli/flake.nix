@@ -32,6 +32,7 @@
             fzf
             ffmpeg
             aria2
+            botan3
           ];
 
           installPhase = ''
