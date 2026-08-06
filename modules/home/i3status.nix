@@ -24,11 +24,6 @@
         };
 
         blocks = [
-          # {
-          #   block = "custom";
-          #   command = ''curl -s -f -o /dev/null "$(cat /run/secrets/server1-url)" && echo "🟢 srv" || echo "🔴 srv"'';
-          #   interval = 60;
-          # }
           {
             block = "music";
             format = " $icon {$combo.str(max_w:30) |}"; # rot_interval:0.5
@@ -70,18 +65,18 @@
           #   block = "net";
           #   format = " $icon $signal_strength ";
           # }
-          {
-            block = "cpu";
-            interval = 5;
-            format = " $utilization";
-          }
-          {
-            block = "memory";
-            format = "󰍛 $mem_used_percents.eng(w:1)";
-            interval = 30;
-            warning_mem = 70;
-            critical_mem = 85;
-          }
+          # {
+          #   block = "cpu";
+          #   interval = 5;
+          #   format = " $utilization";
+          # }
+          # {
+          #   block = "memory";
+          #   format = "󰍛 $mem_used_percents.eng(w:1)";
+          #   interval = 30;
+          #   warning_mem = 70;
+          #   critical_mem = 85;
+          # }
           {
             block = "time";
             interval = 1;

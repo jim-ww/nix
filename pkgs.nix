@@ -118,6 +118,7 @@ in
     goreleaser
     cobra-cli
     cloudflared
+    git-filter-repo
     gh
     devbox
     graphviz # go prof

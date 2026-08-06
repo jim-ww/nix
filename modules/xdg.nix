@@ -6,7 +6,7 @@
 
   xdg.portal = {
     enable = true;
-    xdgOpenUsePortal = true;
+    # xdgOpenUsePortal = true; # only for flatpak/sandboxed apps
     config.common.default = [
       "wlr"
       "gtk"

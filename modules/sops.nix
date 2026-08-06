@@ -5,7 +5,9 @@
 
   sops.secrets = {
     lastfm_password.owner = config.user;
-    server1-url.owner = config.user;
+    server1.owner = config.user;
+    server2.owner = config.user;
+    server-sig.owner = config.user;
     transmission-rpc-addr.owner = config.user;
     transmission-rpc-user.owner = config.user;
     transmission-rpc-pass.owner = config.user;

@@ -3,6 +3,8 @@
   config,
   ...
 }: {
+  powerManagement.powertop.enable = true;
+
   #services.pcscd.enable = true; # card reader
 
   # aarch64 emulation for cross-compiling

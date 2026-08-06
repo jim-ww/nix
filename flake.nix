@@ -150,6 +150,7 @@
               ./modules/home/tealdeer.nix
               ./modules/home/protonvpn.nix
               ./modules/home/go.nix
+              ./modules/home/servers-healthcheck.nix
             ];
             stylix.targets.fzf.enable = false;
             dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";

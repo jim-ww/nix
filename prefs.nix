@@ -124,6 +124,7 @@ in {
       WINEPREFIX = "~/Games/umu/umu-default";
       PROTONPATH = "${pkgs.proton-ge-bin.steamcompattool}";
       OLLAMA_NOHISTORY = 1;
+      KAGE_DEBUG = "1";
 
       # Unclutter home dir
       GOPATH = "${dataHome}/go";

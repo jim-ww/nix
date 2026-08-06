@@ -20,10 +20,10 @@
           directory = "/var/lib/docker";
           mode = "0710";
         }
-        {
-          directory = "/var/lib/tor";
-          mode = "0700";
-        }
+        # {
+        #   directory = "/var/lib/tor";
+        #   mode = "0700";
+        # }
         {
           directory = "/var/lib/ollama";
           mode = "0700";

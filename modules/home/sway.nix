@@ -11,6 +11,7 @@
     ./rofi.nix
     ./swayidle.nix
     ./cliphist.nix
+    ./servers-healthcheck.nix
   ];
 
   home.packages = with pkgs; [
@@ -54,7 +55,6 @@
       smart_corner_radius enable
       shadows on
 
-      for_window [app_id="im.dino.Dino"] move scratchpad
     '';
     config = {
       modifier = mod;
@@ -65,7 +65,7 @@
         {command = config.wallpaper.command;}
         {command = "cliphist wipe";}
         {command = "wl-clip-persist --clipboard regular";}
-        {command = "dino";} # "element-desktop --hidden --no-update";}
+        {command = "kage daemon start";}
         {command = "keepassxc --minimized";}
         {command = "lf -server";}
         {command = "fcitx5";}
@@ -95,7 +95,7 @@
           workspaceNumbers = true;
           trayOutput = "primary";
           colors = {
-            background = "#000000";
+            background = "#323643"; # "#00000000"; transparent
             statusline = "#ffffff";
             separator = "#666666";
             focusedWorkspace = {
@@ -180,9 +180,7 @@
       bindkeysToCode = true;
       keybindings = {
         # basic
-        "${mod}+c" = let
-          swayMsg = "${config.wayland.windowManager.sway.package}/bin/swaymsg";
-        in ''exec [[ $(${swayMsg} -t get_tree | ${pkgs.jq}/bin/jq -r '.. | objects | select(.focused==true) | .app_id') == "im.dino.Dino" ]] && ${swayMsg} scratchpad show && ${swayMsg} focus || ${swayMsg} kill''; # kill anything focused, but hide dino
+        "${mod}+c" = "exec swaymsg kill";
         "${mod}+Shift+m" = "exit";
         "${mod}+v" = "floating toggle";
         "${mod}+Shift+f" = "fullscreen toggle";
@@ -212,8 +210,7 @@
         "${mod}+x" = "exec ${config.notes}";
         "${mod}+Shift+x" = "exec ${config.notes-all}";
         "${mod}+d" = "exec ${config.term} ${config.editor}";
-        "${mod}+z" = ''[app_id="im.dino.Dino"]scratchpad show; focus'';
-        "${mod}+Shift+z" = ''[app_id="im.dino.Dino"]move scratchpad'';
+        "${mod}+z" = "exec ${config.term} kage";
 
         "${mod}+p" = "exec ${lib.getExe pkgs.rofi-pulse-select} sink";
         "${mod}+r" = "exec ${config.app-menu}";
