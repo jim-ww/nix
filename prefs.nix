@@ -29,7 +29,7 @@ with lib; let
 in {
   config = {
     user = "jim";
-    shell = "fish";
+    shell = "bash";
     gitUsername = gitUsername;
     gitEmail = gitEmail;
     gpgKeyID = "84E78B81883125DEF4FFBD7735AE71B304C67013";
@@ -128,7 +128,6 @@ in {
 
       # Unclutter home dir
       GOPATH = "${dataHome}/go";
-      HISTFILE = "${stateHome}/bash/history";
       GRADLE_USER_HOME = "${dataHome}/gradle";
       SONARLINT_USER_HOME = "${dataHome}/sonarlint";
       ELECTRUMDIR = "${dataHome}/electrum";
@@ -358,28 +357,31 @@ in {
       nixos-anywhere-echo = "echo 'nixos-anywhere --flake $NH_FLAKE#nixos user@hostname -i ssh-key-path'";
       mpvsub = "mpv --sub-auto=fuzzy --audio-file-auto=fuzzy";
       jail = ''
-        if test (count $argv) -gt 0
-          ${firejailCmd ["--private-cwd=${home}/work"]} fish -c "$argv"
-        else
-          ${firejailCmd ["--private-cwd=${home}/work"]} fish -c 'set -g fish_greeting; exec fish -i'
-        end
-        true'';
+        __jail() {
+          if [ "$#" -gt 0 ]; then
+            ${firejailCmd ["--private-cwd=${home}/work"]} bash -c "$*"
+          else
+            ${firejailCmd ["--private-cwd=${home}/work"]} bash -c 'exec bash -i'
+          fi
+        }; __jail'';
+
       jail-cwd = ''
-        set WORKDIR /persistent(pwd)
-        set DIRNAME (basename (pwd))
-        set TMPSYMLINK ${home}/.private/$DIRNAME
-        test -L $TMPSYMLINK; and rm $TMPSYMLINK
-        ln -s $WORKDIR $TMPSYMLINK
-        and cd ~
-        and if test (count $argv) -gt 0
-              ${firejailCmd ["--whitelist=$WORKDIR"]} fish -c "cd ${home}/$DIRNAME; $argv"
-            else
-              ${firejailCmd ["--whitelist=$WORKDIR"]} fish -c "cd ${home}/$DIRNAME; fish -C 'set -g fish_greeting' -i"
-            end
-        cd -
-        rm $TMPSYMLINK
-        true'';
-      wf-record = ''wf-recorder -a --audio-backend=pipewire --codec h264_vaapi --device /dev/dri/renderD128 -p preset=fast -f "$XDG_VIDEOS_DIR/rec_$(date +%d-%m-%Y-T%H-%M-%S).mkv"'';
+        __jail_cwd() {
+          local WORKDIR=/persistent$(pwd)
+          local DIRNAME=$(basename "$(pwd)")
+          local TMPSYMLINK=${home}/.private/$DIRNAME
+          [ -L "$TMPSYMLINK" ] && rm "$TMPSYMLINK"
+          ln -s "$WORKDIR" "$TMPSYMLINK"
+          cd ~ || return
+          if [ "$#" -gt 0 ]; then
+            ${firejailCmd ["--whitelist=$WORKDIR"]} bash -c "cd ${home}/$DIRNAME; $*"
+          else
+            ${firejailCmd ["--whitelist=$WORKDIR"]} bash -c "cd ${home}/$DIRNAME; bash -i"
+          fi
+          cd - || return
+          rm "$TMPSYMLINK"
+        }; __jail_cwd'';
+      wf-record = ''wf-recorder -a --audio-backend=pipewire --codec h264_vaapi --device /dev/dri/renderD128 -p preset=ultrafast -f "$XDG_VIDEOS_DIR/rec_$(date +%d-%m-%Y-T%H-%M-%S).mkv"''; # preset=fast
       mount-personal = "mkdir -p ~/Archive/personal && gocryptfs ~/Archive/personal_enc ~/Archive/personal";
       umount-personal = umountPersonal;
       trcli = "transmission-cli";

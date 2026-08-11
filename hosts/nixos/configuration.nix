@@ -3,7 +3,17 @@
   config,
   ...
 }: {
+  programs.bash.blesh.enable = true;
+
   powerManagement.powertop.enable = true;
+
+  programs.wshowkeys.enable = true;
+  # security.wrappers.wshowkeys = {
+  #   owner = "root";
+  #   group = "root";
+  #   source = "${pkgs.wshowkeys}/bin/wshowkeys";
+  #   setuid = true;
+  # };
 
   #services.pcscd.enable = true; # card reader
 
@@ -25,7 +35,6 @@
 
   programs.firejail.enable = true;
   programs.dconf.enable = true;
-  programs.fish.enable = true;
 
   # TODO
   # services.vnstat.enable = true; # network usage

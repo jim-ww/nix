@@ -95,7 +95,7 @@
           workspaceNumbers = true;
           trayOutput = "primary";
           colors = {
-            background = "#323643"; # "#00000000"; transparent
+            # background = "#00000000"; # transparent
             statusline = "#ffffff";
             separator = "#666666";
             focusedWorkspace = {

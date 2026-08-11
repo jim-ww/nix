@@ -89,7 +89,7 @@
           }
 
           {
-            directory = ".local/share/fish";
+            directory = ".local/share/bash";
             mode = "0700";
           }
 

@@ -154,4 +154,8 @@ in
         "postgres"
       ];
     }))
+
+    croc
+    wormhole-william
+    jrnl # python
   ]

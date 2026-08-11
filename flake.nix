@@ -137,7 +137,6 @@
               ./modules/home/xdg.nix
               ./modules/home/gpg.nix
               ./modules/home/mpd.nix
-              ./modules/home/fish.nix
               ./modules/home/lf.nix
               ./modules/home/battery-low.nix
               ./modules/home/librewolf
@@ -151,6 +150,7 @@
               ./modules/home/protonvpn.nix
               ./modules/home/go.nix
               ./modules/home/servers-healthcheck.nix
+              ./modules/home/bash.nix
             ];
             stylix.targets.fzf.enable = false;
             dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";

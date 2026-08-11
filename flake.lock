@@ -636,11 +636,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785533160,
-        "narHash": "sha256-84dALRgandllrrXy5cyH8I0MA8LGOHqdsnNUN0iyKrk=",
+        "lastModified": 1786475735,
+        "narHash": "sha256-sjZzRGNnV1bp9RbNoAEnZLuJyoILAGxl26zf1n+7dOc=",
         "owner": "jim-ww",
         "repo": "itpec-sensei",
-        "rev": "dd493d83f1973cad2ad86ee75834947f875c11cd",
+        "rev": "d4ecedc07993b3c053dbe4ee1ac14ccfc7a43e98",
         "type": "github"
       },
       "original": {
@@ -658,11 +658,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786447900,
-        "narHash": "sha256-zuXSLF5baWtSfjzmiO3Rew3leeOm1SMbt/zzndkOjvk=",
+        "lastModified": 1786494593,
+        "narHash": "sha256-etKb+yvcWnr4WIG/lnP3DAHpGeJQQXSPzNJ1lj/8COk=",
         "owner": "jim-ww",
         "repo": "kage",
-        "rev": "ab20f3979775b8ab77630bd6f09ef0ed7625c4c8",
+        "rev": "378a27a57174aec286e60d1fb846f673af7aa146",
         "type": "github"
       },
       "original": {
