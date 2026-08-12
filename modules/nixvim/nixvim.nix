@@ -40,7 +40,7 @@ in {
     ./config/plugins/image.nix
     ./config/plugins/leetcode.nix
     #./config/plugins/noice.nix
-    ./config/plugins/bufferline.nix
+    # ./config/plugins/bufferline.nix
   ];
 
   /*
@@ -193,8 +193,10 @@ in {
   opts = {
     shell = config.shell;
 
-    # Automatically change dir to current buffer (e.g. nvim ~/SomeDir will cd into SomeDir)
-    autochdir = true;
+    # NOTE: autochdir was removed — it silently changes Neovim's global cwd on
+    # every buffer switch (LSP jumps, oldfiles, quickfix, etc.), which made
+    # Telescope's find_files (no explicit cwd) search from whatever directory
+    # the last-focused buffer happened to live in instead of the project root.
 
     # Show line numbers
     number = true;

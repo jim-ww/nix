@@ -65,6 +65,7 @@ in
     steam-run-free
     groff
     (pkgs.writeShellScriptBin "ms2pdf" ''${lib.getExe' pkgs.groff "groff"} -mms -Kutf8 -Tps "$1" | ${pkgs.ghostscript}/bin/ps2pdf - "$2"'')
+    git-remote-gcrypt
 
     # music
     rmpc
@@ -142,10 +143,18 @@ in
     (buildGoFromGitHub {
       owner = "mattn";
       repo = "nostr-relay";
-      rev = "v0.0.246";
-      githubHash = "sha256-6Y0Gwxmae1Py1eM3w9hSVk9Xc9yb6XB4V6CfIi1MWbQ=";
-      vendorHash = "sha256-rM1cOGGrzZ9yNf+vscB5KHX+oiIULRAOt7T3rgDHRZg=";
+      rev = "v0.0.250";
+      githubHash = "sha256-jQ3sOSj6X42QzwggZITjbhSDbkxZQp38gP+kl9ZkQzs=";
+      vendorHash = "sha256-1mg8QKcx/AwOZIA411h7SFy/hRLg+msCn/Sd5fnFmA4=";
     })
+    # (buildGoFromGitHub {
+    #   owner = "axadrn";
+    #   repo = "shadcn-templ";
+    #   rev = "9ec720c03909236c1d2350c11eddb466e2299031";
+    #   # githubHash = "";
+    #   vendorHash = "";
+    #   useFetchGit = true;
+    # })
 
     postgresql
     (go-migrate.overrideAttrs (old: {

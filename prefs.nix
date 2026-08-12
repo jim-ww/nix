@@ -18,6 +18,7 @@ with lib; let
     "file://${home}/Music"
   ];
 
+  videosDir = "${home}/Videos";
   dataHome = "${home}/.local/share";
   stateHome = "${home}/.local/state";
   configHome = "${home}/.config";
@@ -381,7 +382,7 @@ in {
           cd - || return
           rm "$TMPSYMLINK"
         }; __jail_cwd'';
-      wf-record = ''wf-recorder -a --audio-backend=pipewire --codec h264_vaapi --device /dev/dri/renderD128 -p preset=ultrafast -f "$XDG_VIDEOS_DIR/rec_$(date +%d-%m-%Y-T%H-%M-%S).mkv"''; # preset=fast
+      wf-record = ''wf-recorder -a --audio-backend=pipewire --codec h264_vaapi --device /dev/dri/renderD128 -p preset=ultrafast -f "${videosDir}/rec_$(date +%d-%m-%Y-T%H-%M-%S).mkv"''; # preset=fast
       mount-personal = "mkdir -p ~/Archive/personal && gocryptfs ~/Archive/personal_enc ~/Archive/personal";
       umount-personal = umountPersonal;
       trcli = "transmission-cli";
@@ -391,6 +392,8 @@ in {
       http-fs-serve = ''goeval 'log.Fatal(http.ListenAndServe(":8000", http.FileServer(http.Dir("."))))' '';
       yt-dlp = "yt-dlp --write-subs";
       itpec-sensei-mcp = "tmux new-session -s itpec-sensei-mcp 'NGROK_AUTHTOKEN=$(cat /run/secrets/ngrok-token) NGROK_RESERVED_URL=$(cat /run/secrets/ngrok-url) itpec-sensei serve --ngrok --remote'";
+      bc = "busybox bc -q";
+      gtr = "gtr -t ru";
 
       gomod2nix-init = "nix flake init -t github:nix-community/gomod2nix#app";
 
