@@ -150,6 +150,7 @@
               ./modules/home/go.nix
               ./modules/home/servers-healthcheck.nix
               ./modules/home/bash.nix
+              ./modules/home/bwrap.nix
             ];
             stylix.targets.fzf.enable = false;
             dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
