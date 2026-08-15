@@ -339,6 +339,9 @@ in {
       itpec-sensei-mcp = "tmux new-session -s itpec-sensei-mcp 'NGROK_AUTHTOKEN=$(cat /run/secrets/ngrok-token) NGROK_RESERVED_URL=$(cat /run/secrets/ngrok-url) itpec-sensei serve --ngrok --remote'";
       bc = "busybox bc -q";
       gtr = "gtr -t ru";
+      tns = ''        tmux new-session -s "$(basename "$(pwd)")" -n edit "$EDITOR ." \; \
+            new-window -n claude "bwrap-cwd claude" \; \
+            new-window -n term'';
 
       gomod2nix-init = "nix flake init -t github:nix-community/gomod2nix#app";
 
