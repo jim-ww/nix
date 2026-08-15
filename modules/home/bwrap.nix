@@ -1,4 +1,8 @@
-{pkgs, ...}: let
+{
+  pkgs,
+  config,
+  ...
+}: let
   baseArgs = [
     "--ro-bind"
     "/usr"
@@ -41,7 +45,7 @@
     "--clearenv"
     "--setenv"
     "PATH"
-    "${pkgs.git}/bin:/run/current-system/sw/bin:/usr/bin:/usr/sbin"
+    "${pkgs.git}/bin:/etc/profiles/per-user/${config.user}/bin:/run/current-system/sw/bin:/usr/bin:/usr/sbin"
     "--setenv"
     "HOME"
     "$HOME"
