@@ -4,7 +4,8 @@
   lib,
   ...
 }:
-with lib; let
+with lib;
+let
   gitUsername = "jim-ww";
   gitEmail = "jim.w2610@proton.me";
   home = "/home/${config.user}";
@@ -24,14 +25,15 @@ with lib; let
   configHome = "${home}/.config";
 
   umountPersonal = "umount ~/Archive/personal";
-in {
+in
+{
   config = {
     user = "jim";
     shell = "bash";
     gitUsername = gitUsername;
     gitEmail = gitEmail;
     gpgKeyID = "84E78B81883125DEF4FFBD7735AE71B304C67013";
-    packages = import ./pkgs.nix {inherit pkgs;};
+    packages = import ./pkgs.nix { inherit pkgs; };
     font-packages = with pkgs; [
       nerd-fonts.symbols-only # icons for terminal
       noto-fonts-cjk-sans # clean/readable japanese font
@@ -52,7 +54,7 @@ in {
     file-manager-term = "${config.term} ${lib.getExe pkgs.lf}";
     browser = "librewolf"; # "helium"; #"librewolf"; # "brave"; # "zen"; # "schizofox";
     duckduckgo = "https://duckduckgo.com/?kp=-2&kl=wt-wt&ka=Terminus&kt=Terminus&kj=1a1b26&kn=1&kx=a9b1d6&k1=-1&k5=2&k7=16161e&k8=a9b1d6&k9=7aa2f7&k18=1&kaa=bb9af7&kaf=s&kaj=m&kak=-1&kae=d&kao=-1&kap=-1&kaq=-1&kau=-1&kav=1&kax=-1&kay=b&kbf=1&duckai=1";
-    bookmarks-menu = ''${lib.getExe pkgs.yq-go} -r '.[]' /run/secrets/bookmarks | ${lib.getExe pkgs.rofi} -dmenu -p 'search bookmarks...' | wl-copy '';
+    bookmarks-menu = "${lib.getExe pkgs.yq-go} -r '.[]' /run/secrets/bookmarks | ${lib.getExe pkgs.rofi} -dmenu -p 'search bookmarks...' | wl-copy ";
     music-player = "${config.term} rmpc --clean";
     passwords = "keepassxc ${documents}/.vault.kdbx";
     clipboard-manager = "cliphist list | rofi -dmenu | cliphist decode | wl-copy";
@@ -270,86 +272,89 @@ in {
         *.nix=:
       '';
     };
-    shellAliases = let
-      ls = "${lib.getExe pkgs.eza}";
-      fzf = "${lib.getExe pkgs.fzf}";
-      term-editor = "$EDITOR";
-    in {
-      v = "$EDITOR";
-      c = "clear";
-      mv = "mv -v";
-      cp = "cp -v";
-      rm = "rm -v";
-      cc = "cd ${config.flakeDir} && l";
-      ccc = "cd ${config.flakeDir} && ${term-editor} $(${fzf})";
-      l = ls;
-      ls = ls;
-      ll = "${ls} -l";
-      la = "${ls} -a";
-      lla = "${ls} -al";
-      ff = "fastfetch -s title:separator:os:wm:lm:terminal:shell:packages:uptime:datetime:battery:disk:memory:theme:wmtheme:colors";
-      conf = "cd ${config.flakeDir}/hosts/nixos && ${term-editor} configuration.nix";
-      prefs = "cd ${config.flakeDir} && ${term-editor} prefs.nix";
-      flake = "cd ${config.flakeDir} && ${term-editor} flake.nix";
-      pkgs = "cd ${config.flakeDir} && ${term-editor} pkgs.nix";
-      ns = "nix-search";
-      nsp = "nix-shell --run ${config.shell} -p";
-      nix-store-fix = "sudo nix-store --repair --verify --check-contents";
+    shellAliases =
+      let
+        ls = "${lib.getExe pkgs.eza}";
+        fzf = "${lib.getExe pkgs.fzf}";
+        term-editor = "$EDITOR";
+      in
+      {
+        v = "$EDITOR";
+        c = "clear";
+        mv = "mv -v";
+        cp = "cp -v";
+        rm = "rm -v";
+        cc = "cd ${config.flakeDir} && l";
+        ccc = "cd ${config.flakeDir} && ${term-editor} $(${fzf})";
+        l = ls;
+        ls = ls;
+        ll = "${ls} -l";
+        la = "${ls} -a";
+        lla = "${ls} -al";
+        ff = "fastfetch -s title:separator:os:wm:lm:terminal:shell:packages:uptime:datetime:battery:disk:memory:theme:wmtheme:colors";
+        conf = "cd ${config.flakeDir}/hosts/nixos && ${term-editor} configuration.nix";
+        prefs = "cd ${config.flakeDir} && ${term-editor} prefs.nix";
+        flake = "cd ${config.flakeDir} && ${term-editor} flake.nix";
+        pkgs = "cd ${config.flakeDir} && ${term-editor} pkgs.nix";
+        ns = "nix-search";
+        nsp = "nix-shell --run ${config.shell} -p";
+        nix-store-fix = "sudo nix-store --repair --verify --check-contents";
 
-      gs = "git status";
-      gc = "git commit";
-      ga = "git add";
-      gaa = "git add --all";
-      gl = "git log";
-      gr = "git remote";
-      grl = "git reflog";
-      gf = "git fetch";
-      gi = "git init";
-      gb = "git branch";
-      gsw = "git switch";
-      gd = "git diff";
-      gcm = "git commit -m";
-      gsm = "git stash -m";
-      gwt = "git worktree";
-      gcp = ''git commit -m "update" && git push'';
-      gcl = "git clone";
-      gco = "git checkout";
-      gps = "git push";
-      gpl = "git pull";
+        gs = "git status";
+        gc = "git commit";
+        ga = "git add";
+        gaa = "git add --all";
+        gl = "git log";
+        gr = "git remote";
+        grl = "git reflog";
+        gf = "git fetch";
+        gi = "git init";
+        gb = "git branch";
+        gsw = "git switch";
+        gd = "git diff";
+        gcm = "git commit -m";
+        gsm = "git stash -m";
+        gwt = "git worktree";
+        gcp = ''git commit -m "update" && git push'';
+        gcl = "git clone";
+        gco = "git checkout";
+        gps = "git push";
+        gpl = "git pull";
 
-      ani = "ani-cli";
-      umu = "umu-run";
-      http = "curlie";
-      "7z" = "7zz";
-      transcribe-translate-jp = "whisperx --device cpu --model base --compute_type int8 --language ja --output_format srt --output_dir . --no_align --task translate";
-      busybox = lib.getExe pkgs.busybox;
-      set-wallpaper = config.wallpaper.command;
-      set-video-wallper = ''mpvpaper  -vf "*" $NH_FLAKE/assets/video-wallpaper --mpv-options -o "--loop=yes" & disown'';
-      nixos-anywhere-echo = "echo 'nixos-anywhere --flake $NH_FLAKE#nixos user@hostname -i ssh-key-path'";
-      mpvsub = "mpv --sub-auto=fuzzy --audio-file-auto=fuzzy";
-      wf-record = ''wf-recorder -a --audio-backend=pipewire --codec h264_vaapi --device /dev/dri/renderD128 -p preset=ultrafast -f "${videosDir}/rec_$(date +%d-%m-%Y-T%H-%M-%S).mkv"''; # preset=fast
-      mount-personal = "mkdir -p ~/Archive/personal && gocryptfs ~/Archive/personal_enc ~/Archive/personal";
-      umount-personal = umountPersonal;
-      trcli = "transmission-cli";
-      trcli-rmt = ''transmission-remote $(cat /run/secrets/transmission-rpc-addr) -n "$(cat /run/secrets/transmission-rpc-user):$(cat /run/secrets/transmission-rpc-pass)"'';
-      wg-update-ip = ''sed -i "s/ip = \"[^\"]*\"/ip = \"$(wl-paste)\"/" $NH_FLAKE/modules/wireguard.nix'';
-      wg-clear-ip = ''sed -i "s/ip = \"[^\"]*\"/ip = \"\"/" $NH_FLAKE/modules/wireguard.nix'';
-      http-fs-serve = ''goeval 'log.Fatal(http.ListenAndServe(":8000", http.FileServer(http.Dir("."))))' '';
-      yt-dlp = "yt-dlp --write-subs";
-      itpec-sensei-mcp = "tmux new-session -s itpec-sensei-mcp 'NGROK_AUTHTOKEN=$(cat /run/secrets/ngrok-token) NGROK_RESERVED_URL=$(cat /run/secrets/ngrok-url) itpec-sensei serve --ngrok --remote'";
-      bc = "busybox bc -q";
-      gtr = "gtr -t ru";
-      tns = ''        tmux new-session -s "$(basename "$(pwd)")" -n edit "$EDITOR ." \; \
-            new-window -n claude "bwrap-cwd claude" \; \
-            new-window -n term'';
+        ani = "ani-cli";
+        umu = "umu-run";
+        http = "curlie";
+        "7z" = "7zz";
+        transcribe-translate-jp = "whisperx --device cpu --model base --compute_type int8 --language ja --output_format srt --output_dir . --no_align --task translate";
+        busybox = lib.getExe pkgs.busybox;
+        set-wallpaper = config.wallpaper.command;
+        set-video-wallper = ''mpvpaper  -vf "*" $NH_FLAKE/assets/video-wallpaper --mpv-options -o "--loop=yes" & disown'';
+        nixos-anywhere-echo = "echo 'nixos-anywhere --flake $NH_FLAKE#nixos user@hostname -i ssh-key-path'";
+        mpvsub = "mpv --sub-auto=fuzzy --audio-file-auto=fuzzy";
+        wf-record = ''wf-recorder -a --audio-backend=pipewire --codec h264_vaapi --device /dev/dri/renderD128 -p preset=ultrafast -f "${videosDir}/rec_$(date +%d-%m-%Y-T%H-%M-%S).mkv"''; # preset=fast
+        mount-personal = "mkdir -p ~/Archive/personal && gocryptfs ~/Archive/personal_enc ~/Archive/personal";
+        umount-personal = umountPersonal;
+        trcli = "transmission-cli";
+        trcli-rmt = ''transmission-remote $(cat /run/secrets/transmission-rpc-addr) -n "$(cat /run/secrets/transmission-rpc-user):$(cat /run/secrets/transmission-rpc-pass)"'';
+        wg-update-ip = ''sed -i "s/ip = \"[^\"]*\"/ip = \"$(wl-paste)\"/" $NH_FLAKE/modules/wireguard.nix'';
+        wg-clear-ip = ''sed -i "s/ip = \"[^\"]*\"/ip = \"\"/" $NH_FLAKE/modules/wireguard.nix'';
+        http-fs-serve = ''goeval 'log.Fatal(http.ListenAndServe(":8000", http.FileServer(http.Dir("."))))' '';
+        yt-dlp = "yt-dlp --write-subs";
+        itpec-sensei-mcp = "tmux new-session -s itpec-sensei-mcp 'NGROK_AUTHTOKEN=$(cat /run/secrets/ngrok-token) NGROK_RESERVED_URL=$(cat /run/secrets/ngrok-url) itpec-sensei serve --ngrok --remote'";
+        bc = "busybox bc -q";
+        gtr = "gtr -t ru";
+        tns = ''
+          tmux new-session -s "$(basename "$(pwd)")" -n edit "$EDITOR ." \; \
+                        new-window -n claude "bwrap-cwd claude" \; \
+                        new-window -n term \; \
+                        select-window -t claude'';
+        gomod2nix-init = "nix flake init -t github:nix-community/gomod2nix#app";
 
-      gomod2nix-init = "nix flake init -t github:nix-community/gomod2nix#app";
-
-      # unclutter home dir
-      wget = ''${lib.getExe pkgs.wget} --hsts-file="${dataHome}/wget-hsts"'';
-      adb = ''HOME="${dataHome}"/android ${pkgs.android-tools}/bin/adb'';
-      monerod = ''monerod --data-dir "${dataHome}"/bitmonero'';
-    };
+        # unclutter home dir
+        wget = ''${lib.getExe pkgs.wget} --hsts-file="${dataHome}/wget-hsts"'';
+        adb = ''HOME="${dataHome}"/android ${pkgs.android-tools}/bin/adb'';
+        monerod = ''monerod --data-dir "${dataHome}"/bitmonero'';
+      };
   };
   options = {
     user = mkOption {
@@ -451,7 +456,8 @@ in {
       type = types.str;
     };
     env = mkOption {
-      type = with types;
+      type =
+        with types;
         lazyAttrsOf (oneOf [
           str
           path

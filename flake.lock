@@ -40,11 +40,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785822688,
-        "narHash": "sha256-pJshK547VlWxetv3msRNGs83ervqNQH+Ea1V0bHErNw=",
+        "lastModified": 1786912201,
+        "narHash": "sha256-oPgg2yJ+jU1RD1F38X3sVqfeCGTBKZtQfyfBy4yIl8Y=",
         "owner": "jim-ww",
         "repo": "anitui",
-        "rev": "9a7af81cf32ae0804516b81e0ecf37928bf8d41f",
+        "rev": "501175768999e6d0ae7f343a3b54eb69d128f9ab",
         "type": "github"
       },
       "original": {
