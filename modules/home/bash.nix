@@ -38,9 +38,18 @@
 
       bind 'set completion-ignore-case on'
       bind 'set show-all-if-ambiguous on'
-      bind '"\e[A": history-search-backward hide-status'
-      bind '"\e[B": history-search-forward hide-status'
       bind '"\C-h": backward-kill-word'
+
+      ble/widget/my-history-search-backward() {
+        ble/widget/history-search-backward "$@"
+        ble/widget/end-of-line
+      }
+      ble/widget/my-history-search-forward() {
+        ble/widget/history-search-forward "$@"
+        ble/widget/end-of-line
+      }
+      ble-bind -f 'Up' my-history-search-backward
+      ble-bind -f 'Down' my-history-search-forward
     '';
   };
 }
