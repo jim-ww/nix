@@ -375,6 +375,31 @@ in {
         end
       '';
     }
+
+    # Track the project root as the global cwd, replacing `autochdir`.
+    # Unlike `autochdir` (which chdir's into whatever buffer's directory on
+    # every switch, including help/quickfix/library files), this only moves
+    # cwd for real file buffers, and only up to a project root marker
+    # (.git), so unrelated buffers don't drag the cwd away from the project.
+    {
+      event = ["BufEnter"];
+      desc = "cd to project root of current buffer";
+      callback.__raw = ''
+        function(args)
+          if vim.bo[args.buf].buftype ~= "" or not vim.bo[args.buf].buflisted then
+            return
+          end
+          local path = vim.api.nvim_buf_get_name(args.buf)
+          if path == "" then
+            return
+          end
+          local root = vim.fs.root(path, { ".git" })
+          if root and root ~= vim.uv.cwd() then
+            vim.fn.chdir(root)
+          end
+        end
+      '';
+    }
   ];
 
   diagnostic = {
