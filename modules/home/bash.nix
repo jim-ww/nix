@@ -11,9 +11,12 @@
     initExtra = ''
       . "$HOME/.profile"
 
+      shopt -s autocd
+
       # bleopt default_keymap=vi
       bleopt color_scheme=base16
       bleopt exec_elapsed_mark=
+      bleopt exec_errexit_mark=
       bleopt prompt_eol_mark=
       ble-face command_builtin=fg=4
 
@@ -35,8 +38,8 @@
 
       bind 'set completion-ignore-case on'
       bind 'set show-all-if-ambiguous on'
-      bind '"\e[A": history-search-backward'
-      bind '"\e[B": history-search-forward'
+      bind '"\e[A": history-search-backward hide-status'
+      bind '"\e[B": history-search-forward hide-status'
       bind '"\C-h": backward-kill-word'
     '';
   };
