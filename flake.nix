@@ -103,7 +103,6 @@
       ./modules/keyring.nix
       ./modules/xdg.nix
       ./modules/ollama.nix
-      ./modules/waydroid.nix
       nur.modules.nixos.default
       stylix.nixosModules.stylix
       sops-nix.nixosModules.sops
