@@ -167,4 +167,7 @@ in
     croc
     wormhole-william
     jrnl # python
+
+    ueberzugpp
+    nethogs # per-process bandwidth
   ]
