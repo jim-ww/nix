@@ -355,6 +355,14 @@ in {
   #  See `:help lua-guide-autocommands`
   # https://nix-community.github.io/nixvim/NeovimOptions/autoCmd/index.html
   autoCmd = [
+    # Hugo templates use Go template syntax inside .html files; treat all
+    # .html as gotmpl so treesitter/LSP understand the {{ }} actions.
+    {
+      event = ["BufNewFile" "BufRead"];
+      pattern = ["*.html"];
+      command = "set filetype=gotmpl";
+    }
+
     # Auto run transparent mode
     (lib.mkIf config.programs.nixvim.plugins.transparent.enable {
       command = ":TransparentEnable";
