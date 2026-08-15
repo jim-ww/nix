@@ -8,13 +8,6 @@
   powerManagement.powertop.enable = true;
 
   programs.wshowkeys.enable = true;
-  # security.wrappers.wshowkeys = {
-  #   owner = "root";
-  #   group = "root";
-  #   source = "${pkgs.wshowkeys}/bin/wshowkeys";
-  #   setuid = true;
-  # };
-
   #services.pcscd.enable = true; # card reader
 
   # aarch64 emulation for cross-compiling
@@ -33,7 +26,6 @@
     HandlePowerKeyLongPress = "poweroff";
   };
 
-  programs.firejail.enable = true;
   programs.dconf.enable = true;
 
   # TODO

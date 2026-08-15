@@ -24,9 +24,6 @@ with lib; let
   configHome = "${home}/.config";
 
   umountPersonal = "umount ~/Archive/personal";
-
-  firejailCmd = extra:
-    "firejail " + lib.concatStringsSep " " (config.firejailBaseArgs ++ extra) + " 2>/dev/null";
 in {
   config = {
     user = "jim";
@@ -41,33 +38,6 @@ in {
       # zpix-pixel-font # pixel japanese font
       # hachimarupop # cute japanese font
     ];
-    firejailBaseArgs = [
-      "--quiet"
-      "--private=${home}/.private"
-      "--private-tmp"
-      "--private-dev"
-      "--caps.drop=all"
-      "--nonewprivs"
-      "--noroot"
-      "--nogroups"
-      "--whitelist=/persistent${home}/.claude.json"
-      "--whitelist=/persistent${home}/.claude"
-      "--whitelist=/persistent${home}/.local/share/itpec-sensei"
-      "--whitelist=/persistent${home}/.cache"
-      "--whitelist=/persistent${home}/.private/.config/devin"
-      "--whitelist=/persistent${home}/.private/.config/cursor"
-      "--whitelist=/persistent${home}/.private/.local/share/devin"
-      "--blacklist=/run/secrets"
-      "--blacklist=${pkgs.tmux}/bin/tmux"
-      "--blacklist=/run/user/$(id -u)/tmux-$(id -u)"
-      "--whitelist=${home}/.private/"
-      "--dbus-user=filter"
-      "--dbus-user.talk=org.freedesktop.Notifications"
-      "--dbus-user.talk=org.freedesktop.portal.Desktop"
-      "--dbus-system=none"
-      "--seccomp"
-    ];
-
     wallpaper = {
       command = "swaybg -i $NH_FLAKE/wallpaper -m fill & disown";
       dir = "$NH_FLAKE/assets/wallpapers";
@@ -357,31 +327,6 @@ in {
       set-video-wallper = ''mpvpaper  -vf "*" $NH_FLAKE/assets/video-wallpaper --mpv-options -o "--loop=yes" & disown'';
       nixos-anywhere-echo = "echo 'nixos-anywhere --flake $NH_FLAKE#nixos user@hostname -i ssh-key-path'";
       mpvsub = "mpv --sub-auto=fuzzy --audio-file-auto=fuzzy";
-      jail = ''
-        __jail() {
-          if [ "$#" -gt 0 ]; then
-            ${firejailCmd ["--private-cwd=${home}/work"]} bash -c "$*"
-          else
-            ${firejailCmd ["--private-cwd=${home}/work"]} bash -c 'exec bash -i'
-          fi
-        }; __jail'';
-
-      jail-cwd = ''
-        __jail_cwd() {
-          local WORKDIR=/persistent$(pwd)
-          local DIRNAME=$(basename "$(pwd)")
-          local TMPSYMLINK=${home}/.private/$DIRNAME
-          [ -L "$TMPSYMLINK" ] && rm "$TMPSYMLINK"
-          ln -s "$WORKDIR" "$TMPSYMLINK"
-          cd ~ || return
-          if [ "$#" -gt 0 ]; then
-            ${firejailCmd ["--whitelist=$WORKDIR"]} bash -c "cd ${home}/$DIRNAME; $*"
-          else
-            ${firejailCmd ["--whitelist=$WORKDIR"]} bash -c "cd ${home}/$DIRNAME; bash -i"
-          fi
-          cd - || return
-          rm "$TMPSYMLINK"
-        }; __jail_cwd'';
       wf-record = ''wf-recorder -a --audio-backend=pipewire --codec h264_vaapi --device /dev/dri/renderD128 -p preset=ultrafast -f "${videosDir}/rec_$(date +%d-%m-%Y-T%H-%M-%S).mkv"''; # preset=fast
       mount-personal = "mkdir -p ~/Archive/personal && gocryptfs ~/Archive/personal_enc ~/Archive/personal";
       umount-personal = umountPersonal;
@@ -424,9 +369,6 @@ in {
     };
     font-packages = mkOption {
       type = types.listOf types.package;
-    };
-    firejailBaseArgs = mkOption {
-      type = types.listOf types.str;
     };
     wallpaper = {
       command = mkOption {
