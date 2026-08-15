@@ -22,7 +22,7 @@ in {
     stylua
     gofumpt
     gotools # goimports
-    alejandra
+    nixfmt
     templ
     biome # or prettier
     prettierd
@@ -74,7 +74,7 @@ in {
         ];
         # TODO: json
         nix = [
-          "alejandra"
+          "nixfmt"
           "trim_whitespace"
           "trim_newlines"
         ];

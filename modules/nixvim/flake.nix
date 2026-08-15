@@ -49,7 +49,7 @@
         checks.default = nixvimLib.check.mkTestDerivationFromNixvimModule nixvimModule;
 
         # Optional: Add formatter
-        formatter = pkgs.alejandra;
+        formatter = pkgs.nixfmt;
       };
 
       flake = {
