@@ -126,8 +126,13 @@ let
           /*) CWDPATH="''${PWD#/}" ;;
           *) CWDPATH="$PWD" ;;
         esac
+        SANDBOX_BASE="$HOME/.cache/sandbox"
+        TARGET="$SANDBOX_BASE/$CWDPATH"
+        mkdir -p "$TARGET"
+        exec {CWD_LOCKFD}<"$TARGET"
+        ${pkgs.util-linux}/bin/flock -s "$CWD_LOCKFD"
         ${guiPreamble}
-        exec ${pkgs.bubblewrap}/bin/bwrap \
+        ${pkgs.bubblewrap}/bin/bwrap \
           ${argsStr} \
           ${bindsStr} \
           "''${GUI_ARGS[@]}" \
@@ -135,6 +140,15 @@ let
           --chdir "$HOME/$CWDPATH" \
           -- \
           "''${@:-bash}"
+        STATUS=$?
+        if ${pkgs.util-linux}/bin/flock -xn "$CWD_LOCKFD"; then
+          d="$TARGET"
+          while [ "$d" != "$SANDBOX_BASE" ]; do
+            rmdir "$d" 2>/dev/null || break
+            d="$(dirname "$d")"
+          done
+        fi
+        exit "$STATUS"
       ''
     else
       pkgs.writeShellScriptBin name ''
