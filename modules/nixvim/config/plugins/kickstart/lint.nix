@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{ pkgs, ... }: {
   extraPackages = with pkgs; [
     golangci-lint
     ruff # python
@@ -16,17 +16,17 @@
 
     # NOTE: Enabling these will cause errors unless these tools are installed
     lintersByFt = {
-      nix = ["nix"];
-      go = ["golangcilint"]; # "go_arch_lint"
-      html = ["htmlhint"];
+      nix = [ "nix" ];
+      go = [ "golangcilint" ]; # "go_arch_lint"
+      html = [ "htmlhint" ];
       #css = [ "stylelint" ];
-      javascript = ["eslint"];
-      javascriptreact = ["eslint"];
-      typescript = ["eslint"];
-      typescriptreact = ["eslint"];
-      svelte = ["eslint"];
-      python = ["ruff"];
-      java = ["checkstyle"];
+      javascript = [ "eslint" ];
+      javascriptreact = [ "eslint" ];
+      typescript = [ "eslint" ];
+      typescriptreact = [ "eslint" ];
+      svelte = [ "eslint" ];
+      python = [ "ruff" ];
+      java = [ "checkstyle" ];
       #markdown = [
       #"markdownlint"
       #"vale"

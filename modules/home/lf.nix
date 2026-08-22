@@ -3,11 +3,13 @@
   config,
   lib,
   ...
-}: let
+}:
+let
   gum-confirm = ''gum confirm --unselected.background="#${config.lib.stylix.colors.base02}" --selected.background="#${config.lib.stylix.colors.base0D}" --prompt.foreground="#${config.lib.stylix.colors.base05}" '';
   gum-input = ''gum input --prompt.foreground="#${config.lib.stylix.colors.base0D}" --cursor.foreground="#${config.lib.stylix.colors.base05}" '';
   gum-choose = ''gum choose --header.foreground="#${config.lib.stylix.colors.base03}" --cursor.foreground="#${config.lib.stylix.colors.base0D}" --item.foreground="#${config.lib.stylix.colors.base05}" --selected.foreground="#${config.lib.stylix.colors.base01}" --selected.background="#${config.lib.stylix.colors.base0D}" '';
-in {
+in
+{
   home.packages = with pkgs; [
     trashy
     gum

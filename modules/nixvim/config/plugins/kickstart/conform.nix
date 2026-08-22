@@ -1,4 +1,5 @@
-{pkgs, ...}: let
+{ pkgs, ... }:
+let
   # Nursery/unstable: sorts Tailwind-style classes but can't read a
   # project's tailwind.config.js, so this uses biome's hardcoded default
   # Tailwind preset only.
@@ -13,7 +14,8 @@
       }
     }
   '';
-in {
+in
+{
   # Dependencies
   #
   # https://nix-community.github.io/nixvim/NeovimOptions/index.html#extrapackages
@@ -116,9 +118,9 @@ in {
         svelte = {
           lsp_format = "first";
         };
-        html = ["prettierd"]; # biome
-        css = ["biome"];
-        json = ["biome"]; # jq
+        html = [ "prettierd" ]; # biome
+        css = [ "biome" ];
+        json = [ "biome" ]; # jq
         #sql = ["sqlfluff"];
         #terraform = [ "terraform_fmt"]; # opentofu?
         #toml = [ "taplo" ];

@@ -2,8 +2,9 @@
   pkgs,
   config,
   ...
-}: {
-  home.packages = with pkgs; [pavucontrol];
+}:
+{
+  home.packages = with pkgs; [ pavucontrol ];
 
   # https://github.com/greshake/i3status-rust/blob/master/doc/themes.md
   programs.i3status-rust = {

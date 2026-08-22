@@ -2,7 +2,8 @@
   device ? throw "Set this to your disk device, e.g. /dev/disk/by-id/...",
   pkgs,
   ...
-}: {
+}:
+{
   environment.systemPackages = with pkgs; [
     disko
     nixos-anywhere
@@ -55,7 +56,7 @@
         passwordFile = "/tmp/secret.key"; # `echo -n "password" > /tmp/secret.key` (on target machine)
         content = {
           type = "btrfs";
-          extraArgs = ["-f"];
+          extraArgs = [ "-f" ];
 
           subvolumes = {
             "/persistent" = {

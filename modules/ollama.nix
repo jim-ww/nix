@@ -2,7 +2,8 @@
   pkgs,
   lib,
   ...
-}: {
+}:
+{
   # impermanence directory mount fix
   systemd.services.ollama.serviceConfig = {
     DynamicUser = lib.mkForce false;

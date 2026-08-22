@@ -1,4 +1,4 @@
-{pkgs, config, ...}: {
+{ pkgs, config, ... }: {
   environment.variables.PODMAN_COMPOSE_PROVIDER = "docker-compose";
 
   # systemd.user.services.podman-api = {
@@ -20,7 +20,7 @@
   # };
 
   systemd.user.sockets.podman = {
-    wantedBy = ["sockets.target"];
+    wantedBy = [ "sockets.target" ];
     socketConfig = {
       ListenStream = "%t/podman/podman.sock";
       SocketMode = "0660";

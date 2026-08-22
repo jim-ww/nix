@@ -36,13 +36,13 @@
       };
     };
     /*
-    filesystem = {
-      window = {
-        mappings = {
-          "\\" = "close_window";
+      filesystem = {
+        window = {
+          mappings = {
+            "\\" = "close_window";
+          };
         };
       };
-    };
     */
   };
 

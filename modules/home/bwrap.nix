@@ -2,7 +2,8 @@
   pkgs,
   config,
   ...
-}: let
+}:
+let
   baseArgs = [
     "--ro-bind"
     "/usr"
@@ -106,23 +107,18 @@
     fi
   '';
 
-  mkBwrap = {
-    name,
-    net,
-    cwdBind,
-  }: let
-    args =
-      baseArgs
-      ++ (
-        if net
-        then ["--share-net"]
-        else []
-      );
-    argsStr = builtins.concatStringsSep " " (map (a: "\"${a}\"") args);
-    bindsStr = builtins.concatStringsSep " \\\n      " homeBinds;
-  in
-    if cwdBind
-    then
+  mkBwrap =
+    {
+      name,
+      net,
+      cwdBind,
+    }:
+    let
+      args = baseArgs ++ (if net then [ "--share-net" ] else [ ]);
+      argsStr = builtins.concatStringsSep " " (map (a: "\"${a}\"") args);
+      bindsStr = builtins.concatStringsSep " \\\n      " homeBinds;
+    in
+    if cwdBind then
       pkgs.writeShellScriptBin name ''
         mkdir -p "$HOME/.cache/sandbox"
         CWDNAME="$(basename "$PWD")"
@@ -170,7 +166,8 @@
     net = false;
     cwdBind = true;
   };
-in {
+in
+{
   home.packages = [
     bwrap
     bwrapCwd

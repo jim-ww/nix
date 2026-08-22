@@ -2,7 +2,8 @@
   pkgs,
   config,
   ...
-}: {
+}:
+{
   programs.gpg = {
     enable = true;
     homedir = "${config.xdg.dataHome}/gnupg";
@@ -17,5 +18,5 @@
     defaultCacheTtlSsh = 1800;
   };
 
-  home.packages = [pkgs.gcr]; # for gnome-pinentry
+  home.packages = [ pkgs.gcr ]; # for gnome-pinentry
 }

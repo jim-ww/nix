@@ -1,4 +1,4 @@
-{config, ...}: {
+{ config, ... }: {
   services.mpd = {
     enable = true;
     musicDirectory = config.musicDir;

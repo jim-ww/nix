@@ -1,19 +1,20 @@
-{pkgs, ...}: let
-  buildGoFromGitHub = {
-    pname ? repo,
-    owner,
-    repo,
-    rev,
-    vendorHash ? null,
-    githubHash ? null,
-    useFetchGit ? false,
-  } @ args:
+{ pkgs, ... }:
+let
+  buildGoFromGitHub =
+    {
+      pname ? repo,
+      owner,
+      repo,
+      rev,
+      vendorHash ? null,
+      githubHash ? null,
+      useFetchGit ? false,
+    }@args:
     pkgs.buildGoModule {
       inherit pname vendorHash;
       version = builtins.substring 0 8 rev;
       src =
-        if useFetchGit
-        then
+        if useFetchGit then
           builtins.fetchGit {
             url = "git@github.com:${owner}/${repo}.git";
             inherit rev;
@@ -25,149 +26,150 @@
           };
     };
 in
-  with pkgs; [
-    fd
-    jq
-    lf
-    nh
-    vim
-    eza
-    fzf
-    imv
-    mpv
-    git
-    age
-    _7zz
-    unrar #   unar
-    ncdu
-    sops
-    btop
-    tmux
-    ripgrep
-    ffmpeg
-    tealdeer
-    trashy
-    unison
-    testdisk # disk recovery
-    fastfetch-unwrapped
-    gocryptfs
-    openssl
-    nix-search-cli
-    file
-    lsof
-    tree
-    bluetuith
-    nixfmt
-    nom
-    ani-cli
-    transmission_4
-    imagemagick
-    steam-run-free
-    groff
-    (pkgs.writeShellScriptBin "ms2pdf" ''${lib.getExe' pkgs.groff "groff"} -mms -Kutf8 -Tps "$1" | ${pkgs.ghostscript}/bin/ps2pdf - "$2"'')
-    git-remote-gcrypt
+with pkgs;
+[
+  fd
+  jq
+  lf
+  nh
+  vim
+  eza
+  fzf
+  imv
+  mpv
+  git
+  age
+  _7zz
+  unrar # unar
+  ncdu
+  sops
+  btop
+  tmux
+  ripgrep
+  ffmpeg
+  tealdeer
+  trashy
+  unison
+  testdisk # disk recovery
+  fastfetch-unwrapped
+  gocryptfs
+  openssl
+  nix-search-cli
+  file
+  lsof
+  tree
+  bluetuith
+  nixfmt
+  nom
+  ani-cli
+  transmission_4
+  imagemagick
+  steam-run-free
+  groff
+  (pkgs.writeShellScriptBin "ms2pdf" ''${lib.getExe' pkgs.groff "groff"} -mms -Kutf8 -Tps "$1" | ${pkgs.ghostscript}/bin/ps2pdf - "$2"'')
+  git-remote-gcrypt
 
-    # music
-    rmpc
-    yt-dlp # or spotdl
+  # music
+  rmpc
+  yt-dlp # or spotdl
 
-    # gui
-    keepassxc
-    monero-gui
-    pcmanfm
-    element-desktop
-    dino
-    gnome-disk-utility
-    localsend
-    file-roller
-    anki-bin
-    lorien # infinite canvas
-    proton-vpn-cli
-    tor-browser
-    freetube
-    imhex
+  # gui
+  keepassxc
+  monero-gui
+  pcmanfm
+  element-desktop
+  dino
+  gnome-disk-utility
+  localsend
+  file-roller
+  anki-bin
+  lorien # infinite canvas
+  proton-vpn-cli
+  tor-browser
+  freetube
+  imhex
 
-    ## dev
-    go
-    air
-    gopls
-    golint
-    tinygo
-    garble
-    gnumake
-    gcc
-    python3Minimal
-    nodejs
-    pnpm
-    curlie
-    sqlc
-    tailwindcss_4
-    protobuf
-    protoc-gen-go
-    protoc-gen-go-grpc
-    grpcurl
-    grpcui
-    lazydocker
-    goose
-    go-mockery
-    ogen
-    sqlite
-    pgweb
-    pocketbase
-    hugo
-    opentofu
-    goreleaser
-    cobra-cli
-    cloudflared
-    git-filter-repo
-    gh
-    devbox
-    graphviz # go prof
-    ghz # grpc load test
-    hyprpicker
-    #kubectl
-    ayugram-desktop
-    csvq
+  ## dev
+  go
+  air
+  gopls
+  golint
+  tinygo
+  garble
+  gnumake
+  gcc
+  python3Minimal
+  nodejs
+  pnpm
+  curlie
+  sqlc
+  tailwindcss_4
+  protobuf
+  protoc-gen-go
+  protoc-gen-go-grpc
+  grpcurl
+  grpcui
+  lazydocker
+  goose
+  go-mockery
+  ogen
+  sqlite
+  pgweb
+  pocketbase
+  hugo
+  opentofu
+  goreleaser
+  cobra-cli
+  cloudflared
+  git-filter-repo
+  gh
+  devbox
+  graphviz # go prof
+  ghz # grpc load test
+  hyprpicker
+  #kubectl
+  ayugram-desktop
+  csvq
 
-    claude-code
-    devin-cli
-    cursor-cli
-    # codex
+  claude-code
+  devin-cli
+  cursor-cli
+  # codex
 
-    ungoogled-chromium
-    wails
-    godot # godot-mcp
-    android-tools
-    eid-mw
+  ungoogled-chromium
+  wails
+  godot # godot-mcp
+  android-tools
+  eid-mw
 
-    (buildGoFromGitHub {
-      owner = "mattn";
-      repo = "nostr-relay";
-      rev = "v0.0.250";
-      githubHash = "sha256-jQ3sOSj6X42QzwggZITjbhSDbkxZQp38gP+kl9ZkQzs=";
-      vendorHash = "sha256-1mg8QKcx/AwOZIA411h7SFy/hRLg+msCn/Sd5fnFmA4=";
-    })
-    # (buildGoFromGitHub {
-    #   owner = "axadrn";
-    #   repo = "shadcn-templ";
-    #   rev = "9ec720c03909236c1d2350c11eddb466e2299031";
-    #   # githubHash = "";
-    #   vendorHash = "";
-    #   useFetchGit = true;
-    # })
+  (buildGoFromGitHub {
+    owner = "mattn";
+    repo = "nostr-relay";
+    rev = "v0.0.250";
+    githubHash = "sha256-jQ3sOSj6X42QzwggZITjbhSDbkxZQp38gP+kl9ZkQzs=";
+    vendorHash = "sha256-1mg8QKcx/AwOZIA411h7SFy/hRLg+msCn/Sd5fnFmA4=";
+  })
+  # (buildGoFromGitHub {
+  #   owner = "axadrn";
+  #   repo = "shadcn-templ";
+  #   rev = "9ec720c03909236c1d2350c11eddb466e2299031";
+  #   # githubHash = "";
+  #   vendorHash = "";
+  #   useFetchGit = true;
+  # })
 
-    postgresql
-    (go-migrate.overrideAttrs (old: {
-      tags = [
-        "pgx5"
-        "postgres"
-      ];
-    }))
+  postgresql
+  (go-migrate.overrideAttrs (old: {
+    tags = [
+      "pgx5"
+      "postgres"
+    ];
+  }))
 
-    croc
-    wormhole-william
-    jrnl # python
+  croc
+  wormhole-william
+  jrnl # python
 
-    ueberzugpp
-    nethogs # per-process bandwidth
-  ]
+  ueberzugpp
+  nethogs # per-process bandwidth
+]

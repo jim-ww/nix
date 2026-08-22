@@ -1,4 +1,4 @@
-{config, ...}: {
+{ config, ... }: {
   sops.defaultSopsFile = ../secrets.yaml;
   sops.defaultSopsFormat = "yaml";
   sops.age.keyFile = "/persistent/etc/sops/age/keys.txt";
@@ -13,13 +13,13 @@
     transmission-rpc-pass.owner = config.user;
     ngrok-token.owner = config.user;
     ngrok-url.owner = config.user;
-    gh-token = {};
-    cloudflare-token = {};
-    cloudflare-account-id = {};
-    auth-payments-micro-priv-key = {};
-    hcloud-token = {};
+    gh-token = { };
+    cloudflare-token = { };
+    cloudflare-account-id = { };
+    auth-payments-micro-priv-key = { };
+    hcloud-token = { };
     oa-server.owner = config.user;
-    oa-db-url = {};
+    oa-db-url = { };
     kage-key.owner = config.user;
     kage-acc1-passw.owner = config.user;
     kage-acc2-passw.owner = config.user;

@@ -2,7 +2,8 @@
   pkgs,
   config,
   ...
-}: {
+}:
+{
   programs.bash.blesh.enable = true;
 
   powerManagement.powertop.enable = true;
@@ -11,10 +12,10 @@
   #services.pcscd.enable = true; # card reader
 
   # aarch64 emulation for cross-compiling
-  boot.binfmt.emulatedSystems = ["aarch64-linux"];
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   security.polkit.enable = true;
-  security.pam.services.swaylock = {};
+  security.pam.services.swaylock = { };
   security.sudo.extraConfig = ''
     Defaults lecture = never
   '';
@@ -33,7 +34,7 @@
   services.openssh.enable = true;
   services.dbus = {
     enable = true;
-    packages = [pkgs.dconf];
+    packages = [ pkgs.dconf ];
   };
   services.upower.enable = true;
   services.gvfs.enable = true;
@@ -41,7 +42,7 @@
 
   environment.systemPackages = config.packages;
   environment.variables = config.env;
-  environment.sessionVariables.PATH = ["${config.env.GOPATH}/bin"];
+  environment.sessionVariables.PATH = [ "${config.env.GOPATH}/bin" ];
   fonts.packages = config.font-packages;
 
   nixpkgs.config.allowUnfree = true;

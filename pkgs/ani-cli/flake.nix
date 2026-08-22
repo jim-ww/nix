@@ -10,12 +10,13 @@
     };
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    flake-utils,
-    ani-cli-src,
-  }:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+      ani-cli-src,
+    }:
     {
       overlays.default = final: prev: {
         ani-cli = final.stdenvNoCC.mkDerivation (finalAttrs: {
@@ -23,7 +24,7 @@
           version = "unstable";
           src = ani-cli-src;
 
-          nativeBuildInputs = with final; [makeWrapper];
+          nativeBuildInputs = with final; [ makeWrapper ];
           runtimeInputs = with final; [
             openssl
             gnugrep
@@ -54,9 +55,11 @@
       };
     }
     // (flake-utils.lib.eachDefaultSystem (
-      system: let
+      system:
+      let
         pkgs = nixpkgs.legacyPackages.${system};
-      in {
+      in
+      {
         packages.default = pkgs.ani-cli;
       }
     ));
