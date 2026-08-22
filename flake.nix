@@ -88,7 +88,6 @@
         ./modules/firewall.nix
         ./modules/graphics.nix
         ./modules/pipewire.nix
-        ./modules/autologin.nix
         ./modules/stylix.nix
         ./modules/japanese.nix
         ./modules/user.nix

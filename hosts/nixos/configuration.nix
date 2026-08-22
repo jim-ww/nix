@@ -10,12 +10,6 @@
 
   powerManagement.powertop.enable = true;
 
-  programs.wshowkeys.enable = true;
-  #services.pcscd.enable = true; # card reader
-
-  # aarch64 emulation for cross-compiling
-  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
-
   security.polkit.enable = true;
   security.pam.services.swaylock = { };
   security.sudo.extraConfig = ''
@@ -24,6 +18,11 @@
 
   zramSwap.enable = true;
 
+  services.getty = {
+    autologinUser = config.user;
+    autologinOnce = true;
+  };
+
   services.logind.settings.Login = {
     HandlePowerKey = "suspend-then-hibernate";
     HandlePowerKeyLongPress = "poweroff";
@@ -31,8 +30,6 @@
 
   programs.dconf.enable = true;
 
-  # TODO
-  # services.vnstat.enable = true; # network usage
   services.openssh.enable = true;
   services.dbus = {
     enable = true;
@@ -49,8 +46,10 @@
 
   nixpkgs.config.allowUnfree = true;
 
+  nix.optimise.automatic = true;
+  nix.optimise.dates = [ "weekly" ];
+
   nix.settings = {
-    auto-optimise-store = true;
     warn-dirty = false;
     experimental-features = [
       "nix-command"
@@ -75,19 +74,12 @@
   boot.loader.grub.efiSupport = true;
   boot.loader.grub.efiInstallAsRemovable = true;
   boot.loader.timeout = 2;
-  #boot.supportedFilesystems = ["ntfs"];
 
   networking.networkmanager.enable = true;
   systemd.services.NetworkManager-wait-online.enable = false;
 
   time.timeZone = "Europe/Brussels";
   i18n.defaultLocale = "en_US.UTF-8";
-  i18n.extraLocales = [
-    "ru_RU.UTF-8/UTF-8"
-    "ja_JP.UTF-8/UTF-8"
-  ];
-
-  #system.copySystemConfiguration = true;
 
   system.stateVersion = "24.05";
 }
