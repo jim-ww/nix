@@ -4,6 +4,8 @@
   ...
 }:
 {
+  programs.sway.enable = true;
+
   programs.bash.blesh.enable = true;
 
   powerManagement.powertop.enable = true;

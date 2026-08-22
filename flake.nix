@@ -56,10 +56,6 @@
       url = "github:jim-ww/gowebwrap";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    ollama-local-websearch = {
-      url = "git+ssh://git@github.com/jim-ww/ollama-local-websearch.git";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     anitui = {
       url = "github:jim-ww/anitui";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -88,7 +84,6 @@
       commonModules = [
         ./prefs.nix
         ./modules/bluetooth.nix
-        ./modules/docker.nix
         ./modules/earlyoom.nix
         ./modules/firewall.nix
         ./modules/graphics.nix
@@ -106,6 +101,7 @@
         ./modules/xdg.nix
         ./modules/ollama.nix
         ./modules/podman.nix
+        # ./modules/docker.nix
         nur.modules.nixos.default
         stylix.nixosModules.stylix
         sops-nix.nixosModules.sops
@@ -177,7 +173,6 @@
           nixpkgs.overlays = [
             nur.overlays.default
             inputs.ani-cli.overlays.default
-            inputs.ollama-local-websearch.overlays.default
           ];
         }
       ];
