@@ -121,14 +121,18 @@ let
     if cwdBind then
       pkgs.writeShellScriptBin name ''
         mkdir -p "$HOME/.cache/sandbox"
-        CWDNAME="$(basename "$PWD")"
+        case "$PWD" in
+          "$HOME"/*) CWDPATH="''${PWD#$HOME/}" ;;
+          /*) CWDPATH="''${PWD#/}" ;;
+          *) CWDPATH="$PWD" ;;
+        esac
         ${guiPreamble}
         exec ${pkgs.bubblewrap}/bin/bwrap \
           ${argsStr} \
           ${bindsStr} \
           "''${GUI_ARGS[@]}" \
-          --bind "$PWD" "$HOME/$CWDNAME" \
-          --chdir "$HOME/$CWDNAME" \
+          --bind "$PWD" "$HOME/$CWDPATH" \
+          --chdir "$HOME/$CWDPATH" \
           -- \
           "''${@:-bash}"
       ''
