@@ -5,6 +5,7 @@
 }:
 {
   programs.sway.enable = true;
+  services.speechd.enable = false; # graphical-desktop default pulls espeak-ng/mbrola-voices
 
   environment.loginShellInit = ''
     [[ "$(tty)" == /dev/tty1 ]] && sway
