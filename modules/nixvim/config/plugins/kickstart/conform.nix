@@ -29,7 +29,7 @@ in
     biome # or prettier
     prettierd
     #prettier-plugin-go-template
-    google-java-format
+    # google-java-format
   ];
 
   # Autoformat
@@ -85,11 +85,11 @@ in
           "trim_whitespace"
           "trim_newlines"
         ];
-        java = [
-          "google-java-format"
-          "trim_whitespace"
-          "trim_newlines"
-        ];
+        # java = [
+        #   "google-java-format"
+        #   "trim_whitespace"
+        #   "trim_newlines"
+        # ];
         python = [
           "ruff_format"
           "trim_whitespace"

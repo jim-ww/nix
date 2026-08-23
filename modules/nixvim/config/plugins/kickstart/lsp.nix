@@ -19,7 +19,7 @@
   # /nix/store, not the FHS paths jdtls auto-detects) and Gradle needs to be
   # told to run its daemon on that same JDK, or it tries (and fails) to
   # download a toolchain matching the project's declared Java version.
-  extraPackages = [ pkgs.jdk17 ];
+  # extraPackages = [ pkgs.jdk17 ];
 
   # A plugin that properly configures LuaLS for editing your Neovim config
   #  by lazily updating your workspace libraries.
@@ -103,21 +103,21 @@
       nil_ls.enable = true;
 
       # Java lsp
-      jdtls = {
-        enable = true;
-        settings = {
-          java.configuration.runtimes = [
-            {
-              name = "JavaSE-17";
-              path = "${pkgs.jdk17.home}";
-              default = true;
-            }
-          ];
-          # Run the Gradle daemon on the same JDK, so its declared
-          # languageVersion=17 toolchain is satisfied without a download.
-          java.import.gradle.java.home = "${pkgs.jdk17.home}";
-        };
-      };
+      # jdtls = {
+      #   enable = true;
+      #   settings = {
+      #     java.configuration.runtimes = [
+      #       {
+      #         name = "JavaSE-17";
+      #         path = "${pkgs.jdk17.home}";
+      #         default = true;
+      #       }
+      #     ];
+      #     # Run the Gradle daemon on the same JDK, so its declared
+      #     # languageVersion=17 toolchain is satisfied without a download.
+      #     java.import.gradle.java.home = "${pkgs.jdk17.home}";
+      #   };
+      # };
 
       # Lua lsp
       lua_ls = {
