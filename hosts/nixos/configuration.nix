@@ -45,6 +45,7 @@
   fonts.packages = config.font-packages;
 
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.librewolf.speechSynthesisSupport = false;
 
   nix.optimise.automatic = true;
   nix.optimise.dates = [ "weekly" ];
