@@ -1,5 +1,15 @@
 { pkgs, ... }:
 {
+  nixpkgs.overlays = [
+    (final: prev: {
+      qt6Packages = prev.qt6Packages // {
+        fcitx5-with-addons = prev.qt6Packages.fcitx5-with-addons.override {
+          withConfigtool = false;
+        };
+      };
+    })
+  ];
+
   i18n.inputMethod = {
     enable = true;
     type = "fcitx5";

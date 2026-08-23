@@ -3,6 +3,9 @@
 
   programs.librewolf = {
     enable = true;
+    package = pkgs.wrapFirefox pkgs.librewolf-unwrapped {
+      cfg.speechSynthesisSupport = false;
+    };
     settings = import ./settings.nix;
     profiles.default = {
       search = import ./search.nix;
