@@ -37,7 +37,7 @@
   xdg.desktopEntries.nvim = {
     name = "Neovim";
     genericName = "Text Editor";
-    exec = "${config.term} nvim %F";
+    exec = "xdg-terminal-exec -- nvim %F";
     terminal = false;
     type = "Application";
     mimeType = [

@@ -45,21 +45,20 @@ in
     configHome = configHome;
     backupDir = "${home}/Archive/backups";
     musicDir = "/home/${config.user}/Music";
-    term = "foot";
     editor = "nvim";
     file-manager = "nautilus -w";
-    file-manager-term = "${config.term} ${lib.getExe pkgs.lf}";
+    file-manager-term = "xdg-terminal-exec -- ${lib.getExe pkgs.lf}";
     browser = "librewolf";
     duckduckgo = "https://duckduckgo.com/?kp=-2&kl=wt-wt&ka=Terminus&kt=Terminus&kj=1a1b26&kn=1&kx=a9b1d6&k1=-1&k5=2&k7=16161e&k8=a9b1d6&k9=7aa2f7&k18=1&kaa=bb9af7&kaf=s&kaj=m&kak=-1&kae=d&kao=-1&kap=-1&kaq=-1&kau=-1&kav=1&kax=-1&kay=b&kbf=1&duckai=1";
     bookmarks-menu = "${lib.getExe pkgs.yq-go} -r '.[]' /run/secrets/bookmarks | ${lib.getExe pkgs.rofi} -dmenu -p 'search bookmarks...' | wl-copy ";
-    music-player = "${config.term} rmpc --clean";
+    music-player = "xdg-terminal-exec -- rmpc --clean";
     passwords = "keepassxc ${documents}/.vault.kdbx";
     clipboard-manager = "cliphist list | rofi -dmenu | cliphist decode | wl-copy";
     notesDir = documents;
-    notes = "${config.term} -D ${config.notesDir} nvim notes.md";
-    notes-all = "${config.term} -D ${config.notesDir} nvim .";
+    notes = "xdg-terminal-exec --dir ${config.notesDir} -- nvim notes.md";
+    notes-all = "xdg-terminal-exec --dir ${config.notesDir} -- nvim .";
     app-menu = "${lib.getExe pkgs.rofi} -show drun";
-    resource-monitor = "${config.term} btop";
+    resource-monitor = "xdg-terminal-exec -- btop";
     screenshot = ''${pkgs.busybox}/bin/sh -c 'geometry="$(${lib.getExe pkgs.slurp})" || exit 1; ${lib.getExe pkgs.grim} -g "$geometry" - | ${pkgs.busybox}/bin/tee ${home}/Pictures/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png | ${pkgs.wl-clipboard}/bin/wl-copy' '';
     screenshot-full = "${pkgs.busybox}/bin/sh -c '${lib.getExe pkgs.grim} - | ${pkgs.busybox}/bin/tee ${home}/Pictures/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png | ${pkgs.wl-clipboard}/bin/wl-copy' ";
     gtk.bookmarks = gtkBookmarks;
@@ -67,7 +66,7 @@ in
     env = {
       NH_FLAKE = config.flakeDir;
       REFINED_CHAR_SYMBOL = "ジ";
-      TERM = config.term;
+      TERM = "foot"; # terminfo name of the actual terminal; must stay literal, not the xdg-terminal-exec launcher
       EDITOR = "nvim";
       VISUAL = "nvim";
       LESS = "-R"; # syntax highlighting
@@ -386,9 +385,6 @@ in
       type = types.str;
     };
     musicDir = mkOption {
-      type = types.str;
-    };
-    term = mkOption {
       type = types.str;
     };
     editor = mkOption {

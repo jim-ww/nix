@@ -60,7 +60,7 @@
       '';
       config = {
         modifier = mod;
-        terminal = config.term;
+        terminal = "xdg-terminal-exec";
         window.titlebar = false;
         startup = [
           { command = lib.getExe pkgs.autotiling-rs; }
@@ -198,9 +198,9 @@
           "${mod}+Shift+Up" = "move up";
           "${mod}+Shift+Down" = "move down";
           # programs
-          "${mod}+q" = "exec ${config.term}";
+          "${mod}+q" = "exec xdg-terminal-exec";
           "${mod}+Shift+q" = "exec nix-shell -p st --run st bash";
-          "${mod}+t" = "exec ${config.term} --title=term-float";
+          "${mod}+t" = "exec xdg-terminal-exec --title=term-float";
           "${mod}+e" = "exec ${config.file-manager-term}";
           "${mod}+Shift+e" = "exec ${config.file-manager}";
           "${mod}+f" = "exec ${config.browser}";
@@ -213,8 +213,8 @@
           "${mod}+j" = "exec rofi -show emoji";
           "${mod}+x" = "exec ${config.notes}";
           "${mod}+Shift+x" = "exec ${config.notes-all}";
-          "${mod}+d" = "exec ${config.term} ${config.editor}";
-          "${mod}+z" = "exec ${config.term} kage";
+          "${mod}+d" = "exec xdg-terminal-exec -- ${config.editor}";
+          "${mod}+z" = "exec xdg-terminal-exec -- kage";
 
           "${mod}+p" = "exec ${lib.getExe pkgs.rofi-pulse-select} sink";
           "${mod}+r" = "exec ${config.app-menu}";
