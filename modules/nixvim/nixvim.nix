@@ -177,6 +177,8 @@ in
   };
 
   #  See `:help 'clipboard'`
+  withPython3 = false; # all plugins here are Lua-based, no python remote-plugin support needed
+
   clipboard = {
     providers = {
       wl-copy.enable = true; # For Wayland

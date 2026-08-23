@@ -342,7 +342,6 @@ in
 
         # unclutter home dir
         wget = ''${lib.getExe pkgs.wget} --hsts-file="${dataHome}/wget-hsts"'';
-        adb = ''HOME="${dataHome}"/android ${pkgs.android-tools}/bin/adb'';
       };
   };
   options = {
