@@ -77,8 +77,6 @@ with pkgs;
   keepassxc
   monero-gui
   pcmanfm
-  element-desktop
-  dino
   gnome-disk-utility
   localsend
   file-roller
@@ -88,6 +86,7 @@ with pkgs;
   tor-browser
   freetube
   imhex
+  umu-launcher
 
   ## dev
   go
@@ -157,19 +156,5 @@ with pkgs;
   #   vendorHash = "";
   #   useFetchGit = true;
   # })
-
-  postgresql
-  (go-migrate.overrideAttrs (old: {
-    tags = [
-      "pgx5"
-      "postgres"
-    ];
-  }))
-
-  croc
   wormhole-william
-  jrnl # python
-
-  ueberzugpp
-  nethogs # per-process bandwidth
 ]
