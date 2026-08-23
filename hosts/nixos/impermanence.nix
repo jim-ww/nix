@@ -17,10 +17,6 @@
           mode = "0700";
         }
         {
-          directory = "/var/lib/docker";
-          mode = "0710";
-        }
-        {
           directory = "/var/lib/ollama";
           mode = "0700";
           group = "ollama";
@@ -103,11 +99,6 @@
           }
 
           {
-            directory = ".config/docker";
-            mode = "0700";
-          }
-
-          {
             directory = ".config/monero-project";
             mode = "0700";
           }
@@ -141,9 +132,7 @@
           ".shared-ringdb"
           ".config/kage"
           ".config/FreeTube"
-          ".config/obs-studio"
           ".config/Proton"
-          ".config/gowebwrap"
           ".local/share/go"
           ".local/share/Anki2"
           ".local/share/direnv"
@@ -155,8 +144,6 @@
           ".local/share/tealdeer"
           ".local/share/charshare"
           ".local/share/itpec-sensei"
-          ".local/share/gowebwrap"
-          ".config/nom"
           ".config/distrobox"
           ".claude"
           ".cache" # to avoid large blobs taking all RAM
