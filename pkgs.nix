@@ -35,7 +35,7 @@ with pkgs;
   gh
   bluetuith
   transmission_4
-  wormhole-william
+  wormhole-william # or croc
   nix-search-cli
 
   age
@@ -58,7 +58,7 @@ with pkgs;
   umu-launcher
   drawing
   file-roller
-  pcmanfm
+  nautilus
 
   # dev
   go
