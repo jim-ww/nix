@@ -5,6 +5,10 @@
 }:
 {
   programs.sway.enable = true;
+
+  environment.loginShellInit = ''
+    [[ "$(tty)" == /dev/tty1 ]] && sway
+  '';
   programs.bash.blesh.enable = true;
   programs.dconf.enable = true;
   programs.gamemode.enable = true;
