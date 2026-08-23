@@ -23,12 +23,6 @@
     kage-key.owner = config.user;
     kage-acc1-passw.owner = config.user;
     kage-acc2-passw.owner = config.user;
-
-    nom-cfg = {
-      owner = config.user;
-      path = "${config.configHome}/nom/config.yml";
-    };
-
     bookmarks.owner = config.user;
   };
 }
