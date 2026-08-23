@@ -34,6 +34,18 @@
     ];
   };
 
+  xdg.desktopEntries.nvim = {
+    name = "Neovim";
+    genericName = "Text Editor";
+    exec = "${config.term} nvim %F";
+    terminal = false;
+    type = "Application";
+    mimeType = [
+      "text/plain"
+      "text/markdown"
+    ];
+  };
+
   xdg.mimeApps = {
     enable = true;
     defaultApplications =
@@ -96,6 +108,7 @@
         "text/x-python" = code-editor;
         "text/x-java" = code-editor;
         "text/javascript" = code-editor;
+        "text/x-lua" = code-editor;
         "text/vnd.trolltech.linguist" = code-editor;
 
         "application/json" = editor;
