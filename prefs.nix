@@ -21,7 +21,6 @@ let
 
   videosDir = "${home}/Videos";
   dataHome = "${home}/.local/share";
-  stateHome = "${home}/.local/state";
   configHome = "${home}/.config";
 
   umountPersonal = "umount ~/Archive/personal";
@@ -37,8 +36,6 @@ in
     font-packages = with pkgs; [
       nerd-fonts.symbols-only # icons for terminal
       noto-fonts-cjk-sans # clean/readable japanese font
-      # zpix-pixel-font # pixel japanese font
-      # hachimarupop # cute japanese font
     ];
     wallpaper = {
       command = "swaybg -i $NH_FLAKE/wallpaper -m fill & disown";
@@ -52,7 +49,7 @@ in
     editor = "nvim";
     file-manager = "pcmanfm";
     file-manager-term = "${config.term} ${lib.getExe pkgs.lf}";
-    browser = "librewolf"; # "helium"; #"librewolf"; # "brave"; # "zen"; # "schizofox";
+    browser = "librewolf";
     duckduckgo = "https://duckduckgo.com/?kp=-2&kl=wt-wt&ka=Terminus&kt=Terminus&kj=1a1b26&kn=1&kx=a9b1d6&k1=-1&k5=2&k7=16161e&k8=a9b1d6&k9=7aa2f7&k18=1&kaa=bb9af7&kaf=s&kaj=m&kak=-1&kae=d&kao=-1&kap=-1&kaq=-1&kau=-1&kav=1&kax=-1&kay=b&kbf=1&duckai=1";
     bookmarks-menu = "${lib.getExe pkgs.yq-go} -r '.[]' /run/secrets/bookmarks | ${lib.getExe pkgs.rofi} -dmenu -p 'search bookmarks...' | wl-copy ";
     music-player = "${config.term} rmpc --clean";
@@ -274,28 +271,24 @@ in
     };
     shellAliases =
       let
-        ls = "${lib.getExe pkgs.eza}";
-        fzf = "${lib.getExe pkgs.fzf}";
-        term-editor = "$EDITOR";
+        ls = lib.getExe pkgs.eza;
+        fzf = lib.getExe pkgs.fzf;
       in
       {
         v = "$EDITOR";
         c = "clear";
-        mv = "mv -v";
-        cp = "cp -v";
         rm = "rm -v";
         cc = "cd ${config.flakeDir} && l";
-        ccc = "cd ${config.flakeDir} && ${term-editor} $(${fzf})";
+        ccc = "cd ${config.flakeDir} && $EDITOR $(${fzf})";
         l = ls;
         ls = ls;
         ll = "${ls} -l";
         la = "${ls} -a";
-        lla = "${ls} -al";
         ff = "fastfetch -s title:separator:os:wm:lm:terminal:shell:packages:uptime:datetime:battery:disk:memory:theme:wmtheme:colors";
-        conf = "cd ${config.flakeDir}/hosts/nixos && ${term-editor} configuration.nix";
-        prefs = "cd ${config.flakeDir} && ${term-editor} prefs.nix";
-        flake = "cd ${config.flakeDir} && ${term-editor} flake.nix";
-        pkgs = "cd ${config.flakeDir} && ${term-editor} pkgs.nix";
+        conf = "cd ${config.flakeDir}/hosts/nixos && $EDITOR configuration.nix";
+        prefs = "cd ${config.flakeDir} && $EDITOR prefs.nix";
+        flake = "cd ${config.flakeDir} && $EDITOR flake.nix";
+        pkgs = "cd ${config.flakeDir} && $EDITOR pkgs.nix";
         ns = "nix-search";
         nsp = "nix-shell --run ${config.shell} -p";
         nix-store-fix = "sudo nix-store --repair --verify --check-contents";
@@ -306,7 +299,6 @@ in
         gaa = "git add --all";
         gl = "git log";
         gr = "git remote";
-        grl = "git reflog";
         gf = "git fetch";
         gi = "git init";
         gb = "git branch";
@@ -315,7 +307,6 @@ in
         gcm = "git commit -m";
         gsm = "git stash -m";
         gwt = "git worktree";
-        gcp = ''git commit -m "update" && git push'';
         gcl = "git clone";
         gco = "git checkout";
         gps = "git push";
@@ -328,9 +319,6 @@ in
         transcribe-translate-jp = "whisperx --device cpu --model base --compute_type int8 --language ja --output_format srt --output_dir . --no_align --task translate";
         busybox = lib.getExe pkgs.busybox;
         set-wallpaper = config.wallpaper.command;
-        set-video-wallper = ''mpvpaper  -vf "*" $NH_FLAKE/assets/video-wallpaper --mpv-options -o "--loop=yes" & disown'';
-        nixos-anywhere-echo = "echo 'nixos-anywhere --flake $NH_FLAKE#nixos user@hostname -i ssh-key-path'";
-        mpvsub = "mpv --sub-auto=fuzzy --audio-file-auto=fuzzy";
         wf-record = ''wf-recorder -a --audio-backend=pipewire --codec h264_vaapi --device /dev/dri/renderD128 -p preset=ultrafast -f "${videosDir}/rec_$(date +%d-%m-%Y-T%H-%M-%S).mkv"''; # preset=fast
         mount-personal = "mkdir -p ~/Archive/personal && gocryptfs ~/Archive/personal_enc ~/Archive/personal";
         umount-personal = umountPersonal;
@@ -338,7 +326,7 @@ in
         trcli-rmt = ''transmission-remote $(cat /run/secrets/transmission-rpc-addr) -n "$(cat /run/secrets/transmission-rpc-user):$(cat /run/secrets/transmission-rpc-pass)"'';
         wg-update-ip = ''sed -i "s/ip = \"[^\"]*\"/ip = \"$(wl-paste)\"/" $NH_FLAKE/modules/wireguard.nix'';
         wg-clear-ip = ''sed -i "s/ip = \"[^\"]*\"/ip = \"\"/" $NH_FLAKE/modules/wireguard.nix'';
-        http-fs-serve = ''goeval 'log.Fatal(http.ListenAndServe(":8000", http.FileServer(http.Dir("."))))' '';
+        hs = ''goeval 'log.Fatal(http.ListenAndServe(":8000", http.FileServer(http.Dir("."))))' '';
         yt-dlp = "yt-dlp --write-subs";
         itpec-sensei-mcp = "tmux new-session -s itpec-sensei-mcp 'NGROK_AUTHTOKEN=$(cat /run/secrets/ngrok-token) NGROK_RESERVED_URL=$(cat /run/secrets/ngrok-url) itpec-sensei serve --ngrok --remote'";
         bc = "busybox bc -q";
@@ -349,6 +337,7 @@ in
                         new-window -n term \; \
                         select-window -t claude'';
         gomod2nix-init = "nix flake init -t github:nix-community/gomod2nix#app";
+        xmr = "monero-wallet-cli --wallet-file $(cat /run/secrets/xmr-wallet) --daemon-address $(cat /run/secrets/xmr-daemon)";
 
         # unclutter home dir
         wget = ''${lib.getExe pkgs.wget} --hsts-file="${dataHome}/wget-hsts"'';

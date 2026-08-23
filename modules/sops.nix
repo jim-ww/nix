@@ -24,5 +24,7 @@
     kage-acc1-passw.owner = config.user;
     kage-acc2-passw.owner = config.user;
     bookmarks.owner = config.user;
+    xmr-daemon.owner = config.user;
+    xmr-wallet.owner = config.user;
   };
 }
