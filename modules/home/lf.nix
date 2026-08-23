@@ -68,6 +68,18 @@ in
       copy-file = ''$wl-copy -t text/uri-list "file://$(realpath $f)"'';
       on-init = "";
 
+      open = ''
+        ''${{
+          case "$(file -Lb --mime-type -- "$f")" in
+            text/* | application/json | application/x-subrip | inode/x-empty)
+              $EDITOR "$f"
+              ;;
+            *)
+              xdg-open "$f" > /dev/null 2>&1 &
+              ;;
+          esac
+        }}'';
+
       compress = ''
         ''${{
           [ -z "$fx" ] && exit 0
