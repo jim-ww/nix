@@ -12,7 +12,6 @@
     ./rofi.nix
     ./swayidle.nix
     ./cliphist.nix
-    ./servers-healthcheck.nix
   ];
 
   home.packages = with pkgs; [
