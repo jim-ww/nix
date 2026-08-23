@@ -7,7 +7,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     stylix = {
-      url = "github:danth/stylix"; # TODO: moved to nix-community
+      url = "github:nix-community/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     disko = {
@@ -137,7 +137,6 @@
               dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
               programs.btop.enable = true;
 
-              # TODO why stylix doesnt set that?
               gtk.gtk3.extraConfig = {
                 gtk-application-prefer-dark-theme = 1;
               };
