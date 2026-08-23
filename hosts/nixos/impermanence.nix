@@ -84,11 +84,6 @@
           }
 
           {
-            directory = ".local/share/keyrings";
-            mode = "0700";
-          }
-
-          {
             directory = ".config/gh";
             mode = "0700";
           }

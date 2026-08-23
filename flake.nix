@@ -83,7 +83,6 @@
         ./modules/tlp.nix
         ./modules/nix-ld.nix
         ./modules/wireguard.nix
-        ./modules/keyring.nix
         ./modules/xdg.nix
         ./modules/ollama.nix
         ./modules/podman.nix
