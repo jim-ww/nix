@@ -72,7 +72,6 @@
       commonModules = [
         ./prefs.nix
         ./modules/bluetooth.nix
-        ./modules/earlyoom.nix
         ./modules/firewall.nix
         ./modules/graphics.nix
         ./modules/pipewire.nix

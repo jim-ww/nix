@@ -34,6 +34,7 @@
     enable = true;
     packages = [ pkgs.dconf ];
   };
+  services.earlyoom.enable = true;
   services.upower.enable = true;
   services.gvfs.enable = true;
   services.fstrim.enable = true;
