@@ -4,7 +4,13 @@
   stylix.polarity = "dark";
   stylix.cursor = {
     name = "Bibata-Modern-Classic";
-    package = pkgs.bibata-cursors;
+    package = pkgs.bibata-cursors.overrideAttrs (_: {
+      buildPhase = ''
+        runHook preBuild
+        ctgen configs/normal/x.build.toml -p x11 -d $bitmaps/Bibata-Modern-Classic -n 'Bibata-Modern-Classic' -c 'Black and rounded edge Bibata XCursors'
+        runHook postBuild
+      '';
+    });
     size = 20;
   };
   stylix.opacity =
