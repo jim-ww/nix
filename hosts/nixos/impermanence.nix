@@ -94,16 +94,6 @@
           }
 
           {
-            directory = ".config/monero-project";
-            mode = "0700";
-          }
-
-          {
-            directory = ".local/share/bitmonero";
-            mode = "0700";
-          }
-
-          {
             directory = ".local/share/unison";
             mode = "0700";
           }
@@ -121,7 +111,6 @@
           "Pictures"
           "Projects"
           "Videos"
-          ".bitmonero"
           ".npm" # doesn't fit in RAM
           ".barony"
           ".shared-ringdb"

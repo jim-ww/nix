@@ -278,6 +278,8 @@ in
         v = "$EDITOR";
         c = "clear";
         rm = "rm -v";
+        cp = "cp -v";
+        mv = "mv -v";
         cc = "cd ${config.flakeDir} && l";
         ccc = "cd ${config.flakeDir} && $EDITOR $(${fzf})";
         l = ls;
@@ -337,12 +339,11 @@ in
                         new-window -n term \; \
                         select-window -t claude'';
         gomod2nix-init = "nix flake init -t github:nix-community/gomod2nix#app";
-        xmr = "monero-wallet-cli --wallet-file $(cat /run/secrets/xmr-wallet) --daemon-address $(cat /run/secrets/xmr-daemon)";
+        xmr = "monero-wallet-cli --wallet-file $(cat /run/secrets/xmr-wallet) --daemon-address $(cat /run/secrets/xmr-daemon) --log-file ${home}/.cache/monero-wallet-cli.log";
 
         # unclutter home dir
         wget = ''${lib.getExe pkgs.wget} --hsts-file="${dataHome}/wget-hsts"'';
         adb = ''HOME="${dataHome}"/android ${pkgs.android-tools}/bin/adb'';
-        monerod = ''monerod --data-dir "${dataHome}"/bitmonero'';
       };
   };
   options = {
