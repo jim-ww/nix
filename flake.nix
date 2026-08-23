@@ -82,6 +82,7 @@
         ./modules/tlp.nix
         ./modules/nix-ld.nix
         ./modules/wireguard.nix
+        ./modules/vpn.nix
         ./modules/xdg.nix
         ./modules/ollama.nix
         ./modules/podman.nix
@@ -125,7 +126,6 @@
                 ./modules/home/tmux.nix
                 ./modules/home/fzf.nix
                 ./modules/home/tealdeer.nix
-                ./modules/home/protonvpn.nix
                 ./modules/home/go.nix
                 ./modules/home/servers-healthcheck.nix
                 ./modules/home/bash.nix

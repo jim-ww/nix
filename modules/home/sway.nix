@@ -72,7 +72,6 @@
           { command = "lf -server"; }
           { command = "fcitx5"; }
           { command = "${pkgs.mate-polkit}/libexec/polkit-mate-authentication-agent-1"; }
-          { command = "protonvpn connect"; }
           #{ command = "podman system service --time=0"; }
         ];
         input."*" = {

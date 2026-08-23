@@ -53,7 +53,6 @@ with pkgs;
   # gui
   keepassxc
   #anki
-  proton-vpn-cli
   umu-launcher
   drawing
   file-roller

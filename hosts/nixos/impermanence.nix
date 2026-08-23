@@ -117,9 +117,8 @@
           ".shared-ringdb"
           ".config/kage"
           ".config/FreeTube"
-          ".config/Proton"
           ".local/share/go"
-          ".local/share/Anki2"
+          ".local/share/Anki2" # TODO
           ".local/share/direnv"
           ".local/share/umu"
           ".local/share/pnpm"
