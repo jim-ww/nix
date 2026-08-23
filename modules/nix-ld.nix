@@ -34,8 +34,6 @@
       libice
       liberation_ttf
       freetype
-
-      gtk3
     ];
   };
 }

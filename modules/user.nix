@@ -10,10 +10,6 @@
       "audio"
       "video"
       "gamemode"
-      "docker"
-      # "libvirtd"
-      # "adbusers" # adb
-      # "kvm" # possible hardware accel for android dev
     ];
   };
 }
