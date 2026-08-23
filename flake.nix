@@ -32,14 +32,6 @@
       url = "github:jim-ww/nihongo";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    pomodoro-go = {
-      url = "github:jim-ww/pomodoro-go";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    shiraberu = {
-      url = "github:jim-ww/shiraberu";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     charshare = {
       url = "github:jim-ww/charshare";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -50,10 +42,6 @@
     };
     gtr = {
       url = "github:jim-ww/gtr";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    gowebwrap = {
-      url = "github:jim-ww/gowebwrap";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     anitui = {
@@ -99,7 +87,6 @@
         ./modules/xdg.nix
         ./modules/ollama.nix
         ./modules/podman.nix
-        # ./modules/docker.nix
         nur.modules.nixos.default
         stylix.nixosModules.stylix
         sops-nix.nixosModules.sops
@@ -109,11 +96,8 @@
           # with stablePkgs;
           packages = [
             inputs.nihongo.packages.${system}.default
-            inputs.pomodoro-go.packages.${system}.default
-            inputs.shiraberu.packages.${system}.default
             inputs.charshare.packages.${system}.default
             inputs.itpec-sensei.packages.${system}.default
-            inputs.gowebwrap.packages.${system}.default
             inputs.gtr.packages.${system}.default
             inputs.anitui.packages.${system}.default
             inputs.kage.packages.${system}.default
