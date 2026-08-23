@@ -94,7 +94,6 @@
         ./modules/sops.nix
         ./modules/tlp.nix
         ./modules/nix-ld.nix
-        ./modules/games.nix
         ./modules/wireguard.nix
         ./modules/keyring.nix
         ./modules/xdg.nix

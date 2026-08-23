@@ -5,18 +5,15 @@
 }:
 {
   programs.sway.enable = true;
-
   programs.bash.blesh.enable = true;
-
-  powerManagement.powertop.enable = true;
+  programs.dconf.enable = true;
+  programs.gamemode.enable = true;
 
   security.polkit.enable = true;
   security.pam.services.swaylock = { };
   security.sudo.extraConfig = ''
     Defaults lecture = never
   '';
-
-  zramSwap.enable = true;
 
   services.getty = {
     autologinUser = config.user;
@@ -27,8 +24,6 @@
     HandlePowerKey = "suspend-then-hibernate";
     HandlePowerKeyLongPress = "poweroff";
   };
-
-  programs.dconf.enable = true;
 
   services.openssh.enable = true;
   services.dbus = {
@@ -69,6 +64,9 @@
     dates = "weekly";
     options = "--delete-older-than 7d";
   };
+
+  powerManagement.powertop.enable = true;
+  zramSwap.enable = true;
 
   boot.loader.grub.enable = true;
   boot.loader.grub.efiSupport = true;
