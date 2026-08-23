@@ -271,7 +271,7 @@ in
     };
     shellAliases =
       let
-        ls = lib.getExe pkgs.eza;
+        ls = "ls -hlp --group-directories-first --color=auto";
         fzf = lib.getExe pkgs.fzf;
       in
       {
@@ -283,7 +283,7 @@ in
         l = ls;
         ls = ls;
         ll = "${ls} -l";
-        la = "${ls} -a";
+        la = "${ls} -A";
         ff = "fastfetch -s title:separator:os:wm:lm:terminal:shell:packages:uptime:datetime:battery:disk:memory:theme:wmtheme:colors";
         conf = "cd ${config.flakeDir}/hosts/nixos && $EDITOR configuration.nix";
         prefs = "cd ${config.flakeDir} && $EDITOR prefs.nix";
