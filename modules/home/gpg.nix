@@ -13,7 +13,7 @@
     enable = true;
     enableSshSupport = true;
     enableBashIntegration = true;
-    pinentry.package = pkgs.pinentry-curses;
+    pinentry.package = pkgs.pinentry-tty;
     defaultCacheTtl = 1800;
     defaultCacheTtlSsh = 1800;
   };
