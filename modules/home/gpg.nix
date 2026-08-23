@@ -13,10 +13,8 @@
     enable = true;
     enableSshSupport = true;
     enableBashIntegration = true;
-    pinentry.package = pkgs.pinentry-gnome3;
+    pinentry.package = pkgs.pinentry-curses;
     defaultCacheTtl = 1800;
     defaultCacheTtlSsh = 1800;
   };
-
-  home.packages = [ pkgs.gcr ]; # for gnome-pinentry
 }
