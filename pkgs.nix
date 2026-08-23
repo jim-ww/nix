@@ -53,7 +53,7 @@ with pkgs;
 
   # gui
   keepassxc
-  anki-bin
+  #anki
   proton-vpn-cli
   umu-launcher
   drawing
