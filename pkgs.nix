@@ -1,47 +1,54 @@
 { pkgs, ... }:
 with pkgs;
 [
+  # cli
   fd
+  fzf
   jq
   lf
+  ncdu
+  tree
+  file
+  lsof
+  trashy
+  tealdeer
+  fastfetch-unwrapped
+  nixfmt
   nh
   vim
-  fzf
-  imv
-  mpv
-  git
-  age
-  _7zz
-  ncdu
-  sops
   btop
   tmux
   ripgrep
+  _7zz
+
+  imv
+  mpv
   ffmpeg
-  tealdeer
-  trashy
-  unison
-  fastfetch-unwrapped
-  gocryptfs
-  openssl
-  nix-search-cli
-  file
-  lsof
-  tree
-  bluetuith
-  nixfmt
+  imagemagick
+  yt-dlp # or spotdl
+  rmpc
   ani-cli
+
+  git
+  git-remote-gcrypt
+  git-filter-repo
+  gh
+  bluetuith
   transmission_4
-  steam-run-free
+  wormhole-william
+  nix-search-cli
+
+  age
+  sops
+  openssl
+  gocryptfs
   monero-cli
+
   groff
   (pkgs.writeShellScriptBin "ms2pdf" ''${lib.getExe' pkgs.groff "groff"} -mms -Kutf8 -Tps "$1" | ${pkgs.ghostscript}/bin/ps2pdf - "$2"'')
-  git-remote-gcrypt
-  imagemagick
-  rmpc
-  git-filter-repo
-  yt-dlp # or spotdl
-  wormhole-william
+
+  unison
+  steam-run-free
   claude-code
 
   # gui
@@ -53,28 +60,29 @@ with pkgs;
   file-roller
   pcmanfm
 
-  ## dev
+  # dev
   go
-  air
   gopls
   golint
+  gcc
+  gnumake
+  python3Minimal
+  nodejs
+  pnpm
+  curlie
+  sqlite
+
+  air
   tinygo
   garble
-  gnumake
-  gcc
-  curlie
   sqlc
+  ogen
   tailwindcss_4
   goose
   go-mockery
-  sqlite
   pgweb
   pocketbase
   goreleaser
   cobra-cli
-  gh
   wails3
-  python3Minimal
-  nodejs
-  pnpm
 ]
