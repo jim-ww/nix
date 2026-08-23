@@ -14,7 +14,9 @@
     enableSshSupport = true;
     enableBashIntegration = true;
     pinentry.package = pkgs.pinentry-tty;
-    defaultCacheTtl = 1800;
-    defaultCacheTtlSsh = 1800;
+    defaultCacheTtl = 3600;
+    maxCacheTtl = 14400;
+    defaultCacheTtlSsh = 3600;
+    maxCacheTtlSsh = 14400;
   };
 }
