@@ -111,6 +111,7 @@
           "Pictures"
           "Projects"
           "Videos"
+          ".local/share/Trash"
           ".npm" # doesn't fit in RAM
           ".barony"
           ".shared-ringdb"

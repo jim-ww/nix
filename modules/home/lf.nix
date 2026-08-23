@@ -11,7 +11,6 @@ let
 in
 {
   home.packages = with pkgs; [
-    trashy
     gum
     jq
     poppler-utils # pdftotext
@@ -91,7 +90,32 @@ in
         }}'';
 
       extract = ''''$${gum-confirm} "extract '$fx'?" && ([[ "$fx" == *.rar ]] && ${lib.getExe pkgs.unar} "$fx" || ${lib.getExe pkgs._7zz} x "$fx") || echo'';
-      trash = ''''$${gum-confirm} "trash '$fx'?"   && trash $fx'';
+
+      trash = ''
+        ''${{
+          [ -z "$fx" ] && exit 0
+          ${gum-confirm} "trash '$fx'?" || exit 0
+          trash_dir="''${XDG_DATA_HOME:-$HOME/.local/share}/Trash"
+          mkdir -p "$trash_dir/files" "$trash_dir/info"
+          printf '%s\n' "$fx" | while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            orig=$(realpath -- "$f")
+            name=$(basename -- "$f")
+            dest="$trash_dir/files/$name"
+            n=1
+            while [ -e "$dest" ]; do
+              dest="$trash_dir/files/$name.$n"
+              n=$((n + 1))
+            done
+            mv -- "$f" "$dest" 2>/dev/null || { cp -a -- "$f" "$dest" && rm -rf -- "$f"; }
+            {
+              echo "[Trash Info]"
+              echo "Path=$orig"
+              echo "DeletionDate=$(date +%Y-%m-%dT%H:%M:%S)"
+            } > "$trash_dir/info/$(basename -- "$dest").trashinfo"
+          done
+        }}'';
+
       delete = ''''$${gum-confirm} "delete '$fx'?"  && rm -rf $fx'';
 
       create = ''

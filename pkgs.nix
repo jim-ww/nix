@@ -10,7 +10,6 @@ with pkgs;
   tree
   file
   lsof
-  trashy
   tealdeer
   fastfetch-unwrapped
   nixfmt
