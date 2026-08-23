@@ -3,7 +3,7 @@
     enable = true;
     settings = {
       signing = {
-        behavior = "keep";
+        behavior = "drop";
         backend = "gpg";
         key = config.gpgKeyID;
       };
