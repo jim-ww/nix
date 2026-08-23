@@ -5,7 +5,7 @@
     eslint
     htmlhint
     go-arch-lint
-    checkstyle
+    #checkstyle # java
     #stylelint # css
   ];
 
@@ -26,7 +26,7 @@
       typescriptreact = [ "eslint" ];
       svelte = [ "eslint" ];
       python = [ "ruff" ];
-      java = [ "checkstyle" ];
+      #java = [ "checkstyle" ];
       #markdown = [
       #"markdownlint"
       #"vale"
