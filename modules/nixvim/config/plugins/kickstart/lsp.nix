@@ -17,7 +17,37 @@
     "kickstart-lsp-attach" = {
       clear = true;
     };
+    "gopls-organize-imports" = {
+      clear = true;
+    };
   };
+
+  # gopls can organize imports itself (source.organizeImports), so we don't
+  # need a separate goimports/gotools dependency just for conform.
+  autoCmd = [
+    {
+      event = "BufWritePre";
+      group = "gopls-organize-imports";
+      pattern = "*.go";
+      callback.__raw = ''
+        function()
+          local params = vim.lsp.util.make_range_params(0, "utf-8")
+          params.context = { only = { "source.organizeImports" } }
+          local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 3000)
+          for _, res in pairs(result or {}) do
+            for _, r in pairs(res.result or {}) do
+              if r.edit then
+                vim.lsp.util.apply_workspace_edit(r.edit, "utf-8")
+              elseif r.command then
+                vim.lsp.buf.execute_command(r.command)
+              end
+            end
+          end
+        end
+      '';
+      desc = "Organize Go imports via gopls before save";
+    }
+  ];
 
   # jdtls needs an explicit JDK 17 to compile against (NixOS JDKs live in
   # /nix/store, not the FHS paths jdtls auto-detects) and Gradle needs to be

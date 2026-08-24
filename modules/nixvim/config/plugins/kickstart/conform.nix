@@ -23,7 +23,6 @@ in
     # Used to format Lua code
     stylua
     gofumpt
-    gotools # goimports
     nixfmt
     templ
     biome # or prettier
@@ -64,8 +63,7 @@ in
         ];
         # NOTE: Order matters.
         go = [
-          "goimports"
-          "gofumpt" # "gofmt"
+          "gofumpt" # "gofmt"; imports are organized by gopls on save
           "trim_whitespace"
           "trim_newlines"
         ];
