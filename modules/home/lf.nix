@@ -60,7 +60,7 @@ in
     fuse-archive # browse into archives without extracting
     _7zz
     nsxiv
-    xorg.xrdb
+    xrdb
   ];
 
   xresources.properties = {
