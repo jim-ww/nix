@@ -131,6 +131,7 @@
         "text/javascript" = code-editor;
         "text/x-lua" = code-editor;
         "text/vnd.trolltech.linguist" = code-editor;
+        "text/x-log" = code-editor;
 
         "application/json" = editor;
         "application/yaml" = editor;
