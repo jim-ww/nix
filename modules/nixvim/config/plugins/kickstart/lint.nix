@@ -1,10 +1,10 @@
 { pkgs, ... }: {
   extraPackages = with pkgs; [
     golangci-lint
-    ruff # python
+    # ruff # python
     eslint
     htmlhint
-    go-arch-lint
+    # go-arch-lint
     #checkstyle # java
     #stylelint # css
   ];
@@ -25,7 +25,7 @@
       typescript = [ "eslint" ];
       typescriptreact = [ "eslint" ];
       svelte = [ "eslint" ];
-      python = [ "ruff" ];
+      #python = [ "ruff" ];
       #java = [ "checkstyle" ];
       #markdown = [
       #"markdownlint"

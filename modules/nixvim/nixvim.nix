@@ -178,6 +178,8 @@ in
 
   #  See `:help 'clipboard'`
   withPython3 = false; # all plugins here are Lua-based, no python remote-plugin support needed
+  withRuby = false;
+  withNodeJs = false;
 
   clipboard = {
     providers = {
