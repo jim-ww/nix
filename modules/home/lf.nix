@@ -19,6 +19,29 @@ in
     ffmpegthumbnailer # video thumbnails
   ];
 
+  programs.pistol = {
+    enable = true;
+    associations = [
+      {
+        mime = "application/pdf";
+        command = "pdftotext %pistol-filename% -";
+      }
+      {
+        mime = "image/.*";
+        command = "${lib.getExe pkgs.chafa} --clear -f sixel -s %pistol-extra0%x%pistol-extra1% --animate off --polite on --scale max %pistol-filename%";
+      }
+      {
+        mime = "video/.*";
+        command = "${pkgs.writeShellScript "pistol-video" ''
+          thumb=$(mktemp /tmp/lf-thumb.XXXXXX.jpg)
+          ${lib.getExe pkgs.ffmpegthumbnailer} -i "$1" -o "$thumb" -s 0 -q 5 2>/dev/null \
+            && ${lib.getExe pkgs.chafa} --clear -f sixel -s "$2x$3" --animate off --polite on --scale max "$thumb"
+          rm -f "$thumb"
+        ''} %pistol-filename% %pistol-extra0% %pistol-extra1%";
+      }
+    ];
+  };
+
   programs.lf = {
     enable = true;
 
@@ -35,6 +58,7 @@ in
         2
       ];
       autoquit = false;
+      sixel = true;
     };
 
     keybindings = {
@@ -188,54 +212,6 @@ in
       get-mime-type = ''%xdg-mime query filetype \"$f\"'';
     };
 
-    previewer.source = pkgs.writeShellScript "pv.sh" ''
-      #!/usr/bin/env sh
-
-      file="$1"
-      width="$2"
-      height="$3"
-
-      mime=$(file -Lb --mime-type -- "$file")
-
-      case "$mime" in
-        image/webp)
-          webp_tmp=$(mktemp /tmp/lf-webp.XXXXXX.png)
-          ffmpeg -i "$file" -y "$webp_tmp" 2>/dev/null \
-            && chafa --clear -f sixel -s "''${width}x''${height}" \
-              --animate off --polite on --scale max "$webp_tmp"
-          rm -f "$webp_tmp"
-          exit 0
-          ;;
-        image/*)
-          chafa --clear -f sixel -s "''${width}x''${height}" \
-            --animate off --polite on --scale max "$file"
-          exit 0
-          ;;
-        video/*)
-          thumb=$(mktemp /tmp/lf-thumb.XXXXXX.jpg)
-          ffmpegthumbnailer -i "$file" -o "$thumb" -s 0 -q 5 2>/dev/null \
-            && chafa --clear -f sixel -s "''${width}x''${height}" \
-              --animate off --polite on --scale max "$thumb"
-          rm -f "$thumb"
-          exit 0
-          ;;
-        text/* | application/json | application/x-*)
-          highlight -O ansi --force "$file" 2>/dev/null || cat "$file"
-          exit 0
-          ;;
-      esac
-
-      case "$file" in
-        *.tar* | *.tgz | *.tbz | *.txz | *.zip | *.rar | *.7z)
-          ${lib.getExe pkgs._7zz} l "$file" --password 0 2>/dev/null || echo "(could not list archive)"
-          ;;
-        *.pdf)
-          pdftotext "$file" - 2>/dev/null || echo "(pdf text extraction failed)"
-          ;;
-        *)
-          highlight -O ansi "$file" 2>/dev/null || cat "$file"
-          ;;
-      esac
-    '';
+    previewer.source = lib.getExe pkgs.pistol;
   };
 }
