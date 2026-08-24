@@ -8,7 +8,10 @@
   services.speechd.enable = false; # graphical-desktop default pulls espeak-ng/mbrola-voices
 
   environment.loginShellInit = ''
-    [[ "$(tty)" == /dev/tty1 ]] && sway
+    if [[ "$(tty)" == /dev/tty1 ]]; then
+      for f in /etc/profile.d/*.sh; do . "$f"; done
+      exec sway
+    fi
   '';
   programs.bash.blesh.enable = true;
   programs.dconf.enable = true;
