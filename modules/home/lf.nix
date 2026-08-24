@@ -17,6 +17,8 @@ in
     highlight
     chafa # sixel images
     ffmpegthumbnailer # video thumbnails
+    fuse-archive # browse into archives without extracting
+    _7zz
   ];
 
   programs.pistol = {
@@ -65,6 +67,7 @@ in
       D = "delete $fx";
       d = "trash";
       i = "$less $f";
+      H = "leave-archive";
       gc = "cd ${config.flakeDir}";
       gd = "cd ~/Downloads";
       gb = "cd ~/.local/share/bottles/bottles/test/drive_c";
@@ -97,6 +100,18 @@ in
             text/* | application/json | application/x-subrip | inode/x-empty)
               $EDITOR "$f"
               ;;
+            application/zip | application/x-zip* | application/x-tar | application/gzip | application/x-gzip | application/x-bzip2 | application/x-bzip | application/x-xz | application/x-7z-compressed | application/vnd.rar | application/x-rar-compressed | application/x-lzma | application/x-compress)
+              mnt="''${XDG_RUNTIME_DIR:-/tmp}/lf-archive-mounts/$(realpath -- "$f" | md5sum | cut -d' ' -f1)"
+              mkdir -p "$mnt"
+              if ! mountpoint -q "$mnt"; then
+                if ! fuse-archive "$f" "$mnt" 2>>"''${XDG_RUNTIME_DIR:-/tmp}/lf-archive-mount.log"; then
+                  xdg-open "$f" > /dev/null 2>&1 &
+                  exit 0
+                fi
+              fi
+              echo "$PWD" > "''${XDG_RUNTIME_DIR:-/tmp}/lf-archive-origin"
+              lf -remote "send $id cd \"$mnt\""
+              ;;
             *)
               xdg-open "$f" > /dev/null 2>&1 &
               ;;
@@ -110,7 +125,28 @@ in
           [ -z "$format" ] && exit 0
           name=$(${gum-input} --placeholder="archive name:")
           [ -z "$name" ] && exit 0
-          ${lib.getExe pkgs._7zz} a "$name$format" $fx
+          case "$format" in
+            .tar.gz) ${lib.getExe pkgs.gnutar} -czf "$name$format" -- $fx ;;
+            .zip) ${lib.getExe pkgs._7zz} a "$name$format" -- $fx ;;
+          esac
+        }}'';
+
+      leave-archive = ''
+        ''${{
+          origin_file="''${XDG_RUNTIME_DIR:-/tmp}/lf-archive-origin"
+          case "$PWD" in
+            "''${XDG_RUNTIME_DIR:-/tmp}/lf-archive-mounts"*)
+              if [ -f "$origin_file" ]; then
+                lf -remote "send $id cd \"$(cat "$origin_file")\""
+                rm -f "$origin_file"
+              else
+                lf -remote "send $id updir"
+              fi
+              ;;
+            *)
+              lf -remote "send $id updir"
+              ;;
+          esac
         }}'';
 
       extract = ''''$${gum-confirm} "extract '$fx'?" && ([[ "$fx" == *.rar ]] && ${lib.getExe pkgs.unar} "$fx" || ${lib.getExe pkgs._7zz} x "$fx") || echo'';
