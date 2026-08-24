@@ -23,7 +23,10 @@ let
     trash_dir="''${XDG_DATA_HOME:-$HOME/.local/share}/Trash"
     mkdir -p "$trash_dir/files" "$trash_dir/info"
     for f in "$@"; do
-      [ -e "$f" ] || continue
+      if [ ! -e "$f" ] && [ ! -L "$f" ]; then
+        echo "trash: cannot find '$f'" >&2
+        continue
+      fi
       case "$f" in
         *.lfmount)
           fusermount3 -uz -- "$f" 2>/dev/null || umount -l -- "$f" 2>/dev/null || true
