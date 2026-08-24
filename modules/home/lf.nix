@@ -120,15 +120,15 @@ in
       gG = "bottom --";
       gm = "cd /run/media/${config.user}";
       a = "push :create<space>";
+      A = "push :compress<space>";
       w = "$" + config.shell;
       x = "cut";
       Y = "copy-file";
       E = "push :confirm-extract<space>";
-      C = "push :compress<space>";
+      C = "copyto";
       M = "moveto";
-      V = "copyto";
       r = "rename-smart";
-      T = ''$xrdb -merge ~/.Xresources 2>/dev/null; nsxiv -t -- "$PWD"'';
+      T = "grid-select";
       P = "set preview!";
       "<c-c>" = "quit";
       "<c-f>" = ''$lf -remote "send $id select \"$(fzf)\""'';
@@ -266,6 +266,19 @@ in
           done
           [ "$mode" = "move" ] && lf -remote "send clear"
           lf -remote "send $id reload"
+        }}'';
+
+      grid-select = ''
+        ''${{
+          xrdb -merge ~/.Xresources 2>/dev/null
+          sel=$(nsxiv -t -o -- "$PWD" 2>/dev/null)
+          [ -z "$sel" ] && exit 0
+          lf -remote "send $id unselect"
+          printf '%s\n' "$sel" | while IFS= read -r p; do
+            [ -z "$p" ] && continue
+            lf -remote "send $id select \"$p\""
+            lf -remote "send $id toggle"
+          done
         }}'';
 
       moveto = ''
