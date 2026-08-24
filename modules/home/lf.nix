@@ -264,7 +264,14 @@ in
           echo "$fx" | while IFS= read -r f; do
             basename -- "$f"
           done > "$tmpfile"
+          orig_count=$(wc -l < "$tmpfile")
           $EDITOR "$tmpfile"
+          new_count=$(wc -l < "$tmpfile")
+          if [ "$orig_count" -ne "$new_count" ]; then
+            lf -remote "send $id echoerr 'bulk-rename: line count changed ('"$orig_count"' -> '"$new_count"'), aborting'"
+            rm -f "$tmpfile"
+            exit 1
+          fi
           dir=$(dirname "$(echo "$fx" | head -1)")
           i=0
           echo "$fx" | while IFS= read -r src; do
