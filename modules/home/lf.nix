@@ -124,6 +124,7 @@ in
       w = "$" + config.shell;
       x = "cut";
       Y = "copy-file";
+      e = ''$$EDITOR "$f"'';
       E = "push :confirm-extract<space>";
       C = "copyto";
       M = "moveto";
@@ -182,9 +183,16 @@ in
           [ -z "$fx" ] && exit 0
           name="$1"
           [ -z "$name" ] && exit 0
+          mapfile -t files <<< "$fx"
+          dir=$(dirname -- "''${files[0]}")
+          names=()
+          for f in "''${files[@]}"; do
+            names+=("$(basename -- "$f")")
+          done
+          out="$PWD/$name"
           case "$name" in
-            *.tar.gz) ${lib.getExe pkgs.gnutar} -czf "$name" -- $fx ;;
-            *.zip) ${lib.getExe pkgs._7zz} a "$name" -- $fx ;;
+            *.tar.gz) (cd "$dir" && ${lib.getExe pkgs.gnutar} -czf "$out" -- "''${names[@]}") ;;
+            *.zip) (cd "$dir" && ${lib.getExe pkgs._7zz} a "$out" -- "''${names[@]}") ;;
             *) lf -remote "send $id echoerr 'name must end in .tar.gz or .zip'" ;;
           esac
           lf -remote "send $id reload"
