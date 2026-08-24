@@ -1,6 +1,5 @@
 {
   networking.firewall = {
-    enable = true;
     allowedTCPPorts = [
       53317 # localsend
     ];

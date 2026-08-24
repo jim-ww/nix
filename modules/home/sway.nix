@@ -46,9 +46,7 @@
       enable = true;
       package = pkgs.swayfx;
       checkConfig = false;
-      xwayland = true;
       wrapperFeatures = {
-        base = true;
         gtk = true;
       };
       # SWAYFX
@@ -179,7 +177,6 @@
           }
         ];
         window.border = 1;
-        focus.followMouse = true;
         bindkeysToCode = true;
         keybindings = {
           # basic

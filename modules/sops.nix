@@ -1,6 +1,5 @@
 { config, ... }: {
   sops.defaultSopsFile = ../secrets.yaml;
-  sops.defaultSopsFormat = "yaml";
   sops.age.keyFile = "/persistent/etc/sops/age/keys.txt";
 
   sops.secrets = {

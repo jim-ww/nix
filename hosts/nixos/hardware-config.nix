@@ -16,7 +16,6 @@
   boot.initrd.kernelModules = [ "amdgpu" ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.kernelParams = [ "amdgpu.moverate=64" ];
-  boot.extraModulePackages = [ ];
 
   swapDevices = [
     {
@@ -29,8 +28,6 @@
     text = "14316c74abe94ebdadcc5f1452f157aa\n";
     mode = "0444";
   };
-
-  networking.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
