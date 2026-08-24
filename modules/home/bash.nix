@@ -1,4 +1,4 @@
-{ config, ... }: {
+{ config, pkgs, ... }: {
   programs.fzf = {
     enable = true;
     enableBashIntegration = false; # ble.sh handles it
@@ -10,6 +10,11 @@
 
     initExtra = ''
       . "$HOME/.profile"
+
+      # for foot interactive shell
+      if [[ -z "''${BLE_VERSION-}" ]]; then
+        source ${pkgs.blesh}/share/blesh/ble.sh
+      fi
 
       shopt -s autocd
 
@@ -40,16 +45,10 @@
       bind 'set show-all-if-ambiguous on'
       bind '"\C-h": backward-kill-word'
 
-      ble/widget/my-history-search-backward() {
-        ble/widget/history-search-backward "$@"
-        ble/widget/end-of-line
-      }
-      ble/widget/my-history-search-forward() {
-        ble/widget/history-search-forward "$@"
-        ble/widget/end-of-line
-      }
-      ble-bind -f 'Up' my-history-search-backward
-      ble-bind -f 'Down' my-history-search-forward
+      function ble/widget/my-history-search-backward { ble/widget/history-search "backward:point=end:$1"; }
+      function ble/widget/my-history-search-forward { ble/widget/history-search "forward:point=end:$1"; }
+      ble-bind -f 'up' my-history-search-backward
+      ble-bind -f 'down' my-history-search-forward
     '';
   };
 }
