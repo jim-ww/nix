@@ -65,22 +65,15 @@ with pkgs;
   gcc
   gnumake
   python3Minimal
-  nodejs
   pnpm
   curlie
   sqlite
 
   air
-  tinygo
-  garble
   sqlc
-  ogen
   tailwindcss_4
   goose
-  go-mockery
   pgweb
   pocketbase
   goreleaser
-  cobra-cli
-  wails3
 ]
