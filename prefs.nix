@@ -270,7 +270,7 @@ in
     };
     shellAliases =
       let
-        ls = "ls -hlp --group-directories-first --color=auto";
+        ls = "ls -h --group-directories-first --color=auto";
         fzf = lib.getExe pkgs.fzf;
       in
       {
