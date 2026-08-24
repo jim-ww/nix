@@ -4,14 +4,8 @@
   lib,
   ...
 }:
-let
-  gum-confirm = ''gum confirm --unselected.background="#${config.lib.stylix.colors.base02}" --selected.background="#${config.lib.stylix.colors.base0D}" --prompt.foreground="#${config.lib.stylix.colors.base05}" '';
-  gum-input = ''gum input --prompt.foreground="#${config.lib.stylix.colors.base0D}" --cursor.foreground="#${config.lib.stylix.colors.base05}" '';
-  gum-choose = ''gum choose --header.foreground="#${config.lib.stylix.colors.base03}" --cursor.foreground="#${config.lib.stylix.colors.base0D}" --item.foreground="#${config.lib.stylix.colors.base05}" --selected.foreground="#${config.lib.stylix.colors.base01}" --selected.background="#${config.lib.stylix.colors.base0D}" '';
-in
 {
   home.packages = with pkgs; [
-    gum
     jq
     poppler-utils # pdftotext
     highlight
@@ -60,12 +54,11 @@ in
         2
       ];
       autoquit = false;
-      sixel = true;
     };
 
     keybindings = {
-      D = "delete $fx";
-      d = "trash";
+      D = "push :confirm-delete<space>";
+      d = "push :confirm-trash<space>";
       i = "$less $f";
       H = "leave-archive";
       gc = "cd ${config.flakeDir}";
@@ -74,12 +67,12 @@ in
       gg = "top --";
       gG = "bottom --";
       gm = "cd /run/media/${config.user}";
-      a = "create";
+      a = "push :create<space>";
       w = "$" + config.shell;
       x = "cut";
       Y = "copy-file";
-      E = "extract";
-      C = "compress";
+      E = "push :confirm-extract<space>";
+      C = "push :compress<space>";
       r = "rename-smart";
       P = "set preview!";
       "<c-c>" = "quit";
@@ -121,14 +114,14 @@ in
       compress = ''
         ''${{
           [ -z "$fx" ] && exit 0
-          format=$(${gum-choose} ".tar.gz" ".zip" --header="choose format:")
-          [ -z "$format" ] && exit 0
-          name=$(${gum-input} --placeholder="archive name:")
+          name="$1"
           [ -z "$name" ] && exit 0
-          case "$format" in
-            .tar.gz) ${lib.getExe pkgs.gnutar} -czf "$name$format" -- $fx ;;
-            .zip) ${lib.getExe pkgs._7zz} a "$name$format" -- $fx ;;
+          case "$name" in
+            *.tar.gz) ${lib.getExe pkgs.gnutar} -czf "$name" -- $fx ;;
+            *.zip) ${lib.getExe pkgs._7zz} a "$name" -- $fx ;;
+            *) lf -remote "send $id echoerr 'name must end in .tar.gz or .zip'" ;;
           esac
+          lf -remote "send $id reload"
         }}'';
 
       leave-archive = ''
@@ -149,12 +142,18 @@ in
           esac
         }}'';
 
-      extract = ''''$${gum-confirm} "extract '$fx'?" && ([[ "$fx" == *.rar ]] && ${lib.getExe pkgs.unar} "$fx" || ${lib.getExe pkgs._7zz} x "$fx") || echo'';
-
-      trash = ''
+      confirm-extract = ''
         ''${{
+          [ "$1" = "y" ] || exit 0
           [ -z "$fx" ] && exit 0
-          ${gum-confirm} "trash '$fx'?" || exit 0
+          [[ "$fx" == *.rar ]] && ${lib.getExe pkgs.unar} "$fx" || ${lib.getExe pkgs._7zz} x "$fx"
+          lf -remote "send $id reload"
+        }}'';
+
+      confirm-trash = ''
+        ''${{
+          [ "$1" = "y" ] || exit 0
+          [ -z "$fx" ] && exit 0
           trash_dir="''${XDG_DATA_HOME:-$HOME/.local/share}/Trash"
           mkdir -p "$trash_dir/files" "$trash_dir/info"
           printf '%s\n' "$fx" | while IFS= read -r f; do
@@ -174,13 +173,19 @@ in
               echo "DeletionDate=$(date +%Y-%m-%dT%H:%M:%S)"
             } > "$trash_dir/info/$(basename -- "$dest").trashinfo"
           done
+          lf -remote "send $id reload"
         }}'';
 
-      delete = ''''$${gum-confirm} "delete '$fx'?"  && rm -rf $fx'';
+      confirm-delete = ''
+        ''${{
+          [ "$1" = "y" ] || exit 0
+          rm -rf -- $fx
+          lf -remote "send $id reload"
+        }}'';
 
       create = ''
         ''${{
-          name=$(${gum-input} --placeholder="create:")
+          name="$1"
           [ -z "$name" ] && exit 0
           if [ "''${name: -1}" = "/" ]; then
             mkdir -p -- "$name"
@@ -190,6 +195,7 @@ in
             esac
             touch -- "$name"
           fi
+          lf -remote "send $id reload"
         }}'';
 
       paste = ''
@@ -201,19 +207,14 @@ in
           [ -z "$files" ] && exit 0
           printf '%s\n' "$files" | while IFS= read -r src; do
             [ -z "$src" ] && continue
-            dst="$PWD/$(basename -- "$src")"
-            if [ -e "$dst" ]; then
-              if ${gum-confirm} "Replace '$(basename -- "$src")'?"; then
-                [ "$mode" = "move" ] && mv -f -- "$src" "$dst" || cp -rf -- "$src" "$dst"
-              else
-                new_name=$(${gum-input} --placeholder "Enter new name for '$(basename -- "$src")'")
-                [ -z "$new_name" ] && continue
-                dst="$PWD/$new_name"
-                [ "$mode" = "move" ] && mv -- "$src" "$dst" || cp -r -- "$src" "$dst"
-              fi
-            else
-              [ "$mode" = "move" ] && mv -- "$src" "$dst" || cp -r -- "$src" "$dst"
-            fi
+            name=$(basename -- "$src")
+            dst="$PWD/$name"
+            n=1
+            while [ -e "$dst" ]; do
+              dst="$PWD/$name.$n"
+              n=$((n + 1))
+            done
+            [ "$mode" = "move" ] && mv -- "$src" "$dst" || cp -r -- "$src" "$dst"
           done
           [ "$mode" = "move" ] && lf -remote "send clear"
           lf -remote "send $id reload"
@@ -245,11 +246,12 @@ in
             [ -z "$newname" ] && continue
             [ "$(basename -- "$src")" = "$newname" ] && continue
             dst="$dir/$newname"
-            if [ -e "$dst" ]; then
-              ${gum-confirm} "Replace '$newname'?" && mv -f -- "$src" "$dst"
-            else
-              mv -- "$src" "$dst"
-            fi
+            n=1
+            while [ -e "$dst" ]; do
+              dst="$dir/$newname.$n"
+              n=$((n + 1))
+            done
+            mv -- "$src" "$dst"
           done
           rm -f "$tmpfile"
           lf -remote "send $id reload"
