@@ -59,7 +59,14 @@ in
     ffmpegthumbnailer # video thumbnails
     fuse-archive # browse into archives without extracting
     _7zz
+    nsxiv
+    xorg.xrdb
   ];
+
+  xresources.properties = {
+    "Nsxiv.window.background" = "#${config.lib.stylix.colors.base00}";
+    "Nsxiv.window.foreground" = "#${config.lib.stylix.colors.base05}";
+  };
 
   programs.pistol = {
     enable = true;
@@ -121,6 +128,7 @@ in
       M = "moveto";
       V = "copyto";
       r = "rename-smart";
+      T = ''$xrdb -merge ~/.Xresources 2>/dev/null; nsxiv -t -- "$PWD"'';
       P = "set preview!";
       "<c-c>" = "quit";
       "<c-f>" = ''$lf -remote "send $id select \"$(fzf)\""'';
