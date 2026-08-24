@@ -4,8 +4,51 @@
   lib,
   ...
 }:
+let
+  trash = pkgs.writeShellScriptBin "trash" ''
+    set -euo pipefail
+    yes=0
+    if [ "''${1:-}" = "-y" ]; then
+      yes=1
+      shift
+    fi
+    [ "$#" -eq 0 ] && exit 0
+    if [ "$yes" -ne 1 ]; then
+      read -r -p "trash $# item(s)? [y/N] " ans
+      case "$ans" in
+        y | Y) ;;
+        *) exit 0 ;;
+      esac
+    fi
+    trash_dir="''${XDG_DATA_HOME:-$HOME/.local/share}/Trash"
+    mkdir -p "$trash_dir/files" "$trash_dir/info"
+    for f in "$@"; do
+      [ -e "$f" ] || continue
+      case "$f" in
+        *.lfmount)
+          fusermount3 -uz -- "$f" 2>/dev/null || umount -l -- "$f" 2>/dev/null || true
+          ;;
+      esac
+      orig=$(realpath -- "$f")
+      name=$(basename -- "$f")
+      dest="$trash_dir/files/$name"
+      n=1
+      while [ -e "$dest" ]; do
+        dest="$trash_dir/files/$name.$n"
+        n=$((n + 1))
+      done
+      mv -- "$f" "$dest" 2>/dev/null || { cp -a -- "$f" "$dest" && rm -rf -- "$f"; }
+      {
+        echo "[Trash Info]"
+        echo "Path=$orig"
+        echo "DeletionDate=$(date +%Y-%m-%dT%H:%M:%S)"
+      } > "$trash_dir/info/$(basename -- "$dest").trashinfo"
+    done
+  '';
+in
 {
   home.packages = with pkgs; [
+    trash
     jq
     poppler-utils # pdftotext
     highlight
@@ -137,32 +180,22 @@
         ''${{
           case "$1" in "" | y | Y) ;; *) exit 0 ;; esac
           [ -z "$fx" ] && exit 0
-          trash_dir="''${XDG_DATA_HOME:-$HOME/.local/share}/Trash"
-          mkdir -p "$trash_dir/files" "$trash_dir/info"
-          printf '%s\n' "$fx" | while IFS= read -r f; do
-            [ -z "$f" ] && continue
-            orig=$(realpath -- "$f")
-            name=$(basename -- "$f")
-            dest="$trash_dir/files/$name"
-            n=1
-            while [ -e "$dest" ]; do
-              dest="$trash_dir/files/$name.$n"
-              n=$((n + 1))
-            done
-            mv -- "$f" "$dest" 2>/dev/null || { cp -a -- "$f" "$dest" && rm -rf -- "$f"; }
-            {
-              echo "[Trash Info]"
-              echo "Path=$orig"
-              echo "DeletionDate=$(date +%Y-%m-%dT%H:%M:%S)"
-            } > "$trash_dir/info/$(basename -- "$dest").trashinfo"
-          done
+          mapfile -t files <<< "$fx"
+          trash -y -- "''${files[@]}"
           lf -remote "send $id reload"
         }}'';
 
       confirm-delete = ''
         ''${{
           case "$1" in "" | y | Y) ;; *) exit 0 ;; esac
-          rm -rf -- $fx
+          [ -z "$fx" ] && exit 0
+          mapfile -t files <<< "$fx"
+          for it in "''${files[@]}"; do
+            case "$it" in
+              *.lfmount) fusermount3 -uz -- "$it" 2>/dev/null || umount -l -- "$it" 2>/dev/null || true ;;
+            esac
+          done
+          rm -rf -- "''${files[@]}"
           lf -remote "send $id reload"
         }}'';
 
