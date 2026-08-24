@@ -37,7 +37,7 @@
   };
   services.earlyoom.enable = true;
   services.upower.enable = true;
-  services.gvfs.enable = true;
+  services.gvfs.enable = true; # also pulls in udisks2
   services.fstrim.enable = true;
 
   environment.systemPackages = config.packages;

@@ -61,6 +61,7 @@ in
     _7zz
     nsxiv
     xrdb
+    glib # gio, for mounting MTP devices
   ];
 
   xresources.properties = {
@@ -116,10 +117,11 @@ in
       i = "$less $f";
       gc = "cd ${config.flakeDir}";
       gd = "cd ~/Downloads";
-      gb = "cd ~/.local/share/bottles/bottles/test/drive_c";
+      gt = "cd ~/.local/share/Trash";
+      gp = "cd ~/Archive/personal";
       gg = "top --";
       gG = "bottom --";
-      gm = "cd /run/media/${config.user}";
+      gm = "mount-device";
       a = "push :create<space>";
       A = "push :compress<space>";
       w = "$" + config.shell;
@@ -275,6 +277,27 @@ in
           done
           [ "$mode" = "move" ] && lf -remote "send clear"
           lf -remote "send $id reload"
+        }}'';
+
+      mount-device = ''
+        ''${{
+          blk=$(lsblk -rno NAME,FSTYPE,MOUNTPOINT | awk '$2!="" && $3=="" {print "blk:"$1}')
+          mtp=$(gio mount -l 2>/dev/null | awk -F': ' '/Activation _URI/ {print "mtp:"$2}')
+          choice=$(printf '%s\n%s\n' "$blk" "$mtp" | sed '/^$/d' | fzf --prompt="mount: ")
+          [ -z "$choice" ] && exit 0
+          case "$choice" in
+            blk:*)
+              dev="/dev/''${choice#blk:}"
+              mp=$(udisksctl mount -b "$dev" 2>&1 | sed -n 's/.*at \(.*\)\.$/\1/p')
+              ;;
+            mtp:*)
+              uri="''${choice#mtp:}"
+              gio mount "$uri" 2>/dev/null
+              mp=$(gio mount -l 2>/dev/null | grep -A5 "$uri" | sed -n 's/.*-> \(.*\)/\1/p' | head -1)
+              ;;
+          esac
+          [ -z "$mp" ] && exit 0
+          lf -remote "send $id cd \"$mp\""
         }}'';
 
       grid-select = ''
