@@ -55,8 +55,6 @@ with pkgs;
   #anki
   umu-launcher
   drawing
-  file-roller
-  nautilus
 
   # dev
   go

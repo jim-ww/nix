@@ -46,19 +46,40 @@
     ];
   };
 
+  xdg.desktopEntries.lf = {
+    name = "lf";
+    genericName = "File Manager";
+    exec = "xdg-terminal-exec -- lf %f";
+    terminal = false;
+    type = "Application";
+    mimeType = [
+      "inode/directory"
+      "application/zip"
+      "application/x-zip-compressed"
+      "application/x-tar"
+      "application/gzip"
+      "application/x-gzip"
+      "application/x-bzip2"
+      "application/x-xz"
+      "application/x-7z-compressed"
+      "application/vnd.rar"
+      "application/x-rar-compressed"
+    ];
+  };
+
   xdg.mimeApps = {
     enable = true;
     defaultApplications =
       let
         editor = "nvim.desktop";
         code-editor = "nvim.desktop";
-        fileManager = "${config.file-manager}.desktop";
+        fileManager = "lf.desktop";
         web-browser = "${config.browser}.desktop";
         video-player = "mpv.desktop";
         audio-player = "mpv.desktop";
         image-viewer = "imv-dir.desktop";
         document-viewer = "org.pwmt.zathura.desktop";
-        archive-manager = "org.gnome.FileRoller.desktop";
+        archive-manager = "lf.desktop";
       in
       {
         "inode/directory" = fileManager;

@@ -46,7 +46,7 @@ in
     backupDir = "${home}/Archive/backups";
     musicDir = "/home/${config.user}/Music";
     editor = "nvim";
-    file-manager = "nautilus -w";
+    file-manager = "xdg-terminal-exec -- ${lib.getExe pkgs.lf}";
     file-manager-term = "xdg-terminal-exec -- ${lib.getExe pkgs.lf}";
     browser = "librewolf";
     duckduckgo = "https://duckduckgo.com/?kp=-2&kl=wt-wt&ka=Terminus&kt=Terminus&kj=1a1b26&kn=1&kx=a9b1d6&k1=-1&k5=2&k7=16161e&k8=a9b1d6&k9=7aa2f7&k18=1&kaa=bb9af7&kaf=s&kaj=m&kak=-1&kae=d&kao=-1&kap=-1&kaq=-1&kau=-1&kav=1&kax=-1&kay=b&kbf=1&duckai=1";
