@@ -107,6 +107,7 @@ in
         2
       ];
       autoquit = false;
+      mouse = true;
     };
 
     keybindings = {
