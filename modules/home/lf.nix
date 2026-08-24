@@ -127,7 +127,7 @@
 
       confirm-extract = ''
         ''${{
-          [ "$1" = "y" ] || exit 0
+          case "$1" in "" | y | Y) ;; *) exit 0 ;; esac
           [ -z "$fx" ] && exit 0
           [[ "$fx" == *.rar ]] && ${lib.getExe pkgs.unar} "$fx" || ${lib.getExe pkgs._7zz} x "$fx"
           lf -remote "send $id reload"
@@ -135,7 +135,7 @@
 
       confirm-trash = ''
         ''${{
-          [ "$1" = "y" ] || exit 0
+          case "$1" in "" | y | Y) ;; *) exit 0 ;; esac
           [ -z "$fx" ] && exit 0
           trash_dir="''${XDG_DATA_HOME:-$HOME/.local/share}/Trash"
           mkdir -p "$trash_dir/files" "$trash_dir/info"
@@ -161,7 +161,7 @@
 
       confirm-delete = ''
         ''${{
-          [ "$1" = "y" ] || exit 0
+          case "$1" in "" | y | Y) ;; *) exit 0 ;; esac
           rm -rf -- $fx
           lf -remote "send $id reload"
         }}'';
