@@ -194,7 +194,17 @@ in
         ''${{
           case "$1" in "" | y | Y) ;; *) exit 0 ;; esac
           [ -z "$fx" ] && exit 0
-          [[ "$fx" == *.rar ]] && ${lib.getExe pkgs.unar} "$fx" || ${lib.getExe pkgs._7zz} x "$fx"
+          mapfile -t files <<< "$fx"
+          for f in "''${files[@]}"; do
+            case "$f" in
+              *.tar.gz | *.tgz) ${lib.getExe pkgs.gnutar} -xzf "$f" ;;
+              *.tar.bz2 | *.tbz2) ${lib.getExe pkgs.gnutar} -xjf "$f" ;;
+              *.tar.xz | *.txz) ${lib.getExe pkgs.gnutar} -xJf "$f" ;;
+              *.tar) ${lib.getExe pkgs.gnutar} -xf "$f" ;;
+              *.rar) ${lib.getExe pkgs.unar} "$f" ;;
+              *) ${lib.getExe pkgs._7zz} x "$f" ;;
+            esac
+          done
           lf -remote "send $id reload"
         }}'';
 
