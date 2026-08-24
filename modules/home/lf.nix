@@ -118,6 +118,8 @@ in
       Y = "copy-file";
       E = "push :confirm-extract<space>";
       C = "push :compress<space>";
+      M = "moveto";
+      V = "copyto";
       r = "rename-smart";
       P = "set preview!";
       "<c-c>" = "quit";
@@ -244,6 +246,30 @@ in
             [ "$mode" = "move" ] && mv -- "$src" "$dst" || cp -r -- "$src" "$dst"
           done
           [ "$mode" = "move" ] && lf -remote "send clear"
+          lf -remote "send $id reload"
+        }}'';
+
+      moveto = ''
+        ''${{
+          [ -z "$fx" ] && exit 0
+          dest=$(fd --type d . "$HOME" 2>/dev/null | fzf --prompt="move to: ")
+          [ -z "$dest" ] && exit 0
+          mapfile -t files <<< "$fx"
+          for src in "''${files[@]}"; do
+            mv -- "$src" "$dest/"
+          done
+          lf -remote "send $id reload"
+        }}'';
+
+      copyto = ''
+        ''${{
+          [ -z "$fx" ] && exit 0
+          dest=$(fd --type d . "$HOME" 2>/dev/null | fzf --prompt="copy to: ")
+          [ -z "$dest" ] && exit 0
+          mapfile -t files <<< "$fx"
+          for src in "''${files[@]}"; do
+            cp -r -- "$src" "$dest/"
+          done
           lf -remote "send $id reload"
         }}'';
 
