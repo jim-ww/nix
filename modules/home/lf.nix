@@ -60,7 +60,6 @@
       D = "push :confirm-delete<space>";
       d = "push :confirm-trash<space>";
       i = "$less $f";
-      H = "leave-archive";
       gc = "cd ${config.flakeDir}";
       gd = "cd ~/Downloads";
       gb = "cd ~/.local/share/bottles/bottles/test/drive_c";
@@ -94,15 +93,17 @@
               $EDITOR "$f"
               ;;
             application/zip | application/x-zip* | application/x-tar | application/gzip | application/x-gzip | application/x-bzip2 | application/x-bzip | application/x-xz | application/x-7z-compressed | application/vnd.rar | application/x-rar-compressed | application/x-lzma | application/x-compress)
-              mnt="''${XDG_RUNTIME_DIR:-/tmp}/lf-archive-mounts/$(realpath -- "$f" | md5sum | cut -d' ' -f1)"
-              mkdir -p "$mnt"
+              mnt="$(dirname -- "$f")/.$(basename -- "$f").lfmount"
+              if ! mkdir -p "$mnt" 2>/dev/null; then
+                mnt="''${XDG_RUNTIME_DIR:-/tmp}/lf-archive-mounts/$(realpath -- "$f" | md5sum | cut -d' ' -f1)"
+                mkdir -p "$mnt"
+              fi
               if ! mountpoint -q "$mnt"; then
                 if ! fuse-archive "$f" "$mnt" 2>>"''${XDG_RUNTIME_DIR:-/tmp}/lf-archive-mount.log"; then
                   xdg-open "$f" > /dev/null 2>&1 &
                   exit 0
                 fi
               fi
-              echo "$PWD" > "''${XDG_RUNTIME_DIR:-/tmp}/lf-archive-origin"
               lf -remote "send $id cd \"$mnt\""
               ;;
             *)
@@ -122,24 +123,6 @@
             *) lf -remote "send $id echoerr 'name must end in .tar.gz or .zip'" ;;
           esac
           lf -remote "send $id reload"
-        }}'';
-
-      leave-archive = ''
-        ''${{
-          origin_file="''${XDG_RUNTIME_DIR:-/tmp}/lf-archive-origin"
-          case "$PWD" in
-            "''${XDG_RUNTIME_DIR:-/tmp}/lf-archive-mounts"*)
-              if [ -f "$origin_file" ]; then
-                lf -remote "send $id cd \"$(cat "$origin_file")\""
-                rm -f "$origin_file"
-              else
-                lf -remote "send $id updir"
-              fi
-              ;;
-            *)
-              lf -remote "send $id updir"
-              ;;
-          esac
         }}'';
 
       confirm-extract = ''
