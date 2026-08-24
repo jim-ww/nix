@@ -55,8 +55,8 @@ in
     passwords = "keepassxc ${documents}/.vault.kdbx";
     clipboard-manager = "cliphist list | rofi -dmenu | cliphist decode | wl-copy";
     notesDir = documents;
-    notes = "xdg-terminal-exec --dir ${config.notesDir} -- nvim notes.md";
-    notes-all = "xdg-terminal-exec --dir ${config.notesDir} -- nvim .";
+    notes = ''xdg-terminal-exec -- sh -c 'cd "${config.notesDir}" && exec nvim notes.md' '';
+    notes-all = ''xdg-terminal-exec -- sh -c 'cd "${config.notesDir}" && exec nvim .' '';
     app-menu = "${lib.getExe pkgs.rofi} -show drun";
     resource-monitor = "xdg-terminal-exec -- btop";
     screenshot = ''${pkgs.busybox}/bin/sh -c 'geometry="$(${lib.getExe pkgs.slurp})" || exit 1; ${lib.getExe pkgs.grim} -g "$geometry" - | ${pkgs.busybox}/bin/tee ${home}/Pictures/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png | ${pkgs.wl-clipboard}/bin/wl-copy' '';
