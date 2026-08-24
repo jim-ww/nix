@@ -80,7 +80,7 @@ in
       Y = "copy-file";
       E = "extract";
       C = "compress";
-      # B = "bulk-rename";
+      r = "rename-smart";
       P = "set preview!";
       "<c-c>" = "quit";
       "<tab>" = "!du -sh";
@@ -192,32 +192,6 @@ in
           fi
         }}'';
 
-      # bulk-rename = ''
-      #   ''${{
-      #     [ -z "$fx" ] && exit 0
-      #     tmpfile=$(mktemp /tmp/lf-rename.XXXXXX)
-      #     echo "$fx" | while IFS= read -r f; do
-      #       basename -- "$f"
-      #     done > "$tmpfile"
-      #     ''${VISUAL:-''${EDITOR:-vi}} "$tmpfile"
-      #     dir=$(dirname "$(echo "$fx" | head -1)")
-      #     i=0
-      #     echo "$fx" | while IFS= read -r src; do
-      #       i=$((i + 1))
-      #       newname=$(sed -n "''${i}p" "$tmpfile")
-      #       [ -z "$newname" ] && continue
-      #       [ "$(basename -- "$src")" = "$newname" ] && continue
-      #       dst="$dir/$newname"
-      #       if [ -e "$dst" ]; then
-      #         ${gum-confirm} "Replace '$newname'?" && mv -f -- "$src" "$dst"
-      #       else
-      #         mv -- "$src" "$dst"
-      #       fi
-      #     done
-      #     rm -f "$tmpfile"
-      #     lf -remote "send $id reload"
-      #   }}'';
-
       paste = ''
         ''${{
           lf_files="''${XDG_DATA_HOME:-$HOME/.local/share}/lf/files"
@@ -242,6 +216,42 @@ in
             fi
           done
           [ "$mode" = "move" ] && lf -remote "send clear"
+          lf -remote "send $id reload"
+        }}'';
+
+      rename-smart = ''
+        ''${{
+          count=$(echo "$fx" | grep -c .)
+          if [ "$count" -le 1 ]; then
+            lf -remote "send $id rename"
+          else
+            lf -remote "send $id bulk-rename"
+          fi
+        }}'';
+
+      bulk-rename = ''
+        ''${{
+          [ -z "$fx" ] && exit 0
+          tmpfile=$(mktemp /tmp/lf-rename.XXXXXX)
+          echo "$fx" | while IFS= read -r f; do
+            basename -- "$f"
+          done > "$tmpfile"
+          $EDITOR "$tmpfile"
+          dir=$(dirname "$(echo "$fx" | head -1)")
+          i=0
+          echo "$fx" | while IFS= read -r src; do
+            i=$((i + 1))
+            newname=$(sed -n "''${i}p" "$tmpfile")
+            [ -z "$newname" ] && continue
+            [ "$(basename -- "$src")" = "$newname" ] && continue
+            dst="$dir/$newname"
+            if [ -e "$dst" ]; then
+              ${gum-confirm} "Replace '$newname'?" && mv -f -- "$src" "$dst"
+            else
+              mv -- "$src" "$dst"
+            fi
+          done
+          rm -f "$tmpfile"
           lf -remote "send $id reload"
         }}'';
 
