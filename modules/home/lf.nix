@@ -129,6 +129,14 @@ in
       copy-file = ''$wl-copy -t text/uri-list "file://$(realpath $f)"'';
       on-init = "";
 
+      on-quit = ''
+        ''${{
+          mount | grep -E '\.lfmount ' | awk '{print $3}' | while IFS= read -r m; do
+            fusermount3 -uz -- "$m" 2>/dev/null || umount -l -- "$m" 2>/dev/null
+            rmdir -- "$m" 2>/dev/null
+          done
+        }}'';
+
       open = ''
         ''${{
           case "$(file -Lb --mime-type -- "$f")" in
