@@ -123,6 +123,7 @@ in
       r = "rename-smart";
       P = "set preview!";
       "<c-c>" = "quit";
+      "<c-f>" = ''$lf -remote "send $id select \"$(fzf)\""'';
       "<tab>" = "!du -sh";
       "<enter>" = "open";
       "<esc>" = ":unselect; clear";
