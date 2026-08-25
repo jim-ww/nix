@@ -547,11 +547,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787596160,
-        "narHash": "sha256-di5yFE6qh5hwz/QZShcZC0XYTxcG7LnEFjVExnQ2w5A=",
+        "lastModified": 1787638018,
+        "narHash": "sha256-K3zsyCAagf4wExbG1pbjJlggyBLyyRLbacplKMfk4CU=",
         "owner": "jim-ww",
         "repo": "kage",
-        "rev": "23572a0749a6b14d05436b3447cf5ad030fc81ae",
+        "rev": "28a9ca8015eb63248084c8b91eadbab83869d8dd",
         "type": "github"
       },
       "original": {
