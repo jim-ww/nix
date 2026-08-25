@@ -106,7 +106,17 @@
     #        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
     servers = {
       # clangd.enable = true;
-      gopls.enable = true;
+      gopls = {
+        enable = true;
+        # Prefer the nearest go.work/go.mod walking up from the file itself
+        # (not cwd), so a nested Go module inside a larger repo resolves to
+        # its own root instead of the outer .git root.
+        rootMarkers = [
+          "go.work"
+          "go.mod"
+          ".git"
+        ];
+      };
       # pyright.enable = true; # alt: pylsp
       jsonls.enable = true;
       html.enable = true;
