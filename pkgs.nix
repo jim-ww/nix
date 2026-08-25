@@ -55,7 +55,6 @@ with pkgs;
   keepassxc
   #anki
   umu-launcher
-  drawing
 
   # dev
   go

@@ -52,6 +52,10 @@
       url = "github:jim-ww/kage";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    bdraw = {
+      url = "github:jim-ww/bdraw";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs =
     {
@@ -100,6 +104,7 @@
             inputs.gtr.packages.${system}.default
             inputs.anitui.packages.${system}.default
             inputs.kage.packages.${system}.default
+            inputs.bdraw.packages.${system}.default
           ];
         }
         home-manager.nixosModules.home-manager
