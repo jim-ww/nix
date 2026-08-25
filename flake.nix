@@ -119,7 +119,6 @@
                 ./modules/home/lf.nix
                 ./modules/home/battery-low.nix
                 ./modules/home/librewolf
-                ./modules/home/distrobox.nix
                 ./modules/home/jujutsu.nix
                 ./modules/home/zathura.nix
                 ./modules/home/direnv.nix

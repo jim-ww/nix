@@ -48,6 +48,7 @@ with pkgs;
 
   unison
   steam-run-free
+  distrobox
   claude-code
 
   # gui
