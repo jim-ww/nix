@@ -262,7 +262,7 @@
           "${mod}+Shift+7" = "move container to workspace number 7";
           "${mod}+Shift+8" = "move container to workspace number 8";
           "${mod}+Shift+9" = "move container to workspace number 9";
-          "${mod}+Shift+0" = "move container to workpace number 10";
+          "${mod}+Shift+0" = "move container to workspace number 10";
         };
       };
     };
