@@ -190,7 +190,7 @@
       {
         mode = "n";
         key = "grr";
-        action.__raw = "require('telescope.builtin').lsp_references";
+        action.__raw = "function() require('telescope.builtin').lsp_references() end";
         options.desc = "LSP: [G]oto [R]eferences";
       }
       # Jump to the implementation of the word under your cursor.
@@ -198,7 +198,7 @@
       {
         mode = "n";
         key = "gri";
-        action.__raw = "require('telescope.builtin').lsp_implementations";
+        action.__raw = "function() require('telescope.builtin').lsp_implementations() end";
         options.desc = "LSP: [G]oto [I]mplementation";
       }
       # Jump to the definition of the word under your cursor.
@@ -207,7 +207,7 @@
       {
         mode = "n";
         key = "grd";
-        action.__raw = "require('telescope.builtin').lsp_definitions";
+        action.__raw = "function() require('telescope.builtin').lsp_definitions() end";
         options.desc = "LSP: [G]oto [D]efinition";
       }
       # Fuzzy find all the symbols in your current document.
@@ -215,7 +215,7 @@
       {
         mode = "n";
         key = "gO";
-        action.__raw = "require('telescope.builtin').lsp_document_symbols";
+        action.__raw = "function() require('telescope.builtin').lsp_document_symbols() end";
         options.desc = "LSP: Open Document Symbols";
       }
       # Fuzzy find all the symbols in your current workspace.
@@ -223,7 +223,7 @@
       {
         mode = "n";
         key = "gW";
-        action.__raw = "require('telescope.builtin').lsp_dynamic_workspace_symbols";
+        action.__raw = "function() require('telescope.builtin').lsp_dynamic_workspace_symbols() end";
         options.desc = "LSP: Open Workspace Symbols";
       }
       # Jump to the type of the word under your cursor.
@@ -232,7 +232,7 @@
       {
         mode = "n";
         key = "grt";
-        action.__raw = "require('telescope.builtin').lsp_type_definitions";
+        action.__raw = "function() require('telescope.builtin').lsp_type_definitions() end";
         options.desc = "LSP: [G]oto [T]ype Definition";
       }
 
