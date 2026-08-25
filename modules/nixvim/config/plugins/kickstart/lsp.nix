@@ -1,8 +1,4 @@
-{
-  pkgs,
-  lib,
-  ...
-}: {
+{ pkgs, ... }: {
   # Useful status updates for LSP.
   # https://nix-community.github.io/nixvim/plugins/fidget/index.html
   plugins.fidget = {
@@ -96,7 +92,9 @@
   # and elegantly composed help section, `:help lsp-vs-treesitter`
   #
   # https://nix-community.github.io/nixvim/plugins/lsp/index.html
-  lsp = {
+  plugins.lsp = {
+    enable = true;
+
     # Enable the following language servers
     #  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
     #
@@ -159,7 +157,7 @@
         # };
         # filetypes = {
         # };
-        config = {
+        settings = {
           completion = {
             callSnippet = "Replace";
           };
@@ -177,91 +175,105 @@
       };
     };
 
-    keymaps = [
+    keymaps = {
       # Diagnostic keymaps
-      {
-        mode = "n";
-        key = "<leader>q";
-        action = lib.nixvim.mkRaw "vim.diagnostic.setloclist";
-        options.desc = "Open diagnostic [Q]uickfix list";
-      }
+      diagnostic = {
+        "<leader>q" = {
+          mode = "n";
+          action = "setloclist";
+          desc = "Open diagnostic [Q]uickfix list";
+        };
+      };
 
-      # Find references for the word under your cursor.
-      {
-        mode = "n";
-        key = "grr";
-        action.__raw = "function() require('telescope.builtin').lsp_references() end";
-        options.desc = "LSP: [G]oto [R]eferences";
-      }
-      # Jump to the implementation of the word under your cursor.
-      #  Useful when your language has ways of declaring types without an actual implementation.
-      {
-        mode = "n";
-        key = "gri";
-        action.__raw = "function() require('telescope.builtin').lsp_implementations() end";
-        options.desc = "LSP: [G]oto [I]mplementation";
-      }
-      # Jump to the definition of the word under your cursor.
-      #  This is where a variable was first declared, or where a function is defined, etc.
-      #  To jump back, press <C-t>.
-      {
-        mode = "n";
-        key = "grd";
-        action.__raw = "function() require('telescope.builtin').lsp_definitions() end";
-        options.desc = "LSP: [G]oto [D]efinition";
-      }
-      # Fuzzy find all the symbols in your current document.
-      #  Symbols are things like variables, functions, types, etc.
-      {
-        mode = "n";
-        key = "gO";
-        action.__raw = "function() require('telescope.builtin').lsp_document_symbols() end";
-        options.desc = "LSP: Open Document Symbols";
-      }
-      # Fuzzy find all the symbols in your current workspace.
-      #  Similar to document symbols, except searches over your entire project.
-      {
-        mode = "n";
-        key = "gW";
-        action.__raw = "function() require('telescope.builtin').lsp_dynamic_workspace_symbols() end";
-        options.desc = "LSP: Open Workspace Symbols";
-      }
-      # Jump to the type of the word under your cursor.
-      #  Useful when you're not sure what type a variable is and you want to see
-      #  the definition of its *type*, not where it was *defined*.
-      {
-        mode = "n";
-        key = "grt";
-        action.__raw = "function() require('telescope.builtin').lsp_type_definitions() end";
-        options.desc = "LSP: [G]oto [T]ype Definition";
-      }
+      extra = [
+        # Find references for the word under your cursor.
+        {
+          mode = "n";
+          key = "grr";
+          action.__raw = "require('telescope.builtin').lsp_references";
+          options = {
+            desc = "LSP: [G]oto [R]eferences";
+          };
+        }
+        # Jump to the implementation of the word under your cursor.
+        #  Useful when your language has ways of declaring types without an actual implementation.
+        {
+          mode = "n";
+          key = "gri";
+          action.__raw = "require('telescope.builtin').lsp_implementations";
+          options = {
+            desc = "LSP: [G]oto [I]mplementation";
+          };
+        }
+        # Jump to the definition of the word under your cursor.
+        #  This is where a variable was first declared, or where a function is defined, etc.
+        #  To jump back, press <C-t>.
+        {
+          mode = "n";
+          key = "grd";
+          action.__raw = "require('telescope.builtin').lsp_definitions";
+          options = {
+            desc = "LSP: [G]oto [D]efinition";
+          };
+        }
+        # Fuzzy find all the symbols in your current document.
+        #  Symbols are things like variables, functions, types, etc.
+        {
+          mode = "n";
+          key = "gO";
+          action.__raw = "require('telescope.builtin').lsp_document_symbols";
+          options = {
+            desc = "LSP: Open Document Symbols";
+          };
+        }
+        # Fuzzy find all the symbols in your current workspace.
+        #  Similar to document symbols, except searches over your entire project.
+        {
+          mode = "n";
+          key = "gW";
+          action.__raw = "require('telescope.builtin').lsp_dynamic_workspace_symbols";
+          options = {
+            desc = "LSP: Open Workspace Symbols";
+          };
+        }
+        # Jump to the type of the word under your cursor.
+        #  Useful when you're not sure what type a variable is and you want to see
+        #  the definition of its *type*, not where it was *defined*.
+        {
+          mode = "n";
+          key = "grt";
+          action.__raw = "require('telescope.builtin').lsp_type_definitions";
+          options = {
+            desc = "LSP: [G]oto [T]ype Definition";
+          };
+        }
+      ];
 
-      # Rename the variable under your cursor.
-      #  Most Language Servers support renaming across files, etc.
-      {
-        key = "grn";
-        lspBufAction = "rename";
-        options.desc = "LSP: [R]e[n]ame";
-      }
-      # Execute a code action, usually your cursor needs to be on top of an error
-      # or a suggestion from your LSP for this to activate.
-      {
-        mode = [
-          "n"
-          "x"
-        ];
-        key = "gra";
-        lspBufAction = "code_action";
-        options.desc = "LSP: [G]oto Code [A]ction";
-      }
-      # WARN: This is not Goto Definition, this is Goto Declaration.
-      #  For example, in C this would take you to the header.
-      {
-        key = "grD";
-        lspBufAction = "declaration";
-        options.desc = "LSP: [G]oto [D]eclaration";
-      }
-    ];
+      lspBuf = {
+        # Rename the variable under your cursor.
+        #  Most Language Servers support renaming across files, etc.
+        "grn" = {
+          action = "rename";
+          desc = "LSP: [R]e[n]ame";
+        };
+        # Execute a code action, usually your cursor needs to be on top of an error
+        # or a suggestion from your LSP for this to activate.
+        "gra" = {
+          mode = [
+            "n"
+            "x"
+          ];
+          action = "code_action";
+          desc = "LSP: [G]oto Code [A]ction";
+        };
+        # WARN: This is not Goto Definition, this is Goto Declaration.
+        #  For example, in C this would take you to the header.
+        "grD" = {
+          action = "declaration";
+          desc = "LSP: [G]oto [D]eclaration";
+        };
+      };
+    };
 
     # LSP servers and clients are able to communicate to each other what features they support.
     #  By default, Neovim doesn't support everything that is in the LSP specification.
