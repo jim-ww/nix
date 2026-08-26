@@ -27,6 +27,7 @@
     wf-recorder
     wl-clip-persist
     libnotify
+    rofimoji
     # mpvpaper
     # morewaita-icon-theme
     # qt5.qtwayland # for QT_QPA_PLATFORM
@@ -206,7 +207,7 @@
           "${mod}+w" = "exec freetube";
           "${mod}+b" = "exec ${config.passwords}";
           "${mod}+Shift+b" = "exec ${config.bookmarks-menu}";
-          "${mod}+j" = "exec rofi -show emoji";
+          "${mod}+j" = "exec rofimoji --action type --files kaomoji";
           "${mod}+x" = "exec ${config.notes}";
           "${mod}+Shift+x" = "exec ${config.notes-all}";
           "${mod}+d" = "exec xdg-terminal-exec -- ${config.editor}";

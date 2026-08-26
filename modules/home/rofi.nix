@@ -1,8 +1,6 @@
-{ pkgs, ... }:
 {
   programs.rofi = {
     enable = true;
-    plugins = [ pkgs.rofi-emoji ];
     #package = pkgs.rofi-wayland;
     #theme = lib.mkForce "sidebar"; #"material";
     extraConfig = {
