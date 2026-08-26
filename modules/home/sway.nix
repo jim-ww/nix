@@ -4,6 +4,15 @@
   lib,
   ...
 }:
+let
+  kaomojiRepo = pkgs.fetchFromGitHub {
+    owner = "jim-ww";
+    repo = "kaomoji-csv";
+    rev = "9c7d5bbcc968cb9f2d077ed8dfeeabbd0b3b4c1a";
+    hash = "sha256-TnFvZWURAjUbtz8YBoaLsNYHLinC+urR/N2xPyJbLLM=";
+  };
+  kaomojiData = "${kaomojiRepo}/kaomoji.csv";
+in
 {
   imports = [
     ./i3status.nix
@@ -27,7 +36,6 @@
     wf-recorder
     wl-clip-persist
     libnotify
-    rofimoji
     # mpvpaper
     # morewaita-icon-theme
     # qt5.qtwayland # for QT_QPA_PLATFORM
@@ -207,7 +215,8 @@
           "${mod}+w" = "exec freetube";
           "${mod}+b" = "exec ${config.passwords}";
           "${mod}+Shift+b" = "exec ${config.bookmarks-menu}";
-          "${mod}+j" = "exec rofimoji --action type --files kaomoji";
+          "${mod}+j" =
+            "exec rofi -dmenu -i -p kaomoji < ${kaomojiData} | awk '{print $1}' | sed 's/\\xc2\\xa0/ /g' | wl-copy";
           "${mod}+x" = "exec ${config.notes}";
           "${mod}+Shift+x" = "exec ${config.notes-all}";
           "${mod}+d" = "exec xdg-terminal-exec -- ${config.editor}";
