@@ -40,11 +40,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787781265,
-        "narHash": "sha256-5jBcU/QkI0s4Uuxgm8Yww/ZJlwkI/ttvJzQmWGvStgY=",
+        "lastModified": 1787789712,
+        "narHash": "sha256-68IGckyBs5YexiaeuuEkgZwPqGuD1tSd6WlBGEEwFSk=",
         "owner": "jim-ww",
         "repo": "anitui",
-        "rev": "4ec10ca942ce482e0de05c9d2bae91efe3829830",
+        "rev": "bd716c80563852860bb24a4b6bffaf214ff0af94",
         "type": "github"
       },
       "original": {
@@ -586,11 +586,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787766014,
-        "narHash": "sha256-IwX6TT6Fep4Tmxb+wcEau17CAlyT9Jr0YqOCwF634eo=",
+        "lastModified": 1787868812,
+        "narHash": "sha256-bhcJulAcejP/TLvFfPBRnFXXfzC7bhffBY5mdyR7FTM=",
         "owner": "jim-ww",
         "repo": "kage",
-        "rev": "3fc51d996dbb19f220fc107ff8b1107a80f4e999",
+        "rev": "faaa48ec8be48cf4b949fa9107f00a9fa97943ac",
         "type": "github"
       },
       "original": {
