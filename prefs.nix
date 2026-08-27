@@ -203,12 +203,11 @@ in
         gtr = "gtr -t ru";
         tns = ''
           tmux new-session -s "$(basename "$(pwd)")" -n edit "$EDITOR ." \; \
-                        new-window -n claude "bwrap-cwd claude" \; \
-                        new-window -n term \; \
-                        select-window -t claude'';
+                        new-window -n claude "bwrap-cwd claude" \; '';
         gomod2nix-init = "nix flake init -t github:nix-community/gomod2nix#app";
         xmr = "monero-wallet-cli --wallet-file $(cat /run/secrets/xmr-wallet) --daemon-address $(cat /run/secrets/xmr-daemon) --log-file ${home}/.cache/monero-wallet-cli.log";
         anitui = "anitui -status watching -sort last-watch -hide-airing -emit status,title,last,progress";
+        todo = "todo -f ${config.notesDir}/notes.md";
 
         # unclutter home dir
         wget = ''${lib.getExe pkgs.wget} --hsts-file="${dataHome}/wget-hsts"'';

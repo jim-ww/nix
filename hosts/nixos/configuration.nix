@@ -4,6 +4,8 @@
   ...
 }:
 {
+  # programs.wshowkeys.enable = true;
+
   programs.sway.enable = true;
   services.speechd.enable = false; # graphical-desktop default pulls espeak-ng/mbrola-voices
 

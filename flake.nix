@@ -56,6 +56,10 @@
       url = "github:jim-ww/bdraw";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    todo = {
+      url = "github:jim-ww/todo";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs =
     {
@@ -104,6 +108,8 @@
             inputs.gtr.packages.${system}.default
             inputs.anitui.packages.${system}.default
             inputs.bdraw.packages.${system}.default
+            inputs.kage.packages.${system}.default
+            inputs.todo.packages.${system}.default
           ];
         }
         home-manager.nixosModules.home-manager
@@ -132,8 +138,8 @@
                 ./modules/home/servers-healthcheck.nix
                 ./modules/home/bash.nix
                 ./modules/home/bwrap.nix
-                ./modules/home/kage.nix
-                inputs.kage.homeManagerModules.default
+                # ./modules/home/kage.nix
+                # inputs.kage.homeManagerModules.default
               ];
               stylix.targets.fzf.enable = false;
               dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";

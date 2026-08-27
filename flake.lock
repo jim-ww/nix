@@ -832,7 +832,8 @@
         "nur": "nur",
         "preservation": "preservation",
         "sops-nix": "sops-nix",
-        "stylix": "stylix"
+        "stylix": "stylix",
+        "todo": "todo"
       }
     },
     "sops-nix": {
@@ -1102,6 +1103,26 @@
       "original": {
         "owner": "tinted-theming",
         "repo": "base16-zed",
+        "type": "github"
+      }
+    },
+    "todo": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1788016031,
+        "narHash": "sha256-Fx6n+rTVoyaYkCBp+27FuzhR+waWleYBh0mGInRCZDY=",
+        "owner": "jim-ww",
+        "repo": "todo",
+        "rev": "6262741bf80efb2d47a297cd31a8e31f14be1843",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jim-ww",
+        "repo": "todo",
         "type": "github"
       }
     }
