@@ -208,7 +208,7 @@ in
                         select-window -t claude'';
         gomod2nix-init = "nix flake init -t github:nix-community/gomod2nix#app";
         xmr = "monero-wallet-cli --wallet-file $(cat /run/secrets/xmr-wallet) --daemon-address $(cat /run/secrets/xmr-daemon) --log-file ${home}/.cache/monero-wallet-cli.log";
-        anitui = "anitui -status watching -hide-airing";
+        anitui = "anitui -status watching -sort last-watch -hide-airing -emit status,title,last,progress";
 
         # unclutter home dir
         wget = ''${lib.getExe pkgs.wget} --hsts-file="${dataHome}/wget-hsts"'';
