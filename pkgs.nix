@@ -2,6 +2,7 @@
 with pkgs;
 [
   # cli
+  pv
   fd
   fzf
   jq
@@ -18,7 +19,7 @@ with pkgs;
   btop
   tmux
   ripgrep
-  _7zz
+  _7zz-rar
 
   imv
   # mpv
@@ -27,6 +28,7 @@ with pkgs;
   yt-dlp # or spotdl
   rmpc
   ani-cli
+  anki
 
   git
   git-remote-gcrypt
@@ -36,6 +38,7 @@ with pkgs;
   transmission_4
   wormhole-william # or croc
   nix-search-cli
+  restic
 
   age
   sops

@@ -64,7 +64,7 @@ stdenvNoCC.mkDerivation {
     cp -r animeSubs_dl $out/share/mpv/scripts/animeSubs_dl
 
     substituteInPlace $out/share/mpv/scripts/animeSubs_dl/main.lua \
-      --replace 'custom_python_cmd = nil' 'custom_python_cmd = "${pythonEnv}/bin/python3"'
+      --replace 'local custom_python_cmd' 'local custom_python_cmd = "${pythonEnv}/bin/python3"'
 
     runHook postInstall
   '';

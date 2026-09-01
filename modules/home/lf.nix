@@ -58,7 +58,6 @@ in
     chafa # sixel images
     ffmpegthumbnailer # video thumbnails
     fuse-archive # browse into archives without extracting
-    _7zz
     nsxiv
     xrdb
     glib # gio, for mounting MTP devices
@@ -201,7 +200,7 @@ in
           out="$PWD/$name"
           case "$name" in
             *.tar.gz) (cd "$dir" && ${lib.getExe pkgs.gnutar} -czf "$out" -- "''${names[@]}") ;;
-            *.zip) (cd "$dir" && ${lib.getExe pkgs._7zz} a "$out" -- "''${names[@]}") ;;
+            *.zip) (cd "$dir" && ${lib.getExe pkgs._7zz-rar} a "$out" -- "''${names[@]}") ;;
             *) lf -remote "send $id echoerr 'name must end in .tar.gz or .zip'" ;;
           esac
           lf -remote "send $id reload"
@@ -218,8 +217,7 @@ in
               *.tar.bz2 | *.tbz2) ${lib.getExe pkgs.gnutar} -xjf "$f" ;;
               *.tar.xz | *.txz) ${lib.getExe pkgs.gnutar} -xJf "$f" ;;
               *.tar) ${lib.getExe pkgs.gnutar} -xf "$f" ;;
-              *.rar) ${lib.getExe pkgs.unar} "$f" ;;
-              *) ${lib.getExe pkgs._7zz} x "$f" ;;
+              *) ${lib.getExe pkgs._7zz-rar} x "$f" ;;
             esac
           done
           lf -remote "send $id reload"

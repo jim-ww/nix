@@ -192,6 +192,7 @@ in
         wf-record = ''wf-recorder -a --audio-backend=pipewire --codec h264_vaapi --device /dev/dri/renderD128 -p preset=ultrafast -f "${videosDir}/rec_$(date +%d-%m-%Y-T%H-%M-%S).mkv"''; # preset=fast
         mount-personal = "mkdir -p ~/Archive/personal && gocryptfs ~/Archive/personal_enc ~/Archive/personal";
         umount-personal = umountPersonal;
+        backup-personal = ''tmux new -s backup "set -o pipefail; tar -cf - ${home}/Archive/personal | zstd -9 -T0 | ${lib.getExe pkgs.pv} | age -p -o ${home}/Downloads/backup-$(date +%Y%m%d).tar.zst.age && echo 'backup completed successfully' || echo 'backup FAILED'; read"'';
         trcli = "transmission-cli";
         trcli-rmt = ''transmission-remote $(cat /run/secrets/transmission-rpc-addr) -n "$(cat /run/secrets/transmission-rpc-user):$(cat /run/secrets/transmission-rpc-pass)"'';
         wg-update-ip = ''sed -i "s/ip = \"[^\"]*\"/ip = \"$(wl-paste)\"/" $NH_FLAKE/modules/wireguard.nix'';
