@@ -12,7 +12,7 @@
       "sops-install-secrets.service"
     ];
     wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
+    # wantedBy = [ "multi-user.target" ];
     path = [ pkgs.wireguard-tools ];
     serviceConfig = {
       Type = "oneshot";
