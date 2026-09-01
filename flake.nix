@@ -138,6 +138,7 @@
                 ./modules/home/servers-healthcheck.nix
                 ./modules/home/bash.nix
                 ./modules/home/bwrap.nix
+                ./modules/home/mpv.nix
                 # ./modules/home/kage.nix
                 # inputs.kage.homeManagerModules.default
               ];
@@ -147,13 +148,6 @@
 
               gtk.gtk3.extraConfig = {
                 gtk-application-prefer-dark-theme = 1;
-              };
-
-              programs.mpv = {
-                enable = true;
-                scripts = with pkgs.mpvScripts; [
-                  webtorrent-mpv-hook
-                ];
               };
 
               home.packages = config.packages;
