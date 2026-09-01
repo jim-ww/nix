@@ -149,6 +149,13 @@
                 gtk-application-prefer-dark-theme = 1;
               };
 
+              programs.mpv = {
+                enable = true;
+                scripts = with pkgs.mpvScripts; [
+                  webtorrent-mpv-hook
+                ];
+              };
+
               home.packages = config.packages;
               home.sessionVariables = config.env;
               home.shellAliases = config.shellAliases;

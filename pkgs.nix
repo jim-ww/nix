@@ -21,7 +21,7 @@ with pkgs;
   _7zz
 
   imv
-  mpv
+  # mpv
   ffmpeg
   imagemagick
   yt-dlp # or spotdl

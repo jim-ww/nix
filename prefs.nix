@@ -55,7 +55,7 @@ in
     passwords = "keepassxc ${documents}/.vault.kdbx";
     clipboard-manager = "cliphist list | rofi -dmenu | cliphist decode | wl-copy";
     notesDir = documents;
-    notes = ''xdg-terminal-exec -- sh -c 'cd "${config.notesDir}" && exec nvim notes.md' '';
+    notes = ''xdg-terminal-exec -- sh -c 'cd "${config.notesDir}" && exec nvim TODO.md' '';
     notes-all = ''xdg-terminal-exec -- sh -c 'cd "${config.notesDir}" && exec nvim .' '';
     app-menu = "${lib.getExe pkgs.rofi} -show drun";
     resource-monitor = "xdg-terminal-exec -- btop";
@@ -206,8 +206,9 @@ in
                         new-window -n claude "bwrap-cwd claude" \; '';
         gomod2nix-init = "nix flake init -t github:nix-community/gomod2nix#app";
         xmr = "monero-wallet-cli --wallet-file $(cat /run/secrets/xmr-wallet) --daemon-address $(cat /run/secrets/xmr-daemon) --log-file ${home}/.cache/monero-wallet-cli.log";
-        anitui = "anitui -status watching -sort last-watch -hide-airing -emit status,title,last,progress";
-        todo = "todo -f ${config.notesDir}/notes.md";
+        anitui = "anitui -status watching -sort last-watch -hide-airing -emit status,title,last,progress -external-terminal";
+        todo = "todo -date-format 02-01-2006";
+        # todo = "todo -f ${config.notesDir}/TODO.md";
 
         # unclutter home dir
         wget = ''${lib.getExe pkgs.wget} --hsts-file="${dataHome}/wget-hsts"'';
