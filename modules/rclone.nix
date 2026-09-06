@@ -10,7 +10,6 @@
     rclone-filen-email.owner = config.user;
     rclone-filen-password.owner = config.user;
     rclone-filen-api-key.owner = config.user;
-    rclone-yandex-token.owner = config.user;
     rclone-filelu-key.owner = config.user;
   };
 
@@ -48,10 +47,6 @@
           api_key = config.sops.secrets.rclone-filen-api-key.path;
         };
         config.type = "filen";
-      };
-      yandex = {
-        secrets.token = config.sops.secrets.rclone-yandex-token.path;
-        config.type = "yandex";
       };
       filelu = {
         secrets.key = config.sops.secrets.rclone-filelu-key.path;
