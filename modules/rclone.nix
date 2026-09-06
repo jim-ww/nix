@@ -7,6 +7,9 @@
     rclone-pcloud-token.owner = config.user;
     rclone-koofr-user.owner = config.user;
     rclone-koofr-password.owner = config.user;
+    rclone-filen-email.owner = config.user;
+    rclone-filen-password.owner = config.user;
+    rclone-filen-api-key.owner = config.user;
   };
 
   home-manager.users.${config.user}.programs.rclone = {
@@ -35,6 +38,14 @@
           type = "koofr";
           provider = "koofr";
         };
+      };
+      filen = {
+        secrets = {
+          email = config.sops.secrets.rclone-filen-email.path;
+          password = config.sops.secrets.rclone-filen-password.path;
+          api_key = config.sops.secrets.rclone-filen-api-key.path;
+        };
+        config.type = "filen";
       };
       drive = {
         secrets.token = config.sops.secrets.rclone-drive-token.path;
