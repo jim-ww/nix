@@ -94,6 +94,7 @@
         ./modules/xdg.nix
         ./modules/ollama.nix
         ./modules/podman.nix
+        ./modules/rclone.nix
         nur.modules.nixos.default
         stylix.nixosModules.stylix
         sops-nix.nixosModules.sops

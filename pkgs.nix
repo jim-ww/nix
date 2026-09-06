@@ -62,7 +62,7 @@ with pkgs;
   # dev
   go
   gopls
-  golint
+  revive
   gcc
   gnumake
   python3Minimal
