@@ -11,6 +11,7 @@
     rclone-filen-password.owner = config.user;
     rclone-filen-api-key.owner = config.user;
     rclone-yandex-token.owner = config.user;
+    rclone-filelu-key.owner = config.user;
   };
 
   home-manager.users.${config.user}.programs.rclone = {
@@ -51,6 +52,10 @@
       yandex = {
         secrets.token = config.sops.secrets.rclone-yandex-token.path;
         config.type = "yandex";
+      };
+      filelu = {
+        secrets.key = config.sops.secrets.rclone-filelu-key.path;
+        config.type = "filelu";
       };
       drive = {
         secrets.token = config.sops.secrets.rclone-drive-token.path;
