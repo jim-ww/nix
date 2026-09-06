@@ -210,6 +210,7 @@ in
         anitui = "anitui -status watching -sort last-watch -hide-airing -emit status,title,last,progress -external-terminal";
         todo = "todo -date-format 02-01-2006";
         # todo = "todo -f ${config.notesDir}/TODO.md";
+        restic-backups = "restic -r ${home}/Archive/personal/restic --password-file /run/secrets/restic-backups";
 
         # unclutter home dir
         wget = ''${lib.getExe pkgs.wget} --hsts-file="${dataHome}/wget-hsts"'';
