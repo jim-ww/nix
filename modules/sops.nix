@@ -25,6 +25,8 @@
     bookmarks.owner = config.user;
     xmr-daemon.owner = config.user;
     xmr-wallet.owner = config.user;
-    restic-backups.owner = config.user;
+    restic-repo-password = { };
+    shardic-key.owner = config.user;
+    shardic-providers.owner = config.user;
   };
 }

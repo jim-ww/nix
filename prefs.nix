@@ -95,6 +95,9 @@ in
       OLLAMA_NOHISTORY = 1;
       KAGE_DEBUG = "1";
 
+      SHARDIC_KEY_FILE = "/run/secrets/shardic-key";
+      SHARDIC_K = 3;
+
       # Unclutter home dir
       GOPATH = "${dataHome}/go";
       GRADLE_USER_HOME = "${dataHome}/gradle";
@@ -210,7 +213,8 @@ in
         anitui = "anitui -status watching -sort last-watch -hide-airing -emit status,title,last,progress -external-terminal";
         todo = "todo -date-format 02-01-2006";
         # todo = "todo -f ${config.notesDir}/TODO.md";
-        restic-backups = "restic -r ${home}/Archive/personal/restic --password-file /run/secrets/restic-backups";
+        restic = "restic --password-command $(sudo cat /run/secrets/restic-repo-password)";
+        shardic = "shardic --providers $(cat /run/secrets/shardic-providers)";
 
         # unclutter home dir
         wget = ''${lib.getExe pkgs.wget} --hsts-file="${dataHome}/wget-hsts"'';
