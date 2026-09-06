@@ -10,7 +10,6 @@
     rclone-filen-email.owner = config.user;
     rclone-filen-password.owner = config.user;
     rclone-filen-api-key.owner = config.user;
-    rclone-filelu-key.owner = config.user;
   };
 
   home-manager.users.${config.user}.programs.rclone = {
@@ -47,10 +46,6 @@
           api_key = config.sops.secrets.rclone-filen-api-key.path;
         };
         config.type = "filen";
-      };
-      filelu = {
-        secrets.key = config.sops.secrets.rclone-filelu-key.path;
-        config.type = "filelu";
       };
       drive = {
         secrets.token = config.sops.secrets.rclone-drive-token.path;
