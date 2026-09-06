@@ -213,7 +213,7 @@ in
         anitui = "anitui -status watching -sort last-watch -hide-airing -emit status,title,last,progress -external-terminal";
         todo = "todo -date-format 02-01-2006";
         # todo = "todo -f ${config.notesDir}/TODO.md";
-        restic = "restic --password-command $(sudo cat /run/secrets/restic-repo-password)";
+        restic = "restic --password-command 'sudo cat /run/secrets/restic-repo-password'";
         shardic = "shardic --providers $(cat /run/secrets/shardic-providers)";
 
         # unclutter home dir
