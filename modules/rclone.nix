@@ -4,8 +4,6 @@
     rclone-mega-user.owner = config.user;
     rclone-mega-password.owner = config.user;
     rclone-drive-token.owner = config.user;
-    rclone-drive-client-id.owner = config.user;
-    rclone-drive-client-secret.owner = config.user;
   };
 
   home-manager.users.${config.user}.programs.rclone = {
@@ -19,11 +17,7 @@
         config.type = "mega";
       };
       drive = {
-        secrets = {
-          token = config.sops.secrets.rclone-drive-token.path;
-          client_id = config.sops.secrets.rclone-drive-client-id.path;
-          client_secret = config.sops.secrets.rclone-drive-client-secret.path;
-        };
+        secrets.token = config.sops.secrets.rclone-drive-token.path;
         config = {
           type = "drive";
           scope = "drive";
