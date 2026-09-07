@@ -95,6 +95,8 @@
         ./modules/ollama.nix
         ./modules/podman.nix
         ./modules/rclone.nix
+        ./modules/sway.nix
+        ./modules/bash.nix
         nur.modules.nixos.default
         stylix.nixosModules.stylix
         sops-nix.nixosModules.sops
@@ -123,8 +125,6 @@
               imports = [
                 ./prefs.nix
                 ./modules/home/git.nix
-                ./modules/home/sway.nix
-                ./modules/home/xdg.nix
                 ./modules/home/gpg.nix
                 ./modules/home/mpd.nix
                 ./modules/home/lf.nix
@@ -137,7 +137,6 @@
                 ./modules/home/fzf.nix
                 ./modules/home/tealdeer.nix
                 ./modules/home/servers-healthcheck.nix
-                ./modules/home/bash.nix
                 ./modules/home/bwrap.nix
                 ./modules/home/mpv.nix
                 # ./modules/home/kage.nix
