@@ -22,13 +22,12 @@ with pkgs;
   _7zz-rar
 
   imv
-  # mpv
+  mpv
   ffmpeg
   imagemagick
   yt-dlp # or spotdl
   rmpc
   ani-cli
-  anki
 
   git
   git-remote-gcrypt
@@ -49,14 +48,11 @@ with pkgs;
   groff
   (pkgs.writeShellScriptBin "ms2pdf" ''${lib.getExe' pkgs.groff "groff"} -mms -Kutf8 -Tps "$1" | ${pkgs.ghostscript}/bin/ps2pdf - "$2"'')
 
-  unison
-  steam-run-free
   distrobox
   claude-code
 
   # gui
   keepassxc
-  #anki
   umu-launcher
 
   # dev
@@ -74,7 +70,5 @@ with pkgs;
   sqlc
   tailwindcss_4
   goose
-  pgweb
-  pocketbase
   goreleaser
 ]

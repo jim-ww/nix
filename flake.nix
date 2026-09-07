@@ -88,7 +88,7 @@
         ./modules/user.nix
         ./modules/sops.nix
         ./modules/tlp.nix
-        ./modules/nix-ld.nix
+        # ./modules/nix-ld.nix
         ./modules/wireguard.nix
         ./modules/vpn.nix
         ./modules/xdg.nix
@@ -138,7 +138,6 @@
                 ./modules/home/tealdeer.nix
                 ./modules/home/servers-healthcheck.nix
                 ./modules/home/bwrap.nix
-                ./modules/home/mpv.nix
                 # ./modules/home/kage.nix
                 # inputs.kage.homeManagerModules.default
               ];
