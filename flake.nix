@@ -104,15 +104,15 @@
         {
           programs.nixvim.enable = true;
           # with stablePkgs;
-          packages = [
-            inputs.nihongo.packages.${system}.default
-            inputs.charshare.packages.${system}.default
-            inputs.itpec-sensei.packages.${system}.default
-            inputs.gtr.packages.${system}.default
-            inputs.anitui.packages.${system}.default
-            inputs.bdraw.packages.${system}.default
-            inputs.kage.packages.${system}.default
-            inputs.todo.packages.${system}.default
+          packages = map (n: inputs.${n}.packages.${system}.default) [
+            "nihongo"
+            "charshare"
+            "itpec-sensei"
+            "gtr"
+            "anitui"
+            "bdraw"
+            "kage"
+            "todo"
           ];
         }
         home-manager.nixosModules.home-manager
