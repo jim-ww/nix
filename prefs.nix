@@ -96,7 +96,6 @@ in
       KAGE_DEBUG = "1";
 
       SHARDIC_KEY_FILE = "/run/secrets/shardic-key";
-      SHARDIC_K = 3;
 
       # Unclutter home dir
       GOPATH = "${dataHome}/go";
@@ -214,7 +213,7 @@ in
         todo = "todo -date-format 02-01-2006";
         # todo = "todo -f ${config.notesDir}/TODO.md";
         restic = "restic --password-command 'sudo cat /run/secrets/restic-repo-password'";
-        shardic = "shardic --providers $(cat /run/secrets/shardic-providers)";
+        # shardic = "shardic --providers $(cat /run/secrets/shardic-providers)";
 
         # unclutter home dir
         wget = ''${lib.getExe pkgs.wget} --hsts-file="${dataHome}/wget-hsts"'';
