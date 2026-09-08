@@ -105,14 +105,14 @@
           "path"
           "snippets"
           "buffer" # hm?
-          "lazydev"
+          # "lazydev" # provider below is disabled with lua_ls (see lsp.nix)
           #"avante"
         ];
         providers = {
-          lazydev = {
-            module = "lazydev.integrations.blink";
-            score_offset = 100;
-          };
+          # lazydev = {
+          #   module = "lazydev.integrations.blink";
+          #   score_offset = 100;
+          # };
           # avante = {
           #   module = "blink-cmp-avante";
           #   name = "Avante";
