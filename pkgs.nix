@@ -7,7 +7,7 @@ with pkgs;
   fzf
   jq
   lf
-  ncdu
+  gdu
   tree
   file
   lsof

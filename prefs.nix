@@ -213,6 +213,7 @@ in
         # todo = "todo -f ${config.notesDir}/TODO.md";
         restic = "restic --password-command 'sudo cat /run/secrets/restic-repo-password'";
         # shardic = "shardic --providers $(cat /run/secrets/shardic-providers)";
+        snapshots-size = "sudo btrfs filesystem du -s /persistent/.snapshots/*/snapshot";
 
         # unclutter home dir
         wget = ''${lib.getExe pkgs.wget} --hsts-file="${dataHome}/wget-hsts"'';

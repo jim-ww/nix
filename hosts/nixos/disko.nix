@@ -21,6 +21,7 @@
 
   fileSystems."/nix".neededForBoot = true;
   fileSystems."/persistent".neededForBoot = true;
+  fileSystems."/state".neededForBoot = true;
 
   disko.devices.nodev = {
     "/" = {
@@ -75,6 +76,15 @@
                 "compress=zstd"
               ];
               mountpoint = "/persistent";
+            };
+
+            "/state" = {
+              mountOptions = [
+                "subvol=state"
+                "noatime"
+                "compress=zstd"
+              ];
+              mountpoint = "/state";
             };
 
             "/snapshots" = {

@@ -1,8 +1,34 @@
 { config, ... }: {
   preservation = {
     enable = true;
-
-    preserveAt."/persistent" = {
+    preserveAt."/persistent".users."${config.user}" = {
+      directories = [
+        {
+          directory = ".gnupg";
+          mode = "0700";
+        }
+        {
+          directory = ".local/share/gnupg";
+          mode = "0700";
+        }
+        "Archive"
+        "Documents"
+        "Downloads"
+        "Games"
+        "Music"
+        "Pictures"
+        "Projects"
+        "Videos"
+        ".barony"
+        ".config/kage"
+        ".config/FreeTube"
+        ".local/share/anitui"
+        ".local/share/charshare"
+        ".local/share/itpec-sensei"
+      ];
+    };
+    # volatile state, not snapshotted
+    preserveAt."/state" = {
       directories = [
         {
           directory = "/var/lib/nixos";
@@ -22,13 +48,13 @@
           group = "ollama";
           user = "ollama";
         }
-        {
-          directory = "/tmp"; # to avoid large blobs taking all RAM
-          mode = "1777";
-        }
-        "/var/log"
         "/var/lib/systemd/timers"
         "/etc/ssh"
+        "/var/log"
+        {
+          directory = "/tmp";
+          mode = "1777";
+        }
       ];
 
       users."${config.user}" = {
@@ -37,100 +63,53 @@
             directory = ".ssh";
             mode = "0700";
           }
-
-          {
-            directory = ".gnupg";
-            mode = "0700";
-          }
-
-          {
-            directory = ".local/share/gnupg";
-            mode = "0700";
-          }
-
-          {
-            directory = ".pki";
-            mode = "0700";
-          }
-
-          {
-            directory = ".config/jj";
-            mode = "0700";
-          }
-
-          {
-            directory = ".config/transmission";
-            mode = "0700";
-          }
-
-          {
-            directory = ".local/share/bash";
-            mode = "0700";
-          }
-
-          {
-            directory = ".librewolf";
-            mode = "0700";
-          }
-
-          {
-            directory = ".config/.wrangler";
-            mode = "0700";
-          }
-
-          {
-            directory = ".config/keepassxc";
-            mode = "0700";
-          }
-
-          {
-            directory = ".config/gh";
-            mode = "0700";
-          }
-
           {
             directory = ".config/transmission-remote-gtk";
             mode = "0700";
           }
-
           {
-            directory = ".local/share/unison";
+            directory = ".local/share/bash";
             mode = "0700";
           }
-
           {
-            directory = ".local/state/nvim";
+            directory = ".config/.wrangler";
             mode = "0700";
           }
-
-          "Archive"
-          "Documents"
-          "Downloads"
-          "Games"
-          "Music"
-          "Pictures"
-          "Projects"
-          "Videos"
-          ".local/share/Trash"
-          ".npm" # doesn't fit in RAM
-          ".barony"
+          {
+            directory = ".config/keepassxc";
+            mode = "0700";
+          }
+          {
+            directory = ".pki";
+            mode = "0700";
+          }
+          {
+            directory = ".config/jj";
+            mode = "0700";
+          }
+          {
+            directory = ".config/transmission";
+            mode = "0700";
+          }
+          {
+            directory = ".config/gh";
+            mode = "0700";
+          }
+          ".cache"
+          ".npm"
+          ".librewolf"
           ".shared-ringdb"
-          ".config/kage"
-          ".config/FreeTube"
-          ".local/share/go"
-          ".local/share/Anki2" # TODO
+          ".local/share/Trash"
           ".local/share/direnv"
           ".local/share/umu"
-          ".local/share/pnpm"
           ".local/share/nihongo"
-          ".local/share/anitui"
           ".local/share/zathura"
           ".local/share/tealdeer"
-          ".local/share/charshare"
-          ".local/share/itpec-sensei"
+          ".local/state/nvim"
+          ".local/share/pnpm"
+          ".local/share/go"
           ".config/distrobox"
           ".claude"
-          ".cache" # to avoid large blobs taking all RAM
         ];
         files = [
           {

@@ -74,9 +74,9 @@ let
 
   homeBinds = [
     ''--bind "$HOME/.cache/sandbox" "$HOME"''
-    ''--bind "/persistent$HOME/.claude" "$HOME/.claude"''
-    ''--bind "/persistent$HOME/.claude.json" "$HOME/.claude.json"''
-    ''--bind "/persistent$HOME/.cache" "$HOME/.cache"''
+    ''--bind "/state$HOME/.claude" "$HOME/.claude"''
+    ''--bind "/state$HOME/.claude.json" "$HOME/.claude.json"''
+    ''--bind "/state$HOME/.cache" "$HOME/.cache"''
     ''--bind "/persistent$HOME/.local/share/itpec-sensei" "$HOME/.local/share/itpec-sensei"''
     ''--dir "$HOME/.local/share/gnupg"''
     ''--ro-bind-try "$HOME/.bashrc" "$HOME/.bashrc"''
