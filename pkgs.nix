@@ -53,7 +53,6 @@ with pkgs;
 
   # gui
   keepassxc
-  umu-launcher
 
   # dev
   go

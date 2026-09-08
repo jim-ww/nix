@@ -91,7 +91,6 @@ in
       NIXPKGS_ACCEPT_ANDROID_SDK_LICENSE = 1;
       WRANGLER_SEND_METRICS = "false";
       WINEPREFIX = "~/Games/umu/umu-default";
-      PROTONPATH = "${pkgs.proton-ge-bin.steamcompattool}";
       OLLAMA_NOHISTORY = 1;
       KAGE_DEBUG = "1";
 

@@ -81,7 +81,6 @@
         ./prefs.nix
         ./modules/bluetooth.nix
         ./modules/firewall.nix
-        ./modules/graphics.nix
         ./modules/pipewire.nix
         ./modules/stylix.nix
         ./modules/japanese.nix
@@ -89,6 +88,7 @@
         ./modules/sops.nix
         ./modules/tlp.nix
         # ./modules/nix-ld.nix
+        ./modules/games.nix
         ./modules/wireguard.nix
         ./modules/vpn.nix
         ./modules/xdg.nix
