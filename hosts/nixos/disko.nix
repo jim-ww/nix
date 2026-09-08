@@ -1,9 +1,19 @@
 {
-  device ? throw "Set this to your disk device, e.g. /dev/disk/by-id/...",
   pkgs,
+  device ? throw "Set this to your disk device, e.g. /dev/disk/by-id/...",
   ...
 }:
 {
+
+  services.snapper.configs.persistent = {
+    SUBVOLUME = "/persistent";
+    TIMELINE_CREATE = true;
+    TIMELINE_CLEANUP = true;
+    TIMELINE_LIMIT_HOURLY = 5;
+    TIMELINE_LIMIT_DAILY = 7;
+    TIMELINE_LIMIT_WEEKLY = 4;
+  };
+
   environment.systemPackages = with pkgs; [
     disko
     nixos-anywhere
@@ -65,6 +75,15 @@
                 "compress=zstd"
               ];
               mountpoint = "/persistent";
+            };
+
+            "/snapshots" = {
+              mountOptions = [
+                "subvol=snapshots"
+                "noatime"
+                "compress=zstd"
+              ];
+              mountpoint = "/persistent/.snapshots";
             };
 
             "/nix" = {
