@@ -2,8 +2,7 @@
   extraPackages = with pkgs; [
     golangci-lint
     # ruff # python
-    eslint
-    htmlhint
+    # eslint # replaced by biome
     # go-arch-lint
     #checkstyle # java
     #stylelint # css
@@ -18,13 +17,17 @@
     lintersByFt = {
       nix = [ "nix" ];
       go = [ "golangcilint" ]; # "go_arch_lint"
-      html = [ "htmlhint" ];
+      html = [ "biomejs" ];
       #css = [ "stylelint" ];
-      javascript = [ "eslint" ];
-      javascriptreact = [ "eslint" ];
-      typescript = [ "eslint" ];
-      typescriptreact = [ "eslint" ];
-      svelte = [ "eslint" ];
+      javascript = [ "biomejs" ];
+      javascriptreact = [ "biomejs" ];
+      typescript = [ "biomejs" ];
+      typescriptreact = [ "biomejs" ];
+      # NOTE: biome's svelte support is experimental and only covers <script>
+      # blocks -- it reports template syntax ({#if}, {#each}, directives) as
+      # parse errors. svelte-language-server (svelte-check) already provides
+      # real diagnostics here, so no separate linter.
+      # svelte = [ "biomejs" ];
       #python = [ "ruff" ];
       #java = [ "checkstyle" ];
       #markdown = [

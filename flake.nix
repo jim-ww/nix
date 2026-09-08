@@ -97,6 +97,7 @@
         ./modules/rclone.nix
         ./modules/sway.nix
         ./modules/bash.nix
+        ./modules/pnpm.nix
         nur.modules.nixos.default
         stylix.nixosModules.stylix
         sops-nix.nixosModules.sops

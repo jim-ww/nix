@@ -197,7 +197,7 @@ in
   #  For more options, you can see `:help option-list`
   # https://nix-community.github.io/nixvim/NeovimOptions/index.html#opts
   opts = {
-    shell = config.shell;
+    # shell = config.shell;
 
     # NOTE: autochdir was removed — it silently changes Neovim's global cwd on
     # every buffer switch (LSP jumps, oldfiles, quickfix, etc.), which made

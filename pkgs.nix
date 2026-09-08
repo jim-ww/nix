@@ -56,8 +56,6 @@ with pkgs;
 
   # dev
   go
-  gopls
-  revive
   gcc
   gnumake
   python3Minimal

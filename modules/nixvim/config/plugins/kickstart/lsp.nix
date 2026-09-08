@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{
   # Useful status updates for LSP.
   # https://nix-community.github.io/nixvim/plugins/fidget/index.html
   plugins.fidget = {
@@ -54,17 +54,18 @@
   # A plugin that properly configures LuaLS for editing your Neovim config
   #  by lazily updating your workspace libraries.
   #  https://nix-community.github.io/nixvim/plugins/lazydev/index.html
-  plugins.lazydev = {
-    enable = true; # autoEnableSources not enough
-    settings = {
-      library = [
-        {
-          path = "\${3rd}/luv/library";
-          words = [ "vim%.uv" ];
-        }
-      ];
-    };
-  };
+  # NOTE: only useful with lua_ls, which is disabled below.
+  # plugins.lazydev = {
+  #   enable = true; # autoEnableSources not enough
+  #   settings = {
+  #     library = [
+  #       {
+  #         path = "\${3rd}/luv/library";
+  #         words = [ "vim%.uv" ];
+  #       }
+  #     ];
+  #   };
+  # };
 
   # Brief aside: **What is LSP?**
   #
@@ -160,24 +161,24 @@
       # };
 
       # Lua lsp
-      lua_ls = {
-        enable = true;
-
-        # cmd = {
-        # };
-        # filetypes = {
-        # };
-        settings = {
-          completion = {
-            callSnippet = "Replace";
-          };
-          # diagnostics = {
-          #   disable = [
-          #     "missing-fields"
-          #   ];
-          # };
-        };
-      };
+      # lua_ls = {
+      #   enable = true;
+      #
+      #   # cmd = {
+      #   # };
+      #   # filetypes = {
+      #   # };
+      #   settings = {
+      #     completion = {
+      #       callSnippet = "Replace";
+      #     };
+      #     # diagnostics = {
+      #     #   disable = [
+      #     #     "missing-fields"
+      #     #   ];
+      #     # };
+      #   };
+      # };
 
       svelte = {
         enable = true;

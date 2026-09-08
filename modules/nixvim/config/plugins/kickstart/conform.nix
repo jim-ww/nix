@@ -14,6 +14,18 @@ let
       }
     }
   '';
+  # Biome's HTML formatter is still experimental, so it must be opted into
+  # explicitly. Kept in its own config dir so it doesn't override a project's
+  # own biome.json for the other filetypes.
+  biomeHtmlConfigDir = pkgs.writeTextDir "biome.jsonc" ''
+    {
+      "html": {
+        "formatter": {
+          "enabled": true
+        }
+      }
+    }
+  '';
 in
 {
   # Dependencies
@@ -25,8 +37,8 @@ in
     gofumpt
     nixfmt
     templ
-    biome # or prettier
-    prettierd
+    biome # or prettier; also replaces prettier/eslint for js/ts/css/json/html
+    # prettierd
     #prettier-plugin-go-template
     # google-java-format
   ];
@@ -116,7 +128,7 @@ in
         svelte = {
           lsp_format = "first";
         };
-        html = [ "prettierd" ]; # biome
+        html = [ "biome-html" ]; # was prettierd
         css = [ "biome" ];
         json = [ "biome" ]; # jq
         #sql = ["sqlfluff"];
@@ -149,6 +161,18 @@ in
           args = [
             "format"
             "--write"
+            "--stdin-file-path"
+            "$FILENAME"
+          ];
+          require_cwd = false;
+        };
+        biome-html = {
+          command = "biome";
+          args = [
+            "format"
+            "--write"
+            "--config-path"
+            "${biomeHtmlConfigDir}"
             "--stdin-file-path"
             "$FILENAME"
           ];

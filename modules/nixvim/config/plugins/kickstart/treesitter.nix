@@ -1,4 +1,38 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+let
+  gotmplQueries = pkgs.writeTextDir "queries/gotmpl/injections.scm" ''
+    ;; extends
+    ((text) @injection.content
+      (#set! injection.language "html")
+      (#set! injection.combined))
+  '';
+in
+{
+  # Neovim maps *.tmpl to the "template" filetype and doesn't know *.gohtml at
+  # all, so Go's html/template files end up with no highlighting. Map them to
+  # gohtmltmpl (HTML + Go template) and plain gotmpl for non-HTML templates.
+  filetype = {
+    extension = {
+      tmpl = "gohtmltmpl";
+      gohtml = "gohtmltmpl";
+      gotmpl = "gotmpl";
+    };
+    pattern = {
+      ".*%.html%.tmpl" = "gohtmltmpl";
+    };
+  };
+
+  # There is no "gohtmltmpl" grammar; the gotmpl parser handles both.
+  #
+  # The gotmpl grammar only parses the {{ }} actions -- everything around them
+  # is one big (text) node, so markup gets no highlighting at all. Inject html
+  # into it. "combined" treats all text nodes as one html document, so a tag
+  # opened before a {{ if }} and closed after it still parses.
+  extraConfigLua = ''
+    vim.treesitter.language.register("gotmpl", "gohtmltmpl")
+    vim.opt.runtimepath:prepend("${gotmplQueries}")
+  '';
+
   # Highlight, edit, and navigate code
   # https://nix-community.github.io/nixvim/plugins/treesitter/index.html
   plugins.treesitter = {
