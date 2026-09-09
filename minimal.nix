@@ -137,6 +137,7 @@ in
     rsync
     tealdeer
     steam-run-free
+    ffmpeg-headless
 
     # disks
     parted
