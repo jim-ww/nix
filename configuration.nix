@@ -4,6 +4,8 @@
   ...
 }:
 {
+  _module.args.device = "/dev/nvme0n1";
+
   # programs.wshowkeys.enable = true;
 
   programs.dconf.enable = true;
@@ -13,6 +15,8 @@
   security.sudo.extraConfig = ''
     Defaults lecture = never
   '';
+
+  services.libinput.touchpad.disableWhileTyping = true;
 
   services.getty = {
     autologinUser = config.user;
@@ -76,7 +80,9 @@
   boot.loader.grub.efiInstallAsRemovable = true;
   boot.loader.timeout = 2;
 
+  networking.hostName = "nixos";
   networking.networkmanager.enable = true;
+  networking.networkmanager.wifi.powersave = true;
   systemd.services.NetworkManager-wait-online.enable = false;
 
   time.timeZone = "Europe/Brussels";

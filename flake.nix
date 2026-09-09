@@ -155,7 +155,10 @@
             ;
         };
         modules = [
-          ./hosts/nixos
+          ./configuration.nix
+          ./hardware-config.nix
+          ./disko.nix
+          ./impermanence.nix
           inputs.disko.nixosModules.disko
           inputs.preservation.nixosModules.default
         ]

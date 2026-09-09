@@ -30,7 +30,7 @@ in
         ll = "${ls} -l";
         la = "${ls} -A";
         ff = "fastfetch -s title:separator:os:wm:lm:terminal:shell:packages:uptime:datetime:battery:disk:memory:theme:wmtheme:colors";
-        conf = "cd ${config.flakeDir}/hosts/nixos && $EDITOR configuration.nix";
+        conf = "cd ${config.flakeDir} && $EDITOR configuration.nix";
         prefs = "cd ${config.flakeDir} && $EDITOR prefs.nix";
         flake = "cd ${config.flakeDir} && $EDITOR flake.nix";
         pkgs = "cd ${config.flakeDir} && $EDITOR pkgs.nix";
