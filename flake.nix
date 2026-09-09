@@ -97,6 +97,7 @@
         ./modules/rclone.nix
         ./modules/sway
         ./modules/bash.nix
+        ./modules/nix.nix
         ./home.nix
         nur.modules.nixos.default
         stylix.nixosModules.stylix
