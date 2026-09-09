@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 let
   user = "jim";
   hashedPassword = "$y$j9T$k9cTxhpl3769v0w3vtHHC.$RMnePBGaEHYBg3IZDSnGry3TBScXMfDpPAGXlM9EOJA";
@@ -8,17 +8,6 @@ let
   browser = "librewolf";
 in
 {
-  imports = [ ./hardware-configuration.nix ];
-
-  # boot
-
-  boot.loader.grub = {
-    enable = true;
-    efiSupport = true;
-    efiInstallAsRemovable = true;
-  };
-  boot.loader.timeout = 2;
-
   # hardware
 
   hardware.graphics.enable = true;
@@ -104,7 +93,7 @@ in
   programs.dconf.enable = true;
 
   services.getty = {
-    autologinUser = user;
+    autologinUser = lib.mkForce user;
     autologinOnce = false;
   };
 

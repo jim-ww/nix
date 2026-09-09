@@ -137,6 +137,7 @@
       packages.${system} = {
         nvim = self.nixosConfigurations.nixos.config.programs.nixvim.build.package;
         default = self.packages.${system}.nvim;
+        iso = self.nixosConfigurations.iso.config.system.build.isoImage;
       };
 
       apps.${system}.default = {
@@ -145,6 +146,19 @@
       };
 
       formatter.${system} = pkgs.nixfmt;
+
+      nixosConfigurations.iso = nixpkgs.lib.nixosSystem {
+        modules = [
+          (
+            { modulesPath, ... }:
+            {
+              imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix" ];
+            }
+          )
+          { nixpkgs.hostPlatform = system; }
+          ./minimal.nix
+        ];
+      };
 
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
         specialArgs = {
