@@ -1,4 +1,3 @@
-{ config, ... }:
 {
   programs.sway.enable = true;
   services.speechd.enable = false; # graphical-desktop default pulls espeak-ng/mbrola-voices
@@ -49,12 +48,12 @@
     in
     {
       imports = [
-        ./home/i3status.nix
-        ./home/foot.nix
-        ./home/mako.nix
-        ./home/rofi.nix
-        ./home/swayidle.nix
-        ./home/cliphist.nix
+        ./i3status.nix
+        ./foot.nix
+        ./mako.nix
+        ./rofi.nix
+        ./swayidle.nix
+        ./cliphist.nix
       ];
 
       home.packages = with pkgs; [

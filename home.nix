@@ -15,21 +15,21 @@
     hm = {
       imports = [
         ./prefs.nix
-        ./modules/home/git.nix
-        ./modules/home/gpg.nix
-        ./modules/home/mpd.nix
-        ./modules/home/lf.nix
-        ./modules/home/battery-low.nix
-        ./modules/home/librewolf
-        ./modules/home/jujutsu.nix
-        ./modules/home/zathura.nix
-        ./modules/home/direnv.nix
-        ./modules/home/tmux.nix
-        ./modules/home/fzf.nix
-        ./modules/home/tealdeer.nix
-        ./modules/home/servers-healthcheck.nix
-        ./modules/home/bwrap.nix
-        # ./modules/home/kage.nix
+        ./modules/git.nix
+        ./modules/gpg.nix
+        ./modules/mpd.nix
+        ./modules/lf.nix
+        ./modules/battery-low.nix
+        ./modules/librewolf
+        ./modules/jujutsu.nix
+        ./modules/zathura.nix
+        ./modules/direnv.nix
+        ./modules/tmux.nix
+        ./modules/fzf.nix
+        ./modules/tealdeer.nix
+        ./modules/servers-healthcheck.nix
+        ./modules/bwrap.nix
+        # ./modules/kage.nix
         # inputs.kage.homeManagerModules.default
       ];
 
