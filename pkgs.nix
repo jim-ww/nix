@@ -43,8 +43,7 @@ with pkgs;
   gocryptfs
   monero-cli
 
-  groff
-  (pkgs.writeShellScriptBin "ms2pdf" ''${lib.getExe' pkgs.groff "groff"} -mms -Kutf8 -Tps "$1" | ${pkgs.ghostscript}/bin/ps2pdf - "$2"'')
+  (pkgs.writeShellScriptBin "ms2pdf" ''${lib.getExe' pkgs.groff "groff"} -mms -Kutf8 -Tps "$1" | ${pkgs.ghostscript}/bin/ps2pdf - "$2"'') # usage: ms2pdf <input.ms> <output.pdf>
 
   distrobox
   claude-code

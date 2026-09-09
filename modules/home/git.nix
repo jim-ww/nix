@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 let
   username = config.gitUsername;
   email = config.gitEmail;
@@ -6,6 +6,7 @@ in
 {
   programs.git = {
     enable = true;
+    package = pkgs.gitMinimal;
     signing.format = "openpgp";
     ignores = [
       "CLAUDE.md"

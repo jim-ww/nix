@@ -54,7 +54,7 @@ let
     "--clearenv"
     "--setenv"
     "PATH"
-    "${pkgs.git}/bin:/etc/profiles/per-user/${config.user}/bin:/run/current-system/sw/bin:/usr/bin:/usr/sbin"
+    "${pkgs.gitMinimal}/bin:/etc/profiles/per-user/${config.user}/bin:/run/current-system/sw/bin:/usr/bin:/usr/sbin"
     "--setenv"
     "HOME"
     "$HOME"
