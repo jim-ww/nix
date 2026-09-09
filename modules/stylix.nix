@@ -29,7 +29,7 @@
       package = pkgs.jetbrains-mono;
     };
     sansSerif = {
-      name = "DeaVu Sans";
+      name = "DejaVu Sans";
       package = pkgs.dejavu_fonts;
     };
     serif = {
