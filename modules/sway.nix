@@ -26,6 +26,26 @@
         hash = "sha256-TnFvZWURAjUbtz8YBoaLsNYHLinC+urR/N2xPyJbLLM=";
       };
       kaomojiData = "${kaomojiRepo}/kaomoji.csv";
+
+      home = config.home.homeDirectory;
+      documents = "${home}/Documents";
+      term = "xdg-terminal-exec --";
+      sh = "${pkgs.busybox}/bin/sh -c";
+
+      screenshotTo = ''"${home}/Pictures/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png"'';
+      screenshotPipe = "${pkgs.busybox}/bin/tee ${screenshotTo} | ${pkgs.wl-clipboard}/bin/wl-copy";
+      screenshot = "${sh} 'geometry=\"$(${lib.getExe pkgs.slurp})\" || exit 1; ${lib.getExe pkgs.grim} -g \"$geometry\" - | ${screenshotPipe}'";
+      screenshotFull = "${sh} '${lib.getExe pkgs.grim} - | ${screenshotPipe}'";
+
+      fileManager = "${term} ${lib.getExe pkgs.lf}";
+      appMenu = "${lib.getExe pkgs.rofi} -show drun";
+      resourceMonitor = "${term} btop";
+      passwords = "keepassxc ${documents}/.vault.kdbx";
+      bookmarksMenu = "${lib.getExe pkgs.yq-go} -r '.[]' /run/secrets/bookmarks | ${lib.getExe pkgs.rofi} -dmenu -p 'search bookmarks...' | wl-copy";
+      clipboardManager = "cliphist list | rofi -dmenu | cliphist decode | wl-copy";
+      kaomojiMenu = "rofi -dmenu -i -p kaomoji < ${kaomojiData} | awk '{print $1}' | sed 's/\\xc2\\xa0/ /g' | wl-copy";
+      notes = "${term} sh -c 'cd \"${documents}\" && exec ${config.editor} TODO.md'";
+      notesAll = "${term} sh -c 'cd \"${documents}\" && exec ${config.editor} .'";
     in
     {
       imports = [
@@ -220,28 +240,26 @@
               "${mod}+q" = "exec xdg-terminal-exec";
               "${mod}+Shift+q" = "exec nix-shell -p st --run st bash";
               "${mod}+t" = "exec xdg-terminal-exec --title=term-float";
-              "${mod}+e" = "exec ${config.file-manager-term}";
-              "${mod}+Shift+e" = "exec ${config.file-manager}";
+              "${mod}+e" = "exec ${fileManager}";
               "${mod}+f" = "exec ${config.browser}";
               "${mod}+s" = "exec ${config.music-player}";
-              "${mod}+Shift+a" = "exec ${config.resource-monitor}";
+              "${mod}+Shift+a" = "exec ${resourceMonitor}";
               "${mod}+a" = "exec anki";
               "${mod}+w" = "exec freetube";
-              "${mod}+b" = "exec ${config.passwords}";
-              "${mod}+Shift+b" = "exec ${config.bookmarks-menu}";
-              "${mod}+j" =
-                "exec rofi -dmenu -i -p kaomoji < ${kaomojiData} | awk '{print $1}' | sed 's/\\xc2\\xa0/ /g' | wl-copy";
-              "${mod}+x" = "exec ${config.notes}";
-              "${mod}+Shift+x" = "exec ${config.notes-all}";
-              "${mod}+d" = "exec xdg-terminal-exec -- ${config.editor}";
+              "${mod}+b" = "exec ${passwords}";
+              "${mod}+Shift+b" = "exec ${bookmarksMenu}";
+              "${mod}+j" = "exec ${kaomojiMenu}";
+              "${mod}+x" = "exec ${notes}";
+              "${mod}+Shift+x" = "exec ${notesAll}";
+              "${mod}+d" = "exec ${term} ${config.editor}";
               "${mod}+z" = "exec xdg-terminal-exec -- kage";
 
               "${mod}+p" = "exec ${lib.getExe pkgs.rofi-pulse-select} sink";
-              "${mod}+r" = "exec ${config.app-menu}";
+              "${mod}+r" = "exec ${appMenu}";
               "${mod}+l" = "exec ${config.swaylock}";
-              "${mod}+Shift+c" = "exec ${config.clipboard-manager}";
-              "Print" = "exec ${config.screenshot} ";
-              "${mod}+Print" = "exec ${config.screenshot-full}";
+              "${mod}+Shift+c" = "exec ${clipboardManager}";
+              "Print" = "exec ${screenshot}";
+              "${mod}+Print" = "exec ${screenshotFull}";
               # toggle screen
               "${mod}+F1" = "output eDP-1 enable";
               "${mod}+F2" = "output eDP-1 disable";

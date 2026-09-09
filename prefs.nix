@@ -9,7 +9,6 @@ let
   gitUsername = "jim-ww";
   gitEmail = "jim.w2610@proton.me";
   home = "/home/${config.user}";
-  documents = "${home}/Documents";
 
   videosDir = "${home}/Videos";
   dataHome = "${home}/.local/share";
@@ -36,27 +35,15 @@ in
     flakeDir = "${home}/Projects/nix";
     musicDir = "/home/${config.user}/Music";
     editor = "nvim";
-    file-manager = "xdg-terminal-exec -- ${lib.getExe pkgs.lf}";
-    file-manager-term = "xdg-terminal-exec -- ${lib.getExe pkgs.lf}";
     browser = "librewolf";
-    bookmarks-menu = "${lib.getExe pkgs.yq-go} -r '.[]' /run/secrets/bookmarks | ${lib.getExe pkgs.rofi} -dmenu -p 'search bookmarks...' | wl-copy ";
     music-player = "xdg-terminal-exec -- rmpc --clean";
-    passwords = "keepassxc ${documents}/.vault.kdbx";
-    clipboard-manager = "cliphist list | rofi -dmenu | cliphist decode | wl-copy";
-    notesDir = documents;
-    notes = ''xdg-terminal-exec -- sh -c 'cd "${config.notesDir}" && exec nvim TODO.md' '';
-    notes-all = ''xdg-terminal-exec -- sh -c 'cd "${config.notesDir}" && exec nvim .' '';
-    app-menu = "${lib.getExe pkgs.rofi} -show drun";
-    resource-monitor = "xdg-terminal-exec -- btop";
-    screenshot = ''${pkgs.busybox}/bin/sh -c 'geometry="$(${lib.getExe pkgs.slurp})" || exit 1; ${lib.getExe pkgs.grim} -g "$geometry" - | ${pkgs.busybox}/bin/tee ${home}/Pictures/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png | ${pkgs.wl-clipboard}/bin/wl-copy' '';
-    screenshot-full = "${pkgs.busybox}/bin/sh -c '${lib.getExe pkgs.grim} - | ${pkgs.busybox}/bin/tee ${home}/Pictures/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png | ${pkgs.wl-clipboard}/bin/wl-copy' ";
     swaylock = "${lib.getExe pkgs.swaylock} -efkli ${config.flakeDir}/wallpaper && ${umountPersonal}";
     env = {
       NH_FLAKE = config.flakeDir;
       REFINED_CHAR_SYMBOL = "ジ";
       TERM = "foot"; # terminfo name of the actual terminal; must stay literal, not the xdg-terminal-exec launcher
-      EDITOR = "nvim";
-      VISUAL = "nvim";
+      EDITOR = config.editor;
+      VISUAL = config.editor;
       LESS = "-R"; # syntax highlighting
       SHELL = config.shell;
       SOPS_AGE_KEY_FILE = "/persistent/etc/sops/age/keys.txt";
@@ -198,7 +185,6 @@ in
         xmr = "monero-wallet-cli --wallet-file $(cat /run/secrets/xmr-wallet) --daemon-address $(cat /run/secrets/xmr-daemon) --log-file ${home}/.cache/monero-wallet-cli.log";
         anitui = "anitui -status watching -sort last-watch -hide-airing -emit status,title,last,progress -external-terminal";
         todo = "todo -date-format 02-01-2006";
-        # todo = "todo -f ${config.notesDir}/TODO.md";
         restic = "restic --password-command 'sudo cat /run/secrets/restic-repo-password'";
         # shardic = "shardic --providers $(cat /run/secrets/shardic-providers)";
         snapshots-size = "sudo btrfs filesystem du -s /persistent/.snapshots/*/snapshot";
@@ -246,46 +232,10 @@ in
     editor = mkOption {
       type = types.str;
     };
-    file-manager = mkOption {
-      type = types.str;
-    };
-    file-manager-term = mkOption {
-      type = types.str;
-    };
     browser = mkOption {
       type = types.str;
     };
-    bookmarks-menu = mkOption {
-      type = types.str;
-    };
     music-player = mkOption {
-      type = types.str;
-    };
-    passwords = mkOption {
-      type = types.str;
-    };
-    clipboard-manager = mkOption {
-      type = types.str;
-    };
-    notesDir = mkOption {
-      type = types.str;
-    };
-    notes = mkOption {
-      type = types.str;
-    };
-    notes-all = mkOption {
-      type = types.str;
-    };
-    app-menu = mkOption {
-      type = types.str;
-    };
-    resource-monitor = mkOption {
-      type = types.str;
-    };
-    screenshot = mkOption {
-      type = types.str;
-    };
-    screenshot-full = mkOption {
       type = types.str;
     };
     swaylock = mkOption {
