@@ -10,7 +10,7 @@ in
 {
   imports = [ ./hardware-configuration.nix ];
 
-  # ---- boot ----------------------------------------------------------------
+  # boot
 
   boot.loader.grub = {
     enable = true;
@@ -19,7 +19,7 @@ in
   };
   boot.loader.timeout = 2;
 
-  # ---- hardware ------------------------------------------------------------
+  # hardware
 
   hardware.graphics.enable = true;
   hardware.bluetooth.enable = true;
@@ -30,7 +30,7 @@ in
   services.fstrim.enable = true;
   zramSwap.enable = true;
 
-  # ---- networking ----------------------------------------------------------
+  # networking
 
   networking.hostName = "nixos";
   networking.networkmanager.enable = true;
@@ -38,14 +38,14 @@ in
 
   services.openssh.enable = true;
 
-  # ---- audio ---------------------------------------------------------------
+  # audio
 
   services.pipewire = {
     enable = true;
     alsa.enable = true;
   };
 
-  # ---- session -------------------------------------------------------------
+  # session
   programs.sway = {
     enable = true;
     extraPackages = with pkgs; [
@@ -117,7 +117,7 @@ in
     noto-fonts-cjk-sans
   ];
 
-  # ---- packages ------------------------------------------------------------
+  # packages
 
   environment.systemPackages = with pkgs; [
     # cli
@@ -135,20 +135,24 @@ in
     curl
     _7zz
     rsync
+    tealdeer
+    steam-run-free
 
-    # disks and crypto, rescue
+    # disks
     parted
     gptfdisk
     cryptsetup
     btrfs-progs
     dosfstools
     e2fsprogs
+    testdisk
 
     # secrets
     age
     sops
     gnupg
     gocryptfs
+    restic
 
     # net
     bluetuith
@@ -156,7 +160,7 @@ in
     nix-search-cli
   ];
 
-  # ---- shell ---------------------------------------------------------------
+  # shell
 
   programs.bash.blesh.enable = true;
 
@@ -190,7 +194,7 @@ in
     gpl = "git pull";
   };
 
-  # ---- users ---------------------------------------------------------------
+  # users
 
   users.users.${user} = {
     isNormalUser = true;
@@ -207,7 +211,7 @@ in
     Defaults lecture = never
   '';
 
-  # ---- nix -----------------------------------------------------------------
+  # nix
 
   nixpkgs.config.allowUnfree = true;
 
@@ -233,7 +237,7 @@ in
 
   services.earlyoom.enable = true;
 
-  # ---- locale --------------------------------------------------------------
+  # locale
 
   time.timeZone = timezone;
   i18n.defaultLocale = "en_US.UTF-8";
