@@ -19,8 +19,8 @@
       url = "github:mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    kickstart-nixvim = {
-      url = "path:./modules/nixvim";
+    nixvim = {
+      url = "github:nix-community/nixvim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nur = {
@@ -101,7 +101,8 @@
         nur.modules.nixos.default
         stylix.nixosModules.stylix
         sops-nix.nixosModules.sops
-        inputs.kickstart-nixvim.nixosModules.default
+        inputs.nixvim.nixosModules.nixvim
+        ./modules/nixvim
         {
           programs.nixvim.enable = true;
           # with stablePkgs;
