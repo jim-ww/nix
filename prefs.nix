@@ -28,10 +28,7 @@ in
       nerd-fonts.symbols-only # icons for terminal
       noto-fonts-cjk-sans # clean/readable japanese font
     ];
-    wallpaper = {
-      command = "swaybg -i $NH_FLAKE/wallpaper -m fill & disown";
-      dir = "$NH_FLAKE/assets/wallpapers";
-    };
+    wallpaper.command = "swaybg -i $NH_FLAKE/wallpaper -m fill & disown";
     flakeDir = "${home}/Projects/nix";
     musicDir = "/home/${config.user}/Music";
     editor = "nvim";
@@ -215,13 +212,8 @@ in
     font-packages = mkOption {
       type = types.listOf types.package;
     };
-    wallpaper = {
-      command = mkOption {
-        type = types.str;
-      };
-      dir = mkOption {
-        type = types.str;
-      };
+    wallpaper.command = mkOption {
+      type = types.str;
     };
     flakeDir = mkOption {
       type = types.str;
