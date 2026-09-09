@@ -62,7 +62,7 @@ in
       imv
       mpv
       zathura
-      keepassxc
+      keepassxc # TODO
       librewolf-bin
     ];
   };
