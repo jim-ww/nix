@@ -160,6 +160,22 @@
         ];
       };
 
+      nixosConfigurations.minimal = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs system; };
+        modules = [
+          inputs.disko.nixosModules.disko
+          inputs.preservation.nixosModules.default
+          ./hardware-config.nix
+          ./disko.nix
+          ./impermanence.nix
+          ./minimal.nix
+          {
+            options.user = nixpkgs.lib.mkOption { type = nixpkgs.lib.types.str; };
+            config.user = user;
+          }
+        ];
+      };
+
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
         specialArgs = {
           inherit

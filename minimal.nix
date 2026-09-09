@@ -6,8 +6,12 @@ let
   term = "foot";
   editor = "nvim";
   browser = "librewolf";
+  gitName = "jim-ww";
+  gitEmail = "jim.w2610@proton.me";
 in
 {
+  # TODO: dbus, neovim, upower, gvfs
+
   # hardware
 
   hardware.graphics.enable = true;
@@ -17,6 +21,7 @@ in
   services.libinput.touchpad.disableWhileTyping = true;
   services.tlp.enable = true;
   services.fstrim.enable = true;
+  services.earlyoom.enable = true;
   zramSwap.enable = true;
 
   # networking
@@ -44,7 +49,6 @@ in
       swaylock
       swayidle
       grim
-      slurp
       wl-clipboard
       brightnessctl
       libnotify
@@ -106,12 +110,28 @@ in
     noto-fonts-cjk-sans
   ];
 
+  services.mpd.enable = true;
+  services.mpd.settings.music_directory = "$HOME/Music";
+
+  programs.git = {
+    enable = true;
+    package = pkgs.gitMinimal;
+    config = {
+      init.defaultBranch = "main";
+      pull.rebase = true;
+      push.autoSetupRemote = true;
+      user.name = gitName;
+      user.email = gitEmail;
+    };
+  };
+
   # packages
 
   environment.systemPackages = with pkgs; [
     # cli
     neovim
-    git
+    nh
+    fd
     lf
     fzf
     ripgrep
@@ -122,11 +142,15 @@ in
     gdu
     wget
     curl
-    _7zz
+    _7zz-rar
     rsync
     tealdeer
+    fastfetch-unwrapped
+    jujutsu
     steam-run-free
     ffmpeg-headless
+    monero-cli
+    (pkgs.writeShellScriptBin "ms2pdf" ''${lib.getExe' pkgs.groff "groff"} -mms -Kutf8 -Tps "$1" | ${pkgs.ghostscript}/bin/ps2pdf - "$2"'') # usage: ms2pdf <input.ms> <output.pdf>
 
     # disks
     parted
@@ -137,7 +161,7 @@ in
     e2fsprogs
     testdisk
 
-    # secrets
+    # secrets & files
     age
     sops
     gnupg
@@ -146,8 +170,8 @@ in
 
     # net
     bluetuith
+    transmission_4
     wormhole-william
-    nix-search-cli
   ];
 
   # shell
@@ -168,20 +192,8 @@ in
     l = "ls -h --group-directories-first --color=auto";
     la = "ls -hA --group-directories-first --color=auto";
     conf = "$EDITOR /etc/nixos/configuration.nix";
-    ns = "nix-search";
+    ns = lib.getExe pkgs.nix-search-cli;
     nsp = "nix-shell -p";
-
-    gs = "git status";
-    ga = "git add";
-    gaa = "git add --all";
-    gc = "git commit";
-    gcm = "git commit -m";
-    gd = "git diff";
-    gl = "git log";
-    gsw = "git switch";
-    gcl = "git clone";
-    gps = "git push";
-    gpl = "git pull";
   };
 
   # users
@@ -224,8 +236,6 @@ in
     dates = "weekly";
     options = "--delete-older-than 7d";
   };
-
-  services.earlyoom.enable = true;
 
   # locale
 
