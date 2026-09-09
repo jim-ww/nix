@@ -2,7 +2,6 @@
 with pkgs;
 [
   # cli
-  pv
   fd
   fzf
   jq
@@ -24,12 +23,11 @@ with pkgs;
   imv
   mpv
   ffmpeg
-  imagemagick
   yt-dlp # or spotdl
   rmpc
   ani-cli
 
-  git
+  gitMinimal
   git-remote-gcrypt
   git-filter-repo
   gh
