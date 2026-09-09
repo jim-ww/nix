@@ -1,22 +1,9 @@
-{ pkgs, ... }:
 {
-  xdg.portal = {
-    enable = true;
-    extraPortals = with pkgs; [
-      xdg-desktop-portal-gtk
-      xdg-desktop-portal-wlr
-    ];
-  };
-
   xdg.terminal-exec.enable = true;
   xdg.terminal-exec.settings.default = [ "foot.desktop" ];
 
   hm =
-    {
-      pkgs,
-      config,
-      ...
-    }:
+    { config, ... }:
     {
       xdg.enable = true;
 
@@ -31,21 +18,6 @@
         pictures = "${config.home.homeDirectory}/Pictures";
         videos = "${config.home.homeDirectory}/Videos";
         publicShare = "${config.home.homeDirectory}/Downloads";
-      };
-
-      xdg.portal = {
-        enable = true;
-        # xdgOpenUsePortal = true;
-        config.common = {
-          default = [
-            "wlr"
-            "gtk"
-          ];
-        };
-        extraPortals = with pkgs; [
-          xdg-desktop-portal-gtk
-          xdg-desktop-portal-wlr
-        ];
       };
 
       xdg.desktopEntries.nvim = {
