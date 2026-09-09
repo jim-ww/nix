@@ -4,8 +4,6 @@
   ...
 }:
 {
-  _module.args.device = "/dev/nvme0n1";
-
   # programs.wshowkeys.enable = true;
 
   programs.dconf.enable = true;
@@ -51,12 +49,6 @@
   powerManagement.powertop.enable = true;
   zramSwap.enable = true;
 
-  boot.loader.grub.enable = true;
-  boot.loader.grub.efiSupport = true;
-  boot.loader.grub.efiInstallAsRemovable = true;
-  boot.loader.timeout = 2;
-
-  networking.hostName = "nixos";
   networking.networkmanager.enable = true;
   networking.networkmanager.wifi.powersave = true;
   systemd.services.NetworkManager-wait-online.enable = false;

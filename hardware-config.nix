@@ -7,6 +7,15 @@
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
+  _module.args.device = "/dev/nvme0n1";
+
+  networking.hostName = "nixos";
+
+  boot.loader.grub.enable = true;
+  boot.loader.grub.efiSupport = true;
+  boot.loader.grub.efiInstallAsRemovable = true;
+  boot.loader.timeout = 2;
+
   boot.initrd.availableKernelModules = [
     "nvme"
     "xhci_pci"
