@@ -169,6 +169,18 @@
       ];
     in
     {
+      packages.${system} = {
+        nvim = self.nixosConfigurations.nixos.config.programs.nixvim.build.package;
+        default = self.packages.${system}.nvim;
+      };
+
+      apps.${system}.default = {
+        type = "app";
+        program = "${self.packages.${system}.nvim}/bin/nvim";
+      };
+
+      formatter.${system} = pkgs.nixfmt;
+
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
         specialArgs = {
           inherit
