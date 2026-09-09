@@ -9,6 +9,7 @@
     DynamicUser = lib.mkForce false;
     StateDirectory = lib.mkForce null;
   };
+  systemd.services.ollama-model-loader.startLimitIntervalSec = 0;
   services.ollama = {
     enable = true;
     package = pkgs.ollama-vulkan;
