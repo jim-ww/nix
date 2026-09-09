@@ -98,6 +98,7 @@
         ./modules/sway.nix
         ./modules/bash.nix
         ./modules/pnpm.nix
+        ./home.nix
         nur.modules.nixos.default
         stylix.nixosModules.stylix
         sops-nix.nixosModules.sops
@@ -124,7 +125,6 @@
             useUserPackages = true;
             backupFileExtension = "backup";
             extraSpecialArgs = { inherit inputs; };
-            users.${user} = import ./modules/home;
           };
           nixpkgs.overlays = [
             nur.overlays.default
