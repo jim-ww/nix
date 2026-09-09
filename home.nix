@@ -29,6 +29,7 @@
         ./modules/tealdeer.nix
         ./modules/servers-healthcheck.nix
         ./modules/bwrap.nix
+        ./modules/pnpm.nix
         # ./modules/kage.nix
         # inputs.kage.homeManagerModules.default
       ];
