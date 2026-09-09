@@ -6,8 +6,6 @@
 }:
 with lib;
 let
-  gitUsername = "jim-ww";
-  gitEmail = "jim.w2610@proton.me";
   home = "/home/${config.user}";
 
   videosDir = "${home}/Videos";
@@ -22,13 +20,13 @@ in
   config = {
     user = "jim";
     shell = "bash";
-    gitUsername = gitUsername;
-    gitEmail = gitEmail;
+    gitUsername = "jim-ww";
+    gitEmail = "jim.w2610@proton.me";
     gpgKeyID = "84E78B81883125DEF4FFBD7735AE71B304C67013";
     packages = import ./pkgs.nix { inherit pkgs; };
     wallpaper.command = "swaybg -i $NH_FLAKE/wallpaper -m fill & disown";
     flakeDir = "${home}/Projects/nix";
-    musicDir = "/home/${config.user}/Music";
+    musicDir = "${home}/Music";
     editor = "nvim";
     browser = "librewolf";
     music-player = "xdg-terminal-exec -- rmpc --clean";
