@@ -11,7 +11,7 @@
   xdg.terminal-exec.enable = true;
   xdg.terminal-exec.settings.default = [ "foot.desktop" ];
 
-  home-manager.users.${config.user} =
+  hm =
     {
       pkgs,
       config,

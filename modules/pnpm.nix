@@ -1,6 +1,6 @@
 { config, ... }:
 {
-  home-manager.users.${config.user} =
+  hm =
     { config, ... }:
     {
       # Node resolves modules by walking up to the nearest node_modules, so every

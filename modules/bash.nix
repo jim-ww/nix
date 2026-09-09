@@ -2,7 +2,7 @@
 {
   programs.bash.blesh.enable = true;
 
-  home-manager.users.${config.user} = { config, pkgs, ... }: {
+  hm = { config, pkgs, ... }: {
     programs.bash = {
       enable = true;
       historyFile = "${config.xdg.dataHome}/bash/bash_history";

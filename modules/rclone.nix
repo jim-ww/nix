@@ -21,7 +21,7 @@ in
     rclone-filen-api-key.owner = config.user;
   };
 
-  home-manager.users.${config.user} = {
+  hm = {
     # rclone.conf is rendered in plaintext on every activation, so re-encrypt it
     # once the secrets have been injected.
     systemd.user.services.rclone-config.Service.ExecStartPost =

@@ -11,7 +11,7 @@
     fi
   '';
 
-  home-manager.users.${config.user} =
+  hm =
     {
       pkgs,
       config,
