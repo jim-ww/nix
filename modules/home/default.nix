@@ -28,7 +28,6 @@
     gtk-application-prefer-dark-theme = 1;
   };
 
-  home.packages = config.packages;
   home.sessionVariables = config.env;
   home.shellAliases = config.shellAliases;
 
