@@ -11,14 +11,6 @@ let
   home = "/home/${config.user}";
   documents = "${home}/Documents";
 
-  gtkBookmarks = [
-    "file://${home}/Archive"
-    "file://${home}/Documents"
-    "file://${home}/Projects"
-    "file://${home}/Downloads"
-    "file://${home}/Music"
-  ];
-
   videosDir = "${home}/Videos";
   dataHome = "${home}/.local/share";
   configHome = "${home}/.config";
@@ -42,14 +34,11 @@ in
       dir = "$NH_FLAKE/assets/wallpapers";
     };
     flakeDir = "${home}/Projects/nix";
-    configHome = configHome;
-    backupDir = "${home}/Archive/backups";
     musicDir = "/home/${config.user}/Music";
     editor = "nvim";
     file-manager = "xdg-terminal-exec -- ${lib.getExe pkgs.lf}";
     file-manager-term = "xdg-terminal-exec -- ${lib.getExe pkgs.lf}";
     browser = "librewolf";
-    duckduckgo = "https://duckduckgo.com/?kp=-2&kl=wt-wt&ka=Terminus&kt=Terminus&kj=1a1b26&kn=1&kx=a9b1d6&k1=-1&k5=2&k7=16161e&k8=a9b1d6&k9=7aa2f7&k18=1&kaa=bb9af7&kaf=s&kaj=m&kak=-1&kae=d&kao=-1&kap=-1&kaq=-1&kau=-1&kav=1&kax=-1&kay=b&kbf=1&duckai=1";
     bookmarks-menu = "${lib.getExe pkgs.yq-go} -r '.[]' /run/secrets/bookmarks | ${lib.getExe pkgs.rofi} -dmenu -p 'search bookmarks...' | wl-copy ";
     music-player = "xdg-terminal-exec -- rmpc --clean";
     passwords = "keepassxc ${documents}/.vault.kdbx";
@@ -61,7 +50,6 @@ in
     resource-monitor = "xdg-terminal-exec -- btop";
     screenshot = ''${pkgs.busybox}/bin/sh -c 'geometry="$(${lib.getExe pkgs.slurp})" || exit 1; ${lib.getExe pkgs.grim} -g "$geometry" - | ${pkgs.busybox}/bin/tee ${home}/Pictures/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png | ${pkgs.wl-clipboard}/bin/wl-copy' '';
     screenshot-full = "${pkgs.busybox}/bin/sh -c '${lib.getExe pkgs.grim} - | ${pkgs.busybox}/bin/tee ${home}/Pictures/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png | ${pkgs.wl-clipboard}/bin/wl-copy' ";
-    gtk.bookmarks = gtkBookmarks;
     swaylock = "${lib.getExe pkgs.swaylock} -efkli ${config.flakeDir}/wallpaper && ${umountPersonal}";
     env = {
       NH_FLAKE = config.flakeDir;
@@ -252,12 +240,6 @@ in
     flakeDir = mkOption {
       type = types.str;
     };
-    configHome = mkOption {
-      type = types.str;
-    };
-    backupDir = mkOption {
-      type = types.str;
-    };
     musicDir = mkOption {
       type = types.str;
     };
@@ -271,9 +253,6 @@ in
       type = types.str;
     };
     browser = mkOption {
-      type = types.str;
-    };
-    duckduckgo = mkOption {
       type = types.str;
     };
     bookmarks-menu = mkOption {
@@ -308,9 +287,6 @@ in
     };
     screenshot-full = mkOption {
       type = types.str;
-    };
-    gtk.bookmarks = mkOption {
-      type = types.listOf types.str;
     };
     swaylock = mkOption {
       type = types.str;
