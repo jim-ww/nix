@@ -3,11 +3,6 @@
   programs.bash.blesh.enable = true;
 
   home-manager.users.${config.user} = { config, pkgs, ... }: {
-    programs.fzf = {
-      enable = true;
-      enableBashIntegration = false; # ble.sh handles it
-    };
-
     programs.bash = {
       enable = true;
       historyFile = "${config.xdg.dataHome}/bash/bash_history";

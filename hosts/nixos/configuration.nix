@@ -37,7 +37,10 @@
   environment.systemPackages = config.packages;
   environment.variables = config.env;
   environment.sessionVariables.PATH = [ "${config.env.GOPATH}/bin" ];
-  fonts.packages = config.font-packages;
+  fonts.packages = with pkgs; [
+    nerd-fonts.symbols-only # icons for terminal
+    noto-fonts-cjk-sans # clean/readable japanese font
+  ];
 
   nixpkgs.config.allowUnfree = true;
 

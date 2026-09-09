@@ -1,7 +1,7 @@
-{ config, ... }:
 {
   programs.fzf = {
     enable = true;
-    tmux.enableShellIntegration = config.programs.tmux.enable;
+    enableBashIntegration = false; # ble.sh handles it
+    tmux.enableShellIntegration = true;
   };
 }

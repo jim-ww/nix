@@ -15,6 +15,8 @@ let
   configHome = "${home}/.config";
 
   umountPersonal = "umount ~/Archive/personal";
+
+  strOpt = mkOption { type = types.str; };
 in
 {
   config = {
@@ -24,10 +26,6 @@ in
     gitEmail = gitEmail;
     gpgKeyID = "84E78B81883125DEF4FFBD7735AE71B304C67013";
     packages = import ./pkgs.nix { inherit pkgs; };
-    font-packages = with pkgs; [
-      nerd-fonts.symbols-only # icons for terminal
-      noto-fonts-cjk-sans # clean/readable japanese font
-    ];
     wallpaper.command = "swaybg -i $NH_FLAKE/wallpaper -m fill & disown";
     flakeDir = "${home}/Projects/nix";
     musicDir = "/home/${config.user}/Music";
@@ -191,47 +189,24 @@ in
       };
   };
   options = {
-    user = mkOption {
-      type = types.str;
-    };
-    shell = mkOption {
-      type = types.str;
-    };
-    gitUsername = mkOption {
-      type = types.str;
-    };
-    gitEmail = mkOption {
-      type = types.str;
-    };
-    gpgKeyID = mkOption {
-      type = types.str;
-    };
+    user = strOpt;
+    shell = strOpt;
+    gitUsername = strOpt;
+    gitEmail = strOpt;
+    gpgKeyID = strOpt;
+    wallpaper.command = strOpt;
+    flakeDir = strOpt;
+    musicDir = strOpt;
+    editor = strOpt;
+    browser = strOpt;
+    music-player = strOpt;
+    swaylock = strOpt;
+
     packages = mkOption {
       type = types.listOf types.package;
     };
-    font-packages = mkOption {
-      type = types.listOf types.package;
-    };
-    wallpaper.command = mkOption {
-      type = types.str;
-    };
-    flakeDir = mkOption {
-      type = types.str;
-    };
-    musicDir = mkOption {
-      type = types.str;
-    };
-    editor = mkOption {
-      type = types.str;
-    };
-    browser = mkOption {
-      type = types.str;
-    };
-    music-player = mkOption {
-      type = types.str;
-    };
-    swaylock = mkOption {
-      type = types.str;
+    shellAliases = mkOption {
+      type = types.attrsOf types.str;
     };
     env = mkOption {
       type =
@@ -242,9 +217,6 @@ in
           int
           float
         ]);
-    };
-    shellAliases = mkOption {
-      type = types.attrsOf types.str;
     };
   };
 }
