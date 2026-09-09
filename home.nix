@@ -30,17 +30,13 @@
         ./modules/servers-healthcheck.nix
         ./modules/bwrap.nix
         ./modules/pnpm.nix
+        ./modules/theme.nix
         # ./modules/kage.nix
         # inputs.kage.homeManagerModules.default
       ];
 
       stylix.targets.fzf.enable = false;
-      dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark";
       programs.btop.enable = true;
-
-      gtk.gtk3.extraConfig = {
-        gtk-application-prefer-dark-theme = 1;
-      };
 
       home.sessionVariables = config.env;
       home.shellAliases = config.shellAliases;
