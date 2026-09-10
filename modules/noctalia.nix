@@ -1,4 +1,9 @@
+{ pkgs, ... }:
 {
+  home.packages = with pkgs; [
+    udiskie
+  ];
+
   stylix.targets.noctalia.enable = false;
   programs.noctalia = {
     enable = true;

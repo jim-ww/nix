@@ -9,6 +9,7 @@ background_opacity = 0.4999999888241291
 center = []
 end = [
     "media",
+    "status",
     "tray",
     "clipboard",
     "notifications",
@@ -21,7 +22,7 @@ end = [
     "session"
 ]
 margin_ends = 0
-start = [ "launcher", "workspaces" ]
+start = [ "launcher", "workspaces", "todo", "widget" ]
 thickness = 25
 widget_spacing = 10
 
@@ -160,8 +161,25 @@ target_lang = "ru"
 [plugin_settings."noctalia/wallhaven"]
 api_key = ""
 
+[plugin_settings."yocraft/web-launcher"]
+icon_provider = "duckduckgo"
+links = [
+    "GitHub|https://github.com",
+    "Codeberg|https://codeberg.org",
+    "Reddit|https://reddit.com",
+    "YouTube|https://youtube.com",
+    "Gmail|https://mail.google.com"
+]
+
 [plugins]
-enabled = [ "noctalia/kaomoji", "noctalia/translator", "noctalia/wallhaven", "reaperhound/ambient-sounds" ]
+enabled = [
+    "noctalia/kaomoji",
+    "noctalia/translator",
+    "noctalia/wallhaven",
+    "reaperhound/ambient-sounds",
+    "aristides/udiskie",
+    "yocraft/web-launcher"
+]
 
 [shell]
 avatar_path = "/home/jim/Projects/nix/wallpapers/avatar/f1127010328.png"
@@ -182,16 +200,17 @@ screen_time_enabled = true
     blacklist = [ "Mozilla librewolf" ]
 
     [shell.panel]
-    transparency_mode = "soft"
+    transparency_mode = "solid"
 
     [shell.screen_corners]
     enabled = true
 
 [theme]
 builtin = "Tokyo-Night"
-community_palette = "Kemuri Koke"
+community_palette = "ADW"
 custom_palette = "stylix"
-mode = "dark"
+mode = "auto"
+shell_mode = "dark"
 source = "builtin"
 wallpaper_scheme = "m3-content"
 
@@ -208,25 +227,25 @@ transition_on_startup = true
     recursive = false
 
     [wallpaper.default]
-    path = "/home/jim/Projects/nix/wallpapers/signalis.jpg"
+    path = "/home/jim/Projects/nix/wallpapers/wallhaven-eolk1l.jpg"
 
     [wallpaper.last]
-    path = "/home/jim/Projects/nix/wallpapers/signalis.jpg"
+    path = "/home/jim/Projects/nix/wallpapers/wallhaven-eolk1l.jpg"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/jim/Projects/nix/wallpapers/signalis.jpg"
+    path = "/home/jim/Projects/nix/wallpapers/wallhaven-eolk1l.jpg"
 
     [[wallpaper.favorite]]
-    path = "/home/jim/Projects/nix/wallpapers/chloe.jpg"
-    theme_mode = "auto"
-
-    [[wallpaper.favorite]]
+    builtin_palette = "Tokyo-Night"
+    palette_source = "builtin"
     path = "/home/jim/Projects/nix/wallpapers/wallhaven-eolk1l.jpg"
     theme_mode = "auto"
 
     [[wallpaper.favorite]]
+    builtin_palette = "Tokyo-Night"
+    palette_source = "builtin"
     path = "/home/jim/Projects/nix/wallpapers/wallhaven-dg82zl.jpg"
-    theme_mode = "auto"
+    theme_mode = "dark"
 
 [widget.battery]
 hide_when_full = true
@@ -243,6 +262,15 @@ glyph = "rocket"
 
 [widget.network]
 show_label = false
+
+[widget.status]
+type = "aristides/udiskie:status"
+
+[widget.todo]
+type = "nightwatch75/todo:todo"
+
+[widget.widget]
+type = "aabidk20/yt-music:widget"
 
 [widget.workspaces]
 scale = 1.1000000000000001
