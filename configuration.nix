@@ -32,6 +32,7 @@
     packages = [ pkgs.dconf ];
   };
   services.earlyoom.enable = true;
+  systemd.oomd.enable = false;
   services.upower.enable = true;
   services.gvfs.enable = true; # also pulls in udisks2
   services.fstrim.enable = true;

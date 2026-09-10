@@ -95,9 +95,9 @@
         ./modules/ollama.nix
         ./modules/podman.nix
         ./modules/rclone.nix
-        ./modules/sway
         ./modules/bash.nix
         ./modules/nix.nix
+        ./modules/sway.nix
         ./home.nix
         nur.modules.nixos.default
         stylix.nixosModules.stylix

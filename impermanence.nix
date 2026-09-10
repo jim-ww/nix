@@ -106,6 +106,7 @@
           ".local/share/zathura"
           ".local/share/tealdeer"
           ".local/state/nvim"
+          ".local/state/noctalia"
           ".local/share/pnpm"
           ".local/share/go"
           ".config/distrobox"

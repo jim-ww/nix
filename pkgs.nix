@@ -31,7 +31,6 @@ with pkgs;
   git-remote-gcrypt
   git-filter-repo
   gh
-  bluetuith
   transmission_4
   wormhole-william # or croc
   nix-search-cli
