@@ -23,7 +23,6 @@
 
       fileManager = "${term} ${lib.getExe pkgs.lf}";
       passwords = "keepassxc ${documents}/.vault.kdbx";
-      bookmarksMenu = "${lib.getExe pkgs.yq-go} -r '.[]' /run/secrets/bookmarks | ${lib.getExe pkgs.rofi} -dmenu -p 'search bookmarks...' | wl-copy";
       notes = "${term} sh -c 'cd \"${documents}\" && exec ${config.editor} TODO.md'";
       notesAll = "${term} sh -c 'cd \"${documents}\" && exec ${config.editor} .'";
     in
@@ -140,7 +139,7 @@
                 "${mod}+Shift+w" = "exec ${ipc} panel-toggle noctalia/wallhaven:browser";
                 "${mod}+b" = "exec ${passwords}";
                 "${mod}+k" = "exec ${ipc} panel-toggle launcher '/calc '";
-                "${mod}+Shift+b" = "exec ${bookmarksMenu}";
+                "${mod}+Shift+b" = "exec ${ipc} panel-toggle launcher '/web '";
                 "${mod}+j" = "exec exec ${ipc} panel-toggle launcher '/kao '";
                 "${mod}+x" = "exec ${notes}";
                 "${mod}+Shift+x" = "exec ${notesAll}";
