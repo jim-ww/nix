@@ -79,7 +79,6 @@
       #stablePkgs = nixpkgs-stable.legacyPackages.${system};
       commonModules = [
         ./prefs.nix
-        ./modules/bluetooth.nix
         ./modules/firewall.nix
         ./modules/pipewire.nix
         ./modules/stylix.nix
