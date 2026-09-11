@@ -35,6 +35,8 @@
         bleopt exec_elapsed_mark=
         bleopt exec_errexit_mark=
         bleopt prompt_eol_mark=
+        bleopt char_width_mode=west
+        bleopt char_width_version=16.0
         ble-face command_builtin=fg=4
 
         ble-import -d contrib/integration/fzf-initialize
@@ -62,7 +64,7 @@
         ble-bind -f 'up' my-history-search-backward
         ble-bind -f 'down' my-history-search-forward
 
-        printf '\r\e[K'
+        printf '\r'
       '';
     };
   };
