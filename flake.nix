@@ -211,24 +211,24 @@
           inputs.disko.nixosModules.disko
           revision
           ./hosts/boomer/configuration.nix
+          ./hosts/boomer/disko.nix
+          ./hosts/boomer/deploy.nix
         ];
       };
 
       nixosConfigurations.boomer-iso = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit self; };
         modules = [
-          inputs.disko.nixosModules.disko
           (
             { modulesPath, ... }:
             {
               imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
             }
           )
-          ./hosts/boomer/configuration.nix
-          {
-            boomer.iso = true;
-            boomer.installed = self.nixosConfigurations.boomer;
-          }
           revision
+          ./hosts/boomer/configuration.nix
+          ./hosts/boomer/iso.nix
+          ./hosts/boomer/deploy.nix
         ];
       };
 
