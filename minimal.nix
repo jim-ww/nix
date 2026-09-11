@@ -142,12 +142,6 @@ in
     settings.music_directory = "/home/${user}/Music";
   };
   systemd.services.mpd.environment.XDG_RUNTIME_DIR = "/run/user/1000";
-  nixpkgs.overlays = [
-    (final: prev: {
-      mpd = prev.callPackage "${prev.path}/pkgs/by-name/mp/mpd-small/package.nix" { mpd = prev.mpd; };
-    })
-  ];
-
   programs.git = {
     enable = true;
     package = pkgs.gitMinimal;
@@ -216,7 +210,7 @@ in
     tealdeer
     fastfetch-unwrapped
     jujutsu
-    ffmpeg
+    ffmpeg-headless
     monero-cli
     (pkgs.writeShellScriptBin "ms2pdf" ''${lib.getExe' pkgs.groff "groff"} -mms -Kutf8 -Tps "$1" | ${pkgs.ghostscript}/bin/ps2pdf - "$2"'') # usage: ms2pdf <input.ms> <output.pdf>
 
