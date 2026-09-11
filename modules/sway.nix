@@ -127,7 +127,7 @@
                 "${mod}+Shift+Down" = "move down";
                 # programs
                 "${mod}+q" = "exec xdg-terminal-exec";
-                "${mod}+Shift+q" = "exec nix-shell -p st bash --run st bash";
+                "${mod}+Shift+q" = "exec ${pkgs.foot}";
                 "${mod}+t" = "exec xdg-terminal-exec --title=term-float";
                 "${mod}+Shift+t" = "exec ${ipc} panel-toggle launcher '/tr '";
                 "${mod}+e" = "exec ${fileManager}";

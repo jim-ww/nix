@@ -14,7 +14,7 @@ in
     env = {
       NH_FLAKE = config.flakeDir;
       REFINED_CHAR_SYMBOL = "ジ";
-      TERM = "foot"; # terminfo name of the actual terminal; must stay literal, not the xdg-terminal-exec launcher
+      TERM = "footclient"; # terminfo name of the actual terminal; must stay literal, not the xdg-terminal-exec launcher
       EDITOR = config.editor;
       VISUAL = config.editor;
       LESS = "-R"; # syntax highlighting

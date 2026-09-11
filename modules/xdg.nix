@@ -1,6 +1,6 @@
 {
   xdg.terminal-exec.enable = true;
-  xdg.terminal-exec.settings.default = [ "foot.desktop" ];
+  xdg.terminal-exec.settings.default = [ "footclient.desktop" ];
 
   hm =
     { config, ... }:
