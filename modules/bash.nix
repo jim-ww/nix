@@ -5,7 +5,7 @@
   programs.bash.interactiveShellInit = lib.mkMerge [
     (lib.mkOrder 400 ''
       if [[ $PWD == "$HOME" ]]; then __d='~'; else __d=''${PWD##*/}; fi
-      printf '\e[0;1;32mジ\e(B\e[m \e[0;1;36m%s\e(B\e[m \e[?25l' "$__d"
+      printf '\e[0;1;32mジ\e(B\e[m \e[0;1;36m%s\e(B\e[m ' "$__d"
       unset __d
     '')
     ''
@@ -63,8 +63,6 @@
         function ble/widget/my-history-search-forward { ble/widget/history-search "forward:point=end:$1"; }
         ble-bind -f 'up' my-history-search-backward
         ble-bind -f 'down' my-history-search-forward
-
-        printf '\r'
       '';
     };
   };
