@@ -1,5 +1,6 @@
 {
   config,
+  options,
   lib,
   pkgs,
   modulesPath,
@@ -115,7 +116,20 @@ in
     {
       nixpkgs.hostPlatform = "x86_64-linux";
       nixpkgs.config.allowUnfree = true;
-      environment.etc."nixos/configuration.nix".source = ./configuration.nix;
+      system.activationScripts.nixos-config = ''
+        if [ ! -e /etc/nixos/configuration.nix ]; then
+          ${pkgs.coreutils}/bin/install -D -m 0644 ${./configuration.nix} /etc/nixos/configuration.nix
+        fi
+      '';
+      nix.nixPath = [
+        "nixpkgs=${
+          if config.nixpkgs.flake.source != null then
+            config.nixpkgs.flake.source
+          else
+            builtins.storePath (toString pkgs.path)
+        }"
+        "nixos-config=/etc/nixos/configuration.nix"
+      ];
       system.systemBuilderCommands = "ln -s ${./configuration.nix} $out/configuration.nix";
       hardware.enableAllFirmware = true;
       hardware.bluetooth.enable = true;
@@ -530,6 +544,31 @@ in
     }
 
     (lib.mkIf (!cfg.iso) {
+      fileSystems."/" = {
+        device = "/dev/disk/by-partlabel/disk-main-root";
+        fsType = "ext4";
+      };
+      fileSystems."/boot" = {
+        device = "/dev/disk/by-partlabel/disk-main-ESP";
+        fsType = "vfat";
+        options = [ "umask=0077" ];
+      };
+
+      boot.loader.grub = {
+        enable = true;
+        efiSupport = true;
+        efiInstallAsRemovable = true;
+        configurationLimit = 5;
+        devices = [ "/dev/boomer-disk" ];
+      };
+
+      services.udev.extraRules = ''
+        SUBSYSTEM=="block", ENV{DEVTYPE}=="partition", ENV{ID_PART_ENTRY_NAME}=="disk-main-root", RUN+="${pkgs.coreutils}/bin/ln -sfn /dev/$parent /dev/boomer-disk"
+      '';
+    })
+
+    (lib.optionalAttrs (options ? disko) {
+      disko.enableConfig = false;
       disko.devices.disk.main = {
         type = "disk";
         device = "/dev/boomer-disk";
@@ -561,17 +600,6 @@ in
           };
         };
       };
-
-      boot.loader.grub = {
-        enable = true;
-        efiSupport = true;
-        efiInstallAsRemovable = true;
-        configurationLimit = 5;
-      };
-
-      services.udev.extraRules = ''
-        SUBSYSTEM=="block", ENV{DEVTYPE}=="partition", ENV{ID_PART_ENTRY_NAME}=="disk-main-root", RUN+="${pkgs.coreutils}/bin/ln -sfn /dev/$parent /dev/boomer-disk"
-      '';
     })
 
     (lib.mkIf cfg.iso {

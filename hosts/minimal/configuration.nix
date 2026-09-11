@@ -13,7 +13,11 @@ let
   hardenedSSH = true;
 in
 {
-  environment.etc."nixos/configuration.nix".source = ./configuration.nix;
+  system.activationScripts.nixos-config = ''
+    if [ ! -e /etc/nixos/configuration.nix ]; then
+      ${pkgs.coreutils}/bin/install -D -m 0644 ${./configuration.nix} /etc/nixos/configuration.nix
+    fi
+  '';
   system.systemBuilderCommands = "ln -s ${./configuration.nix} $out/configuration.nix";
 
   # hardware
