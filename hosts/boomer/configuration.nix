@@ -9,7 +9,7 @@ let
   user = "user";
   fullName = "Пользователь";
   hostname = "home-pc";
-  password = "1234";
+  hashedPassword = "$y$j9T$2EiBzU2ZLQSktJOrf1.OM.$EkiofKx5ZL/K5Nx1AwdWeoTrngKRkp1ZthOToo7jWqD";
   timezone = "Europe/Kyiv";
   locale = "ru_RU.UTF-8";
   extraLocales = [
@@ -484,7 +484,7 @@ in
     isNormalUser = true;
     uid = 1000;
     description = fullName;
-    initialPassword = password;
+    inherit hashedPassword;
     extraGroups = [
       "networkmanager"
       "audio"
@@ -493,7 +493,10 @@ in
       "scanner"
     ];
   };
-  users.users.root.openssh.authorizedKeys.keys = adminKeys;
+  users.users.root = {
+    inherit hashedPassword;
+    openssh.authorizedKeys.keys = adminKeys;
+  };
 
   services.openssh = {
     enable = true;

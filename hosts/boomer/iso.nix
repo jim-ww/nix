@@ -37,6 +37,7 @@ in
 {
   networking.hostName = lib.mkForce "${installed.networking.hostName}-usb";
   boot.loader.grub.enable = lib.mkForce false;
+  users.users.root.initialHashedPassword = lib.mkForce null;
   services.openssh.openFirewall = lib.mkForce true;
   system.extraDependencies = [
     installed.system.build.toplevel
