@@ -216,13 +216,13 @@ transition_on_startup = true
     recursive = false
 
     [wallpaper.default]
-    path = "/home/jim/Projects/nix/wallpapers/wallhaven-w5d7oq.jpg"
+    path = "/home/jim/Projects/nix/wallpapers/signalis.jpg"
 
     [wallpaper.last]
-    path = "/home/jim/Projects/nix/wallpapers/wallhaven-w5d7oq.jpg"
+    path = "/home/jim/Projects/nix/wallpapers/signalis.jpg"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/jim/Projects/nix/wallpapers/wallhaven-w5d7oq.jpg"
+    path = "/home/jim/Projects/nix/wallpapers/signalis.jpg"
 
     [[wallpaper.favorite]]
     builtin_palette = "Tokyo-Night"

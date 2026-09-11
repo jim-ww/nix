@@ -13,7 +13,6 @@
         }
         "Archive"
         "Documents"
-        "Downloads"
         "Games"
         "Music"
         "Pictures"
@@ -21,7 +20,6 @@
         "Videos"
         ".barony"
         ".config/kage"
-        ".config/FreeTube"
         ".local/share/anitui"
         ".local/share/charshare"
         ".local/share/itpec-sensei"
@@ -111,6 +109,7 @@
           ".local/share/go"
           ".config/distrobox"
           ".claude"
+          "Downloads"
         ];
         files = [
           {
