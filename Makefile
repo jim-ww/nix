@@ -1,5 +1,5 @@
-.PHONY: iso-minimal
-iso-minimal:
+.PHONY: iso
+iso:
 	nix build ~/Projects/nix#iso -o ~/Downloads/nixos-iso
 
 .PHONY: iso-minimal
