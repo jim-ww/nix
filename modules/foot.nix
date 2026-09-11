@@ -4,7 +4,7 @@
   ...
 }:
 {
-  home.sessionVariables.TERMINAL = "footclient";
+  home.sessionVariables.TERMINAL = "foot";
   programs.foot = {
     enable = true;
     server.enable = true;
