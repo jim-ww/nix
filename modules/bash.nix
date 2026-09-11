@@ -7,11 +7,13 @@
   '';
 
   hm = { config, pkgs, ... }: {
+    systemd.user.tmpfiles.rules = [ "d ${config.xdg.dataHome}/bash 0700" ];
+
     programs.bash = {
       enable = true;
-      historyFile = "${config.xdg.dataHome}/bash/bash_history";
 
       initExtra = ''
+        HISTFILE="${config.xdg.dataHome}/bash/bash_history"
         . "$HOME/.profile"
 
         # for foot interactive shell
