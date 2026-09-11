@@ -85,6 +85,11 @@ let
         fi
         touch "$state/$app"
       done
+      vlcrc="$HOME/.config/vlc/vlcrc"
+      if [ ! -e "$vlcrc" ]; then
+        mkdir -p "$(dirname "$vlcrc")"
+        printf '[qt]\nqt-privacy-ask=0\n' >"$vlcrc"
+      fi
     '';
   };
 
