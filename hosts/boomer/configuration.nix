@@ -38,6 +38,11 @@ let
       util-linux
     ];
     text = ''
+      if [ $# -ne 1 ]; then
+        echo "usage: boomer-install <disk>" >&2
+        lsblk -dpo NAME,SIZE,TYPE,MODEL >&2
+        exit 1
+      fi
       disk=$(readlink -f "$1")
       if [ ! -b "$disk" ]; then
         echo "not a block device: $1" >&2
@@ -228,10 +233,57 @@ in
           "uk"
           "en-US"
         ];
-        preferences."intl.locale.requested" = "";
-        policies.ExtensionSettings."uBlock0@raymondhill.net" = {
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
-          installation_mode = "force_installed";
+        preferencesStatus = "default";
+        preferences = {
+          "intl.locale.requested" = "";
+          "datareporting.policy.dataSubmissionPolicyBypassNotification" = true;
+          "browser.aboutwelcome.enabled" = false;
+        };
+        policies = {
+          ExtensionSettings."uBlock0@raymondhill.net" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
+            installation_mode = "force_installed";
+          };
+          OverrideFirstRunPage = "";
+          OverridePostUpdatePage = "";
+          DontCheckDefaultBrowser = true;
+          DisableTelemetry = true;
+          DisableFirefoxStudies = true;
+          SkipTermsOfUse = true;
+          NoDefaultBookmarks = true;
+          DisplayBookmarksToolbar = "always";
+          Homepage = {
+            StartPage = "previous-session";
+            Locked = false;
+          };
+          FirefoxHome = {
+            SponsoredTopSites = false;
+            SponsoredStories = false;
+            SponsoredPocket = false;
+            Stories = false;
+            Pocket = false;
+            Snippets = false;
+            Locked = false;
+          };
+          FirefoxSuggest = {
+            SponsoredSuggestions = false;
+            ImproveSuggest = false;
+            Locked = false;
+          };
+          UserMessaging = {
+            ExtensionRecommendations = false;
+            FeatureRecommendations = false;
+            MoreFromMozilla = false;
+            FirefoxLabs = false;
+            SkipOnboarding = true;
+            WhatsNew = false;
+            UrlbarInterventions = false;
+            Locked = false;
+          };
+          GenerativeAI = {
+            Enabled = false;
+            Locked = false;
+          };
         };
       };
 
