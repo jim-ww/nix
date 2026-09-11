@@ -5,7 +5,7 @@
   programs.bash.interactiveShellInit = lib.mkMerge [
     (lib.mkOrder 400 ''
       if [[ $PWD == "$HOME" ]]; then __d='~'; else __d=''${PWD##*/}; fi
-      printf '\e[1;32mジ\e[0m \e[1;36m%s\e[0m ' "$__d"
+      printf '\e[0;1;32mジ\e(B\e[m \e[0;1;36m%s\e(B\e[m \e[?25l' "$__d"
       unset __d
     '')
     ''
