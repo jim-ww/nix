@@ -1,5 +1,10 @@
+{ pkgs, ... }:
 {
   programs.bash.blesh.enable = true;
+  programs.bash.enableLsColors = false;
+  programs.bash.interactiveShellInit = ''
+    source ${pkgs.runCommand "dircolors.bash" { } "${pkgs.coreutils}/bin/dircolors -b > $out"}
+  '';
 
   hm = { config, pkgs, ... }: {
     programs.bash = {
