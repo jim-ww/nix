@@ -1,10 +1,17 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 {
   programs.bash.blesh.enable = true;
   programs.bash.enableLsColors = false;
-  programs.bash.interactiveShellInit = ''
-    source ${pkgs.runCommand "dircolors.bash" { } "${pkgs.coreutils}/bin/dircolors -b > $out"}
-  '';
+  programs.bash.interactiveShellInit = lib.mkMerge [
+    (lib.mkOrder 400 ''
+      if [[ $PWD == "$HOME" ]]; then __d='~'; else __d=''${PWD##*/}; fi
+      printf '\e[1;32mジ\e[0m \e[1;36m%s\e[0m ' "$__d"
+      unset __d
+    '')
+    ''
+      source ${pkgs.runCommand "dircolors.bash" { } "${pkgs.coreutils}/bin/dircolors -b > $out"}
+    ''
+  ];
 
   hm = { config, pkgs, ... }: {
     systemd.user.tmpfiles.rules = [ "d ${config.xdg.dataHome}/bash 0700" ];
@@ -54,6 +61,8 @@
         function ble/widget/my-history-search-forward { ble/widget/history-search "forward:point=end:$1"; }
         ble-bind -f 'up' my-history-search-backward
         ble-bind -f 'down' my-history-search-forward
+
+        printf '\r\e[K'
       '';
     };
   };
