@@ -21,6 +21,7 @@ let
   adminKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHxGHWa43ZUlie9Tg6cxVkBFA41f2PSqniD3sn7TnDnK jim.w2610@proton.me"
   ];
+  tailscaleTag = "tag:boomer";
 
   desktopIcons = [
     "firefox.desktop"
@@ -124,6 +125,9 @@ in
         computer-icon-visible=true
         trash-icon-visible=true
 
+        [org.cinnamon.desktop.screensaver]
+        lock-enabled=false
+
         [org.cinnamon.desktop.input-sources]
         sources=[${
           lib.concatMapStringsSep ", " (l: "('xkb', '${l}')") (lib.splitString "," keyboardLayouts)
@@ -163,6 +167,15 @@ in
     drivers = with pkgs; [
       gutenprint
       hplip
+      epson-escpr
+      epson-escpr2
+      brlaser
+      splix
+      foo2zjs
+      canon-capt
+      canon-cups-ufr2
+      cnijfilter2
+      pantum-driver
     ];
   };
   services.avahi = {
@@ -172,7 +185,10 @@ in
   };
   hardware.sane = {
     enable = true;
-    extraBackends = [ pkgs.sane-airscan ];
+    extraBackends = with pkgs; [
+      sane-airscan
+      epsonscan2
+    ];
   };
 
   services.flatpak.enable = true;
@@ -461,6 +477,7 @@ in
       "7z" = "7zz";
       ns = lib.getExe pkgs.nix-search-cli;
       nsp = "nix-shell -p";
+      sos = "tailscale up --reset --qr --operator=${user} --hostname=${hostname} --advertise-tags=${tailscaleTag}";
     };
 
   users.users.${user} = {
@@ -491,6 +508,7 @@ in
   services.tailscale = {
     enable = true;
     extraUpFlags = [ "--hostname=${config.networking.hostName}" ];
+    extraSetFlags = [ "--operator=${user}" ];
   };
 
   nix.settings = {
@@ -504,6 +522,13 @@ in
     automatic = true;
     dates = "weekly";
     options = "--delete-older-than 14d";
+  };
+  system.autoUpgrade = {
+    enable = true;
+    dates = "monthly";
+    operation = "boot";
+    persistent = true;
+    randomizedDelaySec = "6h";
   };
 
   system.stateVersion = "26.11";
