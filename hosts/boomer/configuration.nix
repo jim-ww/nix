@@ -135,6 +135,12 @@ in
             home-icon-visible=true
             computer-icon-visible=true
             trash-icon-visible=true
+
+            [org.cinnamon.desktop.input-sources]
+            sources=[${
+              lib.concatMapStringsSep ", " (l: "('xkb', '${l}')") (lib.splitString "," keyboardLayouts)
+            }]
+            xkb-options=['${keyboardSwitch}']
           '';
         };
       };
