@@ -6,7 +6,6 @@
   ...
 }:
 let
-  desktop = "xfce";
   user = "user";
   fullName = "Пользователь";
   hostname = "boomer";
@@ -17,67 +16,20 @@ let
     "en_US.UTF-8/UTF-8"
     "uk_UA.UTF-8/UTF-8"
   ];
-  keyboardLayouts = "us,ru,ua";
+  keyboardLayouts = "ru,ua,us";
   keyboardSwitch = "grp:alt_shift_toggle";
-  adminName = "Jim";
   adminKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHxGHWa43ZUlie9Tg6cxVkBFA41f2PSqniD3sn7TnDnK jim.w2610@proton.me"
   ];
   tailscaleKeyFile = "/run/secrets/tailscale-boomer";
 
   cfg = config.boomer;
-  isPlasma = desktop == "plasma";
-  isX11 = !isPlasma;
 
   tailscaleKey =
     if !lib.inPureEvalMode && builtins.pathExists tailscaleKeyFile then
       pkgs.writeText "tailscale-boomer" (lib.trim (builtins.readFile tailscaleKeyFile))
     else
       null;
-
-  boomerHelp = pkgs.writeShellApplication {
-    name = "boomer-help";
-    runtimeInputs = with pkgs; [
-      tailscale
-      jq
-      qrencode
-      yad
-      coreutils
-      gnugrep
-    ];
-    text = ''
-      connected() {
-        [ "$(tailscale status --json 2>/dev/null | jq -r .BackendState)" = "Running" ]
-      }
-      if connected; then
-        yad --center --width=420 --title="Помощь" --button="OK:0" \
-          --text="Компьютер подключён. Позвоните ${adminName}, он сможет помочь."
-        exit 0
-      fi
-      log=$(mktemp)
-      tailscale up --reset --hostname=${config.networking.hostName} >"$log" 2>&1 &
-      url=""
-      for _ in $(seq 60); do
-        url=$(grep -o 'https://login.tailscale.com/[^[:space:]]*' "$log" | head -n1 || true)
-        if [ -n "$url" ] || connected; then break; fi
-        sleep 1
-      done
-      if connected; then
-        yad --center --width=420 --title="Помощь" --button="OK:0" \
-          --text="Компьютер подключён. Позвоните ${adminName}, он сможет помочь."
-      elif [ -n "$url" ]; then
-        png=$(mktemp --suffix=.png)
-        qrencode -s 10 -m 2 -o "$png" "$url"
-        yad --center --title="Помощь" --image="$png" --button="Готово:0" \
-          --text="Сфотографируйте этот экран и отправьте фото ${adminName}.
-
-      $url"
-      else
-        yad --center --width=420 --title="Помощь" --button="OK:0" \
-          --text="Нет интернета. Подключитесь к Wi-Fi (значок в углу экрана) и попробуйте снова."
-      fi
-    '';
-  };
 
   boomerInstall = pkgs.writeShellApplication {
     name = "boomer-install";
@@ -100,96 +52,7 @@ let
     '';
   };
 
-  boomerInstallGui = pkgs.writeShellApplication {
-    name = "boomer-install-gui";
-    runtimeInputs = with pkgs; [
-      yad
-      util-linux
-      coreutils
-      systemd
-    ];
-    text = ''
-      src=$(readlink -f "$(findmnt -no SOURCE /iso)")
-      parent=$(lsblk -ndo PKNAME "$src" || true)
-      bootdisk=$src
-      if [ -n "$parent" ]; then bootdisk=/dev/$parent; fi
-      rows=()
-      while read -r name size type rm model; do
-        [ "$type" = disk ] && [ "$rm" = 0 ] && [ "$name" != "$bootdisk" ] || continue
-        case "$name" in /dev/zram* | /dev/loop* | /dev/sr*) continue ;; esac
-        rows+=("$name" "$size" "''${model:--}")
-      done < <(lsblk -dnpo NAME,SIZE,TYPE,RM,MODEL)
-      if [ ''${#rows[@]} -eq 0 ]; then
-        yad --center --width=420 --title="Установка" --button="OK:0" \
-          --text="Не найден подходящий диск. Позвоните ${adminName}."
-        exit 1
-      fi
-      disk=$(yad --center --width=600 --height=300 --title="Установка системы" \
-        --text="Выберите диск, на который установить систему:" \
-        --list --column="Диск" --column="Размер" --column="Модель" \
-        --print-column=1 --separator="" "''${rows[@]}") || exit 0
-      [ -n "$disk" ] || exit 0
-      yad --center --width=420 --title="Установка системы" \
-        --button="Отмена:1" --button="Продолжить:0" \
-        --text="Все файлы на диске $disk будут удалены. Продолжить?" || exit 0
-      yad --center --width=420 --title="Установка системы" \
-        --button="Отмена:1" --button="Да, удалить всё и установить:0" \
-        --text="Вы уверены? Отменить это будет нельзя." || exit 0
-      set +e
-      /run/wrappers/bin/sudo ${boomerInstall}/bin/boomer-install "$disk" 2>&1 \
-        | tee /tmp/boomer-install.log \
-        | yad --center --width=450 --title="Установка системы" --progress --pulsate \
-          --auto-close --no-buttons \
-          --text="Идёт установка. Это займёт 10-30 минут. Не выключайте компьютер."
-      status=''${PIPESTATUS[0]}
-      set -e
-      if [ "$status" -eq 0 ]; then
-        yad --center --width=420 --title="Установка системы" --button="Перезагрузить:0" \
-          --text="Готово! Выньте флешку и нажмите «Перезагрузить»." && systemctl reboot
-      else
-        yad --center --width=420 --title="Установка системы" --button="OK:0" \
-          --text="Ошибка установки. Позвоните ${adminName}."
-        exit 1
-      fi
-    '';
-  };
-
-  boomerWelcome = pkgs.writeShellApplication {
-    name = "boomer-welcome";
-    runtimeInputs = [ pkgs.yad ];
-    text = ''
-      choice=$(yad --center --width=450 --height=250 --title="Добро пожаловать" \
-        --text="Что вы хотите сделать?" --list --no-headers --column="" \
-        --print-column=1 --separator="" \
-        "Помощь по интернету" "Установить систему на этот компьютер" "Просто посмотреть") || exit 0
-      case "$choice" in
-        "Помощь по интернету") exec ${boomerHelp}/bin/boomer-help ;;
-        "Установить систему на этот компьютер") exec ${boomerInstallGui}/bin/boomer-install-gui ;;
-      esac
-    '';
-  };
-
-  helpItem = pkgs.makeDesktopItem {
-    name = "boomer-help";
-    desktopName = "Помощь по интернету";
-    exec = "${boomerHelp}/bin/boomer-help";
-    icon = "help-browser";
-    categories = [ "System" ];
-  };
-
-  installItem = pkgs.makeDesktopItem {
-    name = "boomer-install";
-    desktopName = "Установить систему";
-    exec = "${boomerInstallGui}/bin/boomer-install-gui";
-    icon = "system-software-install";
-    categories = [ "System" ];
-  };
-
-  welcomeItem = pkgs.makeDesktopItem {
-    name = "boomer-welcome";
-    desktopName = "Добро пожаловать";
-    exec = "${boomerWelcome}/bin/boomer-welcome";
-  };
+  mimeDefaults = apps: lib.concatMapAttrs (app: types: lib.genAttrs types (_: app)) apps;
 in
 {
   imports = [ (modulesPath + "/profiles/all-hardware.nix") ];
@@ -219,37 +82,20 @@ in
       console.useXkbConfig = true;
 
       services.xserver = {
-        enable = isX11;
+        enable = true;
         xkb = {
           layout = keyboardLayouts;
           options = keyboardSwitch;
         };
-        desktopManager.xfce = {
-          enable = desktop == "xfce";
-          enableScreensaver = false;
-        };
-        desktopManager.cinnamon.enable = desktop == "cinnamon";
-      };
-      services.desktopManager.plasma6.enable = isPlasma;
-      services.displayManager.sddm = lib.mkIf isPlasma {
-        enable = true;
-        wayland.enable = true;
+        desktopManager.cinnamon.enable = true;
       };
       services.displayManager.autoLogin = {
         enable = true;
         inherit user;
       };
 
-      programs.nm-applet.enable = desktop == "xfce";
-      services.blueman.enable = isX11;
-      programs.system-config-printer.enable = isX11;
-      programs.thunar.plugins = lib.mkIf (desktop == "xfce") (
-        with pkgs;
-        [
-          thunar-archive-plugin
-          thunar-volman
-        ]
-      );
+      services.blueman.enable = true;
+      programs.system-config-printer.enable = true;
 
       services.pipewire = {
         enable = true;
@@ -330,46 +176,96 @@ in
         noto-fonts-color-emoji
       ];
 
-      environment.systemPackages =
-        (with pkgs; [
-          libreoffice
-          hunspell
-          hunspellDicts.ru_RU
-          hunspellDicts.uk_UA
-          hunspellDicts.en_US
-          vlc
-          simple-scan
-          helpItem
-        ])
-        ++ lib.optionals isPlasma (
-          with pkgs.kdePackages;
-          [
-            discover
-            okular
-            gwenview
-            ark
-            kcalc
-            krfb
-          ]
-        )
-        ++ lib.optionals isX11 (
-          with pkgs;
-          [
-            gnome-software
-            x11vnc
-          ]
-        )
-        ++ lib.optionals (desktop == "xfce") (
-          with pkgs;
-          [
-            atril
-            galculator
-            pavucontrol
-            file-roller
-            xfce4-pulseaudio-plugin
-            xfce4-whiskermenu-plugin
-          ]
-        );
+      environment.systemPackages = with pkgs; [
+        libreoffice
+        hunspell
+        hunspellDicts.ru_RU
+        hunspellDicts.uk_UA
+        hunspellDicts.en_US
+        vlc
+        gimp
+        simple-scan
+        telegram-desktop
+        dino
+        gnome-software
+        x11vnc
+      ];
+
+      xdg.mime.defaultApplications = mimeDefaults {
+        "xviewer.desktop" = [
+          "image/jpeg"
+          "image/png"
+          "image/gif"
+          "image/webp"
+          "image/bmp"
+          "image/tiff"
+          "image/svg+xml"
+          "image/heic"
+          "image/avif"
+        ];
+        "xreader.desktop" = [
+          "application/pdf"
+          "application/postscript"
+          "image/vnd.djvu"
+        ];
+        "vlc.desktop" = [
+          "video/mp4"
+          "video/x-matroska"
+          "video/webm"
+          "video/x-msvideo"
+          "video/quicktime"
+          "video/mpeg"
+          "video/x-flv"
+          "video/3gpp"
+          "video/x-ms-wmv"
+          "audio/mpeg"
+          "audio/mp4"
+          "audio/x-m4a"
+          "audio/aac"
+          "audio/wav"
+          "audio/x-wav"
+          "audio/ogg"
+          "audio/opus"
+          "audio/flac"
+          "audio/x-ms-wma"
+        ];
+        "org.x.editor.desktop" = [ "text/plain" ];
+        "writer.desktop" = [
+          "application/msword"
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          "application/vnd.oasis.opendocument.text"
+          "application/rtf"
+        ];
+        "calc.desktop" = [
+          "application/vnd.ms-excel"
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          "application/vnd.oasis.opendocument.spreadsheet"
+          "text/csv"
+        ];
+        "impress.desktop" = [
+          "application/vnd.ms-powerpoint"
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+          "application/vnd.oasis.opendocument.presentation"
+        ];
+        "org.gnome.FileRoller.desktop" = [
+          "application/zip"
+          "application/x-7z-compressed"
+          "application/vnd.rar"
+          "application/x-rar"
+          "application/x-tar"
+          "application/gzip"
+          "application/x-compressed-tar"
+          "application/x-xz-compressed-tar"
+        ];
+        "firefox.desktop" = [
+          "text/html"
+          "x-scheme-handler/http"
+          "x-scheme-handler/https"
+        ];
+        "nemo.desktop" = [ "inode/directory" ];
+        "org.telegram.desktop.desktop" = [ "x-scheme-handler/tg" ];
+        "im.dino.Dino.desktop" = [ "x-scheme-handler/xmpp" ];
+      };
 
       users.users.${user} = {
         isNormalUser = true;
@@ -400,7 +296,6 @@ in
         enable = true;
         authKeyFile = tailscaleKey;
         extraUpFlags = [ "--hostname=${config.networking.hostName}" ];
-        extraSetFlags = [ "--operator=${user}" ];
       };
 
       nix.settings = {
@@ -471,23 +366,7 @@ in
         cfg.installed.config.system.build.toplevel
         cfg.installed.config.system.build.diskoScript
       ];
-      environment.systemPackages = [
-        installItem
-        boomerInstall
-      ];
-      environment.etc."xdg/autostart/boomer-welcome.desktop".source =
-        "${welcomeItem}/share/applications/boomer-welcome.desktop";
-      security.sudo.extraRules = [
-        {
-          users = [ user ];
-          commands = [
-            {
-              command = "${boomerInstall}/bin/boomer-install";
-              options = [ "NOPASSWD" ];
-            }
-          ];
-        }
-      ];
+      environment.systemPackages = [ boomerInstall ];
     })
   ];
 }
