@@ -166,6 +166,10 @@ in
           "en-US"
         ];
         preferences."intl.locale.requested" = "";
+        policies.ExtensionSettings."uBlock0@raymondhill.net" = {
+          install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
+          installation_mode = "force_installed";
+        };
       };
 
       fonts.packages = with pkgs; [
@@ -187,6 +191,7 @@ in
         simple-scan
         telegram-desktop
         dino
+        wineWow64Packages.stableFull
         gnome-software
         x11vnc
       ];
@@ -263,6 +268,16 @@ in
           "x-scheme-handler/https"
         ];
         "nemo.desktop" = [ "inode/directory" ];
+        "wine.desktop" = [
+          "application/x-ms-dos-executable"
+          "application/x-msdownload"
+          "application/vnd.microsoft.portable-executable"
+          "application/x-dosexec"
+          "application/x-ms-ne-executable"
+          "application/x-msi"
+          "application/x-ms-shortcut"
+          "application/x-bat"
+        ];
         "org.telegram.desktop.desktop" = [ "x-scheme-handler/tg" ];
         "im.dino.Dino.desktop" = [ "x-scheme-handler/xmpp" ];
       };
