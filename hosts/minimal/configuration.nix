@@ -13,6 +13,9 @@ let
   hardenedSSH = true;
 in
 {
+  environment.etc."nixos/configuration.nix".source = ./configuration.nix;
+  system.systemBuilderCommands = "ln -s ${./configuration.nix} $out/configuration.nix";
+
   # hardware
   hardware.graphics.enable = true;
   hardware.bluetooth.enable = true;

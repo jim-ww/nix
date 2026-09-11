@@ -115,6 +115,8 @@ in
     {
       nixpkgs.hostPlatform = "x86_64-linux";
       nixpkgs.config.allowUnfree = true;
+      environment.etc."nixos/configuration.nix".source = ./configuration.nix;
+      system.systemBuilderCommands = "ln -s ${./configuration.nix} $out/configuration.nix";
       hardware.enableAllFirmware = true;
       hardware.bluetooth.enable = true;
 
