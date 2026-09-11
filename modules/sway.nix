@@ -126,9 +126,9 @@
                 "${mod}+Shift+Up" = "move up";
                 "${mod}+Shift+Down" = "move down";
                 # programs
-                "${mod}+q" = "exec xdg-terminal-exec";
+                "${mod}+q" = "exec footclient";
                 "${mod}+Shift+q" = "exec ${pkgs.foot}";
-                "${mod}+t" = "exec xdg-terminal-exec --title=term-float";
+                "${mod}+t" = "exec footclient --title=term-float";
                 "${mod}+Shift+t" = "exec ${ipc} panel-toggle launcher '/tr '";
                 "${mod}+e" = "exec ${fileManager}";
                 "${mod}+f" = "exec ${config.browser}";
