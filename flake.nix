@@ -155,7 +155,7 @@
             }
           )
           { nixpkgs.hostPlatform = system; }
-          ./minimal.nix
+          ./hosts/minimal/configuration.nix
         ];
       };
 
@@ -164,10 +164,10 @@
         modules = [
           inputs.disko.nixosModules.disko
           inputs.preservation.nixosModules.default
-          ./hardware-config.nix
-          ./disko.nix
-          ./impermanence.nix
-          ./minimal.nix
+          ./hosts/nixos/hardware-config.nix
+          ./hosts/nixos/disko.nix
+          ./hosts/nixos/impermanence.nix
+          ./hosts/minimal/configuration.nix
           {
             options.user = nixpkgs.lib.mkOption { type = nixpkgs.lib.types.str; };
             config.user = user;
@@ -184,10 +184,10 @@
             ;
         };
         modules = [
-          ./configuration.nix
-          ./hardware-config.nix
-          ./disko.nix
-          ./impermanence.nix
+          ./hosts/nixos/configuration.nix
+          ./hosts/nixos/hardware-config.nix
+          ./hosts/nixos/disko.nix
+          ./hosts/nixos/impermanence.nix
           inputs.disko.nixosModules.disko
           inputs.preservation.nixosModules.default
         ]

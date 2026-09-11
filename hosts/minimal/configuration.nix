@@ -13,8 +13,6 @@ let
   hardenedSSH = true;
 in
 {
-  # TODO: dbus, upower?, gvfs?
-
   # hardware
   hardware.graphics.enable = true;
   hardware.bluetooth.enable = true;
