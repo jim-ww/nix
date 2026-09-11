@@ -471,7 +471,10 @@ in
         cfg.installed.config.system.build.toplevel
         cfg.installed.config.system.build.diskoScript
       ];
-      environment.systemPackages = [ installItem ];
+      environment.systemPackages = [
+        installItem
+        boomerInstall
+      ];
       environment.etc."xdg/autostart/boomer-welcome.desktop".source =
         "${welcomeItem}/share/applications/boomer-welcome.desktop";
       security.sudo.extraRules = [
