@@ -477,6 +477,7 @@ in
       "7z" = "7zz";
       ns = lib.getExe pkgs.nix-search-cli;
       nsp = "nix-shell -p";
+      nosleep = "systemctl mask --runtime sleep.target suspend.target hibernate.target hybrid-sleep.target";
       sos = "tailscale up --reset --qr --operator=${user} --hostname=${hostname} --advertise-tags=${tailscaleTag}";
     };
 
