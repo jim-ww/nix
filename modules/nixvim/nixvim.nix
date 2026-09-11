@@ -473,6 +473,8 @@ in
   # NOTE: This is where you would add a vim plugin that is not implemented in Nixvim, also see extraConfigLuaPre below
   #];
 
+  vimAlias = true;
+
   nixpkgs.source = pkgs.path; # follow the host nixpkgs
 
   dependencies.git.package = pkgs.gitMinimal;

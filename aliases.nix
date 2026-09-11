@@ -18,7 +18,6 @@ in
         fzf = lib.getExe pkgs.fzf;
       in
       {
-        v = "$EDITOR";
         c = "clear";
         rm = "rm -v";
         cp = "cp -v";

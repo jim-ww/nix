@@ -27,10 +27,6 @@
   };
 
   services.openssh.enable = true;
-  services.dbus = {
-    enable = true;
-    packages = [ pkgs.dconf ];
-  };
   services.earlyoom.enable = true;
   systemd.oomd.enable = false;
   services.upower.enable = true;
@@ -50,9 +46,12 @@
   powerManagement.powertop.enable = true;
   zramSwap.enable = true;
 
-  networking.networkmanager.enable = true;
-  networking.networkmanager.wifi.powersave = true;
-  systemd.services.NetworkManager-wait-online.enable = false;
+  networking.networkmanager = {
+    enable = true;
+    wifi.powersave = true;
+    wifi.backend = "iwd";
+  };
+  # systemd.services.NetworkManager-wait-online.enable = false;
 
   time.timeZone = "Europe/Brussels";
   i18n.defaultLocale = "en_US.UTF-8";
