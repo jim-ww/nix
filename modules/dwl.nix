@@ -1,0 +1,215 @@
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}:
+let
+  home = "/home/${config.user}";
+  documents = "${home}/Documents";
+
+  ipc = ''"noctalia", "msg"'';
+  term = ''"xdg-terminal-exec", "--"'';
+
+  configH = ''
+    #define COLOR(hex)    { ((hex >> 24) & 0xFF) / 255.0f, \
+                            ((hex >> 16) & 0xFF) / 255.0f, \
+                            ((hex >> 8) & 0xFF) / 255.0f, \
+                            (hex & 0xFF) / 255.0f }
+
+    static const int sloppyfocus               = 1;
+    static const int bypass_surface_visibility = 0;
+    static const unsigned int borderpx         = 1;
+    static const float rootcolor[]             = COLOR(0x222222ff);
+    static const float bordercolor[]           = COLOR(0x444444ff);
+    static const float focuscolor[]            = COLOR(0x005577ff);
+    static const float urgentcolor[]           = COLOR(0xff0000ff);
+    static const float fullscreen_bg[]         = {0.0f, 0.0f, 0.0f, 1.0f};
+
+    #define TAGCOUNT (10)
+
+    static int log_level = WLR_ERROR;
+
+    static const Rule rules[] = {
+        { NULL,               "term-float", 0,            1,           -1 },
+    };
+
+    static const Layout layouts[] = {
+        { "[]=",      tile },
+        { "><>",      NULL },
+        { "[M]",      monocle },
+    };
+
+    static const MonitorRule monrules[] = {
+        { NULL,       0.55f, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL,   -1,  -1 },
+    };
+
+    static const struct xkb_rule_names xkb_rules = {
+        .layout = "us,ru",
+        .options = "grp:win_space_toggle",
+    };
+
+    static const int repeat_rate = 25;
+    static const int repeat_delay = 600;
+
+    static const int tap_to_click = 1;
+    static const int tap_and_drag = 1;
+    static const int drag_lock = 1;
+    static const int natural_scrolling = 0;
+    static const int disable_while_typing = 1;
+    static const int left_handed = 0;
+    static const int middle_button_emulation = 0;
+    static const enum libinput_config_scroll_method scroll_method = LIBINPUT_CONFIG_SCROLL_2FG;
+    static const enum libinput_config_click_method click_method = LIBINPUT_CONFIG_CLICK_METHOD_BUTTON_AREAS;
+    static const uint32_t send_events_mode = LIBINPUT_CONFIG_SEND_EVENTS_ENABLED;
+    static const enum libinput_config_accel_profile accel_profile = LIBINPUT_CONFIG_ACCEL_PROFILE_FLAT;
+    static const double accel_speed = 0.0;
+    static const enum libinput_config_tap_button_map button_map = LIBINPUT_CONFIG_TAP_MAP_LRM;
+
+    #define MODKEY WLR_MODIFIER_LOGO
+    #define SHIFT  WLR_MODIFIER_SHIFT
+    #define ALT    WLR_MODIFIER_ALT
+    #define CTRL   WLR_MODIFIER_CTRL
+
+    #define CMD(...) { .v = (const char*[]){ __VA_ARGS__, NULL } }
+
+    #define TAGKEYS(KEY,SKEY,TAG) \
+        { MODKEY,       KEY,  view,       {.ui = 1 << TAG} }, \
+        { MODKEY|CTRL,  KEY,  toggleview, {.ui = 1 << TAG} }, \
+        { MODKEY|SHIFT, SKEY, tag,        {.ui = 1 << TAG} }, \
+        { MODKEY|CTRL|SHIFT, SKEY, toggletag, {.ui = 1 << TAG} }
+
+    static const Key keys[] = {
+        { MODKEY,       XKB_KEY_c,          killclient,       {0} },
+        { MODKEY|SHIFT, XKB_KEY_m,          quit,             {0} },
+        { MODKEY,       XKB_KEY_v,          togglefloating,   {0} },
+        { MODKEY|SHIFT, XKB_KEY_f,          togglefullscreen, {0} },
+
+        { MODKEY,       XKB_KEY_Up,         focusstack,       {.i = -1} },
+        { MODKEY,       XKB_KEY_Down,       focusstack,       {.i = +1} },
+        { MODKEY,       XKB_KEY_Left,       focusstack,       {.i = -1} },
+        { MODKEY,       XKB_KEY_Right,      focusstack,       {.i = +1} },
+        { ALT,          XKB_KEY_Tab,        spawn,            CMD(${ipc}, "window-switcher") },
+
+        { MODKEY|SHIFT, XKB_KEY_Up,         zoom,             {0} },
+        { MODKEY|SHIFT, XKB_KEY_Down,       zoom,             {0} },
+        { MODKEY|SHIFT, XKB_KEY_Left,       tagmon,           {.i = WLR_DIRECTION_LEFT} },
+        { MODKEY|SHIFT, XKB_KEY_Right,      tagmon,           {.i = WLR_DIRECTION_RIGHT} },
+
+        { MODKEY,       XKB_KEY_q,          spawn,            CMD("footclient") },
+        { MODKEY|SHIFT, XKB_KEY_q,          spawn,            CMD("foot") },
+        { MODKEY,       XKB_KEY_t,          spawn,            CMD("footclient", "--title=term-float") },
+        { MODKEY|SHIFT, XKB_KEY_t,          spawn,            CMD(${ipc}, "panel-toggle", "launcher", "/tr ") },
+        { MODKEY,       XKB_KEY_e,          spawn,            CMD(${term}, "${lib.getExe pkgs.lf}") },
+        { MODKEY,       XKB_KEY_f,          spawn,            CMD("${config.browser}") },
+        { MODKEY,       XKB_KEY_s,          spawn,            CMD(${term}, "rmpc", "--clean") },
+        { MODKEY|SHIFT, XKB_KEY_s,          spawn,            CMD(${ipc}, "panel-toggle", "reaperhound/ambient-sounds:main") },
+        { MODKEY|SHIFT, XKB_KEY_a,          spawn,            CMD(${ipc}, "panel-toggle", "control-center", "system") },
+        { MODKEY,       XKB_KEY_w,          spawn,            CMD(${ipc}, "panel-toggle", "wallpaper") },
+        { MODKEY|SHIFT, XKB_KEY_w,          spawn,            CMD(${ipc}, "panel-toggle", "noctalia/wallhaven:browser") },
+        { MODKEY,       XKB_KEY_b,          spawn,            CMD("keepassxc", "${documents}/.vault.kdbx") },
+        { MODKEY,       XKB_KEY_k,          spawn,            CMD(${ipc}, "panel-toggle", "launcher", "/calc ") },
+        { MODKEY|SHIFT, XKB_KEY_b,          spawn,            CMD(${ipc}, "panel-toggle", "launcher", "/web ") },
+        { MODKEY,       XKB_KEY_j,          spawn,            CMD(${ipc}, "panel-toggle", "launcher", "/kao ") },
+        { MODKEY,       XKB_KEY_x,          spawn,            CMD(${term}, "sh", "-c", "cd \"${documents}\" && exec ${config.editor} TODO.md") },
+        { MODKEY|SHIFT, XKB_KEY_x,          spawn,            CMD(${term}, "sh", "-c", "cd \"${documents}\" && exec ${config.editor} .") },
+        { MODKEY,       XKB_KEY_d,          spawn,            CMD(${term}, "${config.editor}") },
+        { MODKEY,       XKB_KEY_z,          spawn,            CMD(${term}, "kage") },
+        { MODKEY,       XKB_KEY_Tab,        spawn,            CMD(${ipc}, "panel-toggle", "control-center") },
+        { MODKEY,       XKB_KEY_p,          spawn,            CMD(${ipc}, "panel-toggle", "control-center", "audio") },
+        { MODKEY,       XKB_KEY_r,          spawn,            CMD(${ipc}, "panel-toggle", "launcher") },
+        { MODKEY,       XKB_KEY_l,          spawn,            CMD(${ipc}, "session", "lock") },
+        { MODKEY|SHIFT, XKB_KEY_c,          spawn,            CMD(${ipc}, "panel-toggle", "clipboard") },
+        { 0,            XKB_KEY_Print,      spawn,            CMD(${ipc}, "screenshot-region") },
+        { MODKEY,       XKB_KEY_Print,      spawn,            CMD(${ipc}, "screenshot-fullscreen") },
+
+        { MODKEY,       XKB_KEY_F1,         spawn,            CMD(${ipc}, "dpms-on") },
+        { MODKEY,       XKB_KEY_F2,         spawn,            CMD(${ipc}, "dpms-off") },
+
+        { 0, XKB_KEY_XF86AudioRaiseVolume,  spawn,            CMD(${ipc}, "volume-up") },
+        { 0, XKB_KEY_XF86AudioLowerVolume,  spawn,            CMD(${ipc}, "volume-down") },
+        { 0, XKB_KEY_XF86AudioMute,         spawn,            CMD(${ipc}, "volume-mute") },
+
+        { 0, XKB_KEY_XF86AudioPlay,         spawn,            CMD("playerctl", "-p", "mpd", "play-pause") },
+        { 0, XKB_KEY_XF86AudioPause,        spawn,            CMD("playerctl", "-p", "mpd", "pause") },
+        { 0, XKB_KEY_XF86AudioNext,         spawn,            CMD("playerctl", "-p", "mpd", "next") },
+        { 0, XKB_KEY_XF86AudioPrev,         spawn,            CMD("playerctl", "-p", "mpd", "previous") },
+
+        { 0, XKB_KEY_XF86MonBrightnessUp,   spawn,            CMD(${ipc}, "brightness-up", "10") },
+        { 0, XKB_KEY_XF86MonBrightnessDown, spawn,            CMD(${ipc}, "brightness-down", "10") },
+
+        TAGKEYS( XKB_KEY_1, XKB_KEY_exclam,      0),
+        TAGKEYS( XKB_KEY_2, XKB_KEY_at,          1),
+        TAGKEYS( XKB_KEY_3, XKB_KEY_numbersign,  2),
+        TAGKEYS( XKB_KEY_4, XKB_KEY_dollar,      3),
+        TAGKEYS( XKB_KEY_5, XKB_KEY_percent,     4),
+        TAGKEYS( XKB_KEY_6, XKB_KEY_asciicircum, 5),
+        TAGKEYS( XKB_KEY_7, XKB_KEY_ampersand,   6),
+        TAGKEYS( XKB_KEY_8, XKB_KEY_asterisk,    7),
+        TAGKEYS( XKB_KEY_9, XKB_KEY_parenleft,   8),
+        TAGKEYS( XKB_KEY_0, XKB_KEY_parenright,  9),
+
+        { CTRL|ALT, XKB_KEY_Terminate_Server, quit, {0} },
+    #define CHVT(n) { CTRL|ALT, XKB_KEY_XF86Switch_VT_##n, chvt, {.ui = (n)} }
+        CHVT(1), CHVT(2), CHVT(3), CHVT(4), CHVT(5), CHVT(6),
+        CHVT(7), CHVT(8), CHVT(9), CHVT(10), CHVT(11), CHVT(12),
+    };
+
+    static const Button buttons[] = {
+        { MODKEY, BTN_LEFT,   moveresize,     {.ui = CurMove} },
+        { MODKEY, BTN_MIDDLE, togglefloating, {0} },
+        { MODKEY, BTN_RIGHT,  moveresize,     {.ui = CurResize} },
+    };
+  '';
+  startup = pkgs.writeShellScript "dwl-startup" (
+    lib.concatStringsSep "\n" [
+      "kage daemon start &"
+      "keepassxc --minimized &"
+      "lf -server &"
+      "fcitx5 &"
+    ]
+  );
+
+  dwl = pkgs.dwl.override { inherit configH; };
+in
+{
+  programs.dwl = {
+    enable = true;
+    package = pkgs.symlinkJoin {
+      name = "dwl-wrapped";
+      paths = [ dwl ];
+      nativeBuildInputs = [ pkgs.makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/dwl --add-flags "-s ${startup}"
+      '';
+      meta.mainProgram = "dwl";
+    };
+    extraSessionCommands = lib.concatStringsSep "\n" [
+      "export XDG_CURRENT_DESKTOP=dwl"
+      "export XDG_SESSION_TYPE=wayland"
+    ];
+  };
+
+  services.speechd.enable = false;
+
+  environment.loginShellInit = ''
+    if [[ "$(tty)" == /dev/tty1 ]]; then
+      for f in /etc/profile.d/*.sh; do . "$f"; done
+      exec /etc/xdg/dwl-session
+    fi
+  '';
+
+  hm =
+    { pkgs, lib, ... }:
+    {
+      home.packages = with pkgs; [
+        xdg-utils
+        wl-clipboard
+        wf-recorder
+        libnotify
+        playerctl
+      ];
+
+      services.hyprpaper.enable = lib.mkForce false;
+    };
+}

@@ -101,6 +101,7 @@
         ./modules/bash.nix
         ./modules/nix.nix
         ./modules/sway.nix
+        ./modules/dwl
         ./modules/tailscale.nix
         ./home.nix
         nur.modules.nixos.default
