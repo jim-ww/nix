@@ -1,5 +1,6 @@
 { pkgs, ... }: {
   stylix.enable = true;
+  stylix.targets.qt.enable = false;
   stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-night-terminal-dark.yaml"; # -dark / -terminal-dark
   stylix.polarity = "dark";
   stylix.cursor = {

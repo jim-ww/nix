@@ -14,7 +14,6 @@ with pkgs;
   fastfetch-unwrapped
   nixfmt
   nh
-  vim
   btop
   tmux
   ripgrep
