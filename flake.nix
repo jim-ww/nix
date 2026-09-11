@@ -137,6 +137,7 @@
         nvim = self.nixosConfigurations.nixos.config.programs.nixvim.build.package;
         default = self.packages.${system}.nvim;
         iso = self.nixosConfigurations.iso.config.system.build.isoImage;
+        boomer-iso = self.nixosConfigurations.boomer-iso.config.system.build.isoImage;
       };
 
       apps.${system}.default = {
@@ -171,6 +172,30 @@
           {
             options.user = nixpkgs.lib.mkOption { type = nixpkgs.lib.types.str; };
             config.user = user;
+          }
+        ];
+      };
+
+      nixosConfigurations.boomer = nixpkgs.lib.nixosSystem {
+        modules = [
+          inputs.disko.nixosModules.disko
+          ./hosts/boomer/configuration.nix
+        ];
+      };
+
+      nixosConfigurations.boomer-iso = nixpkgs.lib.nixosSystem {
+        modules = [
+          inputs.disko.nixosModules.disko
+          (
+            { modulesPath, ... }:
+            {
+              imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
+            }
+          )
+          ./hosts/boomer/configuration.nix
+          {
+            boomer.iso = true;
+            boomer.installed = self.nixosConfigurations.boomer;
           }
         ];
       };
