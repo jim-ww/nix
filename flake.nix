@@ -76,8 +76,12 @@
       user = "jim";
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
+      revision = {
+        system.configurationRevision = self.rev or self.dirtyRev or null;
+      };
       #stablePkgs = nixpkgs-stable.legacyPackages.${system};
       commonModules = [
+        revision
         ./prefs.nix
         ./modules/firewall.nix
         ./modules/pipewire.nix
@@ -138,6 +142,7 @@
         nvim = self.nixosConfigurations.nixos.config.programs.nixvim.build.package;
         default = self.packages.${system}.nvim;
         iso = self.nixosConfigurations.iso.config.system.build.isoImage;
+        iso-minimal = self.nixosConfigurations.iso-minimal.config.system.build.isoImage;
         boomer-iso = self.nixosConfigurations.boomer-iso.config.system.build.isoImage;
       };
 
@@ -149,6 +154,28 @@
       formatter.${system} = pkgs.nixfmt;
 
       nixosConfigurations.iso = nixpkgs.lib.nixosSystem {
+        specialArgs = {
+          inherit
+            inputs
+            system
+            self
+            ;
+        };
+        modules = [
+          (
+            { modulesPath, ... }:
+            {
+              imports = [ "${modulesPath}/installer/cd-dvd/installation-cd-base.nix" ];
+            }
+          )
+          { nixpkgs.hostPlatform = system; }
+          ./hosts/nixos/configuration.nix
+          ./hosts/nixos/iso.nix
+        ]
+        ++ commonModules;
+      };
+
+      nixosConfigurations.iso-minimal = nixpkgs.lib.nixosSystem {
         modules = [
           (
             { modulesPath, ... }:
@@ -157,6 +184,7 @@
             }
           )
           { nixpkgs.hostPlatform = system; }
+          revision
           ./hosts/minimal/configuration.nix
         ];
       };
@@ -170,6 +198,7 @@
           ./hosts/nixos/disko.nix
           ./hosts/nixos/impermanence.nix
           ./hosts/minimal/configuration.nix
+          revision
           {
             options.user = nixpkgs.lib.mkOption { type = nixpkgs.lib.types.str; };
             config.user = user;
@@ -180,6 +209,7 @@
       nixosConfigurations.boomer = nixpkgs.lib.nixosSystem {
         modules = [
           inputs.disko.nixosModules.disko
+          revision
           ./hosts/boomer/configuration.nix
         ];
       };
@@ -198,6 +228,7 @@
             boomer.iso = true;
             boomer.installed = self.nixosConfigurations.boomer;
           }
+          revision
         ];
       };
 
