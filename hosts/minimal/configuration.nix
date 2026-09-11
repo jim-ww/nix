@@ -79,36 +79,36 @@ in
         pointer_accel 0.0
       }
 
-      bindsym $mod+q exec $term
-      bindsym $mod+c kill
-      bindsym $mod+e exec $term -e lf
-      bindsym $mod+d exec $term -e nvim
-      bindsym $mod+f exec librewolf
-      bindsym $mod+b exec keepassxc
-      bindsym $mod+v floating toggle
-      bindsym $mod+Shift+f fullscreen toggle
-      bindsym $mod+Tab exec ${ipc} panel-toggle control-center
-      bindsym $mod+p exec ${ipc} panel-toggle control-center audio
-      bindsym $mod+r exec ${ipc} panel-toggle launcher
-      bindsym $mod+Shift+a exec ${ipc} panel-toggle control-center system
-      bindsym $mod+k exec ${ipc} panel-toggle launcher '/calc '
-      bindsym $mod+w exec ${ipc} panel-toggle wallpaper
-      bindsym $mod+Shift+c exec ${ipc} panel-toggle clipboard
-      bindsym $mod+l exec ${ipc} session lock
-      bindsym --locked Alt+Tab exec ${ipc} window-switcher
-      bindsym Print exec ${ipc} screenshot-region
-      bindsym $mod+Print exec ${ipc} screenshot-fullscreen
-      bindsym $mod+F1 exec ${ipc} dpms-on
-      bindsym $mod+F2 exec ${ipc} dpms-off
-      bindsym --locked XF86AudioRaiseVolume exec ${ipc} volume-up
-      bindsym --locked XF86AudioLowerVolume exec ${ipc} volume-down
-      bindsym --locked XF86AudioMute exec ${ipc} volume-mute
-      bindsym --locked XF86AudioPlay exec ${ipc} media toggle
-      bindsym --locked XF86AudioPause exec ${ipc} media pause
-      bindsym --locked XF86AudioNext exec ${ipc} media next
-      bindsym --locked XF86AudioPrev exec ${ipc} media previous
-      bindsym --locked XF86MonBrightnessUp exec ${ipc} brightness-up 10
-      bindsym --locked XF86MonBrightnessDown exec ${ipc} brightness-down 10
+      bindsym --no-warn $mod+q exec $term
+      bindsym --no-warn $mod+c kill
+      bindsym --no-warn $mod+e exec $term -e lf
+      bindsym --no-warn $mod+d exec $term -e nvim
+      bindsym --no-warn $mod+f exec librewolf
+      bindsym --no-warn $mod+b exec keepassxc
+      bindsym --no-warn $mod+v floating toggle
+      bindsym --no-warn $mod+Shift+f fullscreen toggle
+      bindsym --no-warn $mod+Tab exec ${ipc} panel-toggle control-center
+      bindsym --no-warn $mod+p exec ${ipc} panel-toggle control-center audio
+      bindsym --no-warn $mod+r exec ${ipc} panel-toggle launcher
+      bindsym --no-warn $mod+Shift+a exec ${ipc} panel-toggle control-center system
+      bindsym --no-warn $mod+k exec ${ipc} panel-toggle launcher '/calc '
+      bindsym --no-warn $mod+w exec ${ipc} panel-toggle wallpaper
+      bindsym --no-warn $mod+Shift+c exec ${ipc} panel-toggle clipboard
+      bindsym --no-warn $mod+l exec ${ipc} session lock
+      bindsym --no-warn --locked Alt+Tab exec ${ipc} window-switcher
+      bindsym --no-warn Print exec ${ipc} screenshot-region
+      bindsym --no-warn $mod+Print exec ${ipc} screenshot-fullscreen
+      bindsym --no-warn $mod+F1 exec ${ipc} dpms-on
+      bindsym --no-warn $mod+F2 exec ${ipc} dpms-off
+      bindsym --no-warn --locked XF86AudioRaiseVolume exec ${ipc} volume-up
+      bindsym --no-warn --locked XF86AudioLowerVolume exec ${ipc} volume-down
+      bindsym --no-warn --locked XF86AudioMute exec ${ipc} volume-mute
+      bindsym --no-warn --locked XF86AudioPlay exec ${ipc} media toggle
+      bindsym --no-warn --locked XF86AudioPause exec ${ipc} media pause
+      bindsym --no-warn --locked XF86AudioNext exec ${ipc} media next
+      bindsym --no-warn --locked XF86AudioPrev exec ${ipc} media previous
+      bindsym --no-warn --locked XF86MonBrightnessUp exec ${ipc} brightness-up 10
+      bindsym --no-warn --locked XF86MonBrightnessDown exec ${ipc} brightness-down 10
 
       exec noctalia
 
@@ -129,6 +129,7 @@ in
     [[ "$(tty)" == /dev/tty1 ]] && exec sway
   '';
 
+  fonts.fontconfig.enable = true;
   fonts.packages = with pkgs; [
     nerd-fonts.symbols-only
     noto-fonts-cjk-sans
