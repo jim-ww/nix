@@ -8,7 +8,7 @@
 let
   user = "user";
   fullName = "Пользователь";
-  hostname = "boomer";
+  hostname = "home-pc";
   password = "1234";
   timezone = "Europe/Kyiv";
   locale = "ru_RU.UTF-8";
