@@ -29,5 +29,6 @@
     restic-repo-password = { };
     shardic-key.owner = config.user;
     shardic-providers.owner = config.user;
+    tailscale-boomer.owner = config.user;
   };
 }

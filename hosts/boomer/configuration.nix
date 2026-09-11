@@ -52,6 +52,42 @@ let
     '';
   };
 
+  desktopIcons = [
+    "firefox.desktop"
+    "writer.desktop"
+    "calc.desktop"
+    "org.gnome.SimpleScan.desktop"
+    "org.gnome.Software.desktop"
+    "gimp.desktop"
+    "org.telegram.desktop.desktop"
+    "im.dino.Dino.desktop"
+    "org.gnome.Calculator.desktop"
+  ];
+
+  desktopIconsScript = pkgs.writeShellApplication {
+    name = "desktop-icons";
+    runtimeInputs = with pkgs; [
+      xdg-user-dirs
+      coreutils
+    ];
+    text = ''
+      state="$HOME/.local/state/desktop-icons"
+      mkdir -p "$state"
+      xdg-user-dirs-update
+      dir=$(xdg-user-dir DESKTOP)
+      mkdir -p "$dir"
+      for app in ${lib.escapeShellArgs desktopIcons}; do
+        [ -e "$state/$app" ] && continue
+        src=/run/current-system/sw/share/applications/$app
+        [ -e "$src" ] || continue
+        if [ ! -e "$dir/$app" ]; then
+          install -m 0755 "$(readlink -f "$src")" "$dir/$app"
+        fi
+        touch "$state/$app"
+      done
+    '';
+  };
+
   mimeDefaults = apps: lib.concatMapAttrs (app: types: lib.genAttrs types (_: app)) apps;
 in
 {
@@ -87,12 +123,28 @@ in
           layout = keyboardLayouts;
           options = keyboardSwitch;
         };
-        desktopManager.cinnamon.enable = true;
+        desktopManager.cinnamon = {
+          enable = true;
+          extraGSettingsOverrides = ''
+            [org.nemo.desktop]
+            home-icon-visible=true
+            computer-icon-visible=true
+            trash-icon-visible=true
+          '';
+        };
       };
       services.displayManager.autoLogin = {
         enable = true;
         inherit user;
       };
+
+      environment.etc."xdg/autostart/desktop-icons.desktop".text = ''
+        [Desktop Entry]
+        Type=Application
+        Name=Desktop icons
+        Exec=${desktopIconsScript}/bin/desktop-icons
+        NoDisplay=true
+      '';
 
       services.blueman.enable = true;
       programs.system-config-printer.enable = true;
