@@ -309,6 +309,34 @@ in
         wineWow64Packages.stableFull
         gnome-software
         x11vnc
+
+        tmux
+        btop
+        fd
+        ripgrep
+        fzf
+        lf
+        gdu
+        file
+        tree
+        curl
+        wget
+        rsync
+        _7zz-rar
+        tealdeer
+        smartmontools
+        lm_sensors
+        inxi
+        lsof
+        dnsutils
+        iperf3
+        pciutils
+        usbutils
+        parted
+        gptfdisk
+        e2fsprogs
+        dosfstools
+        testdisk
       ];
 
       xdg.mime.defaultApplications = mimeDefaults {
@@ -396,6 +424,61 @@ in
         "org.telegram.desktop.desktop" = [ "x-scheme-handler/tg" ];
         "im.dino.Dino.desktop" = [ "x-scheme-handler/xmpp" ];
       };
+
+      programs.bash.blesh.enable = true;
+      programs.neovim = {
+        enable = true;
+        vimAlias = true;
+        defaultEditor = true;
+        configure.customLuaRC = ''
+          vim.o.number = true
+          vim.o.relativenumber = true
+          vim.o.clipboard = "unnamedplus"
+          vim.o.undofile = true
+          vim.o.swapfile = false
+          vim.opt.path:append("**")
+          vim.o.ignorecase = true
+          vim.o.smartcase = true
+          vim.o.breakindent = true
+          vim.o.linebreak = true
+          vim.o.splitright = true
+          vim.o.splitbelow = true
+          vim.o.cursorline = true
+          vim.o.scrolloff = 10
+          vim.o.confirm = true
+          vim.o.inccommand = "split"
+          vim.o.list = true
+          vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
+
+          vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
+          vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>")
+          for _, k in ipairs({ "h", "j", "k", "l" }) do
+            vim.keymap.set("n", "<C-" .. k .. ">", "<C-w><C-" .. k .. ">")
+          end
+
+          vim.api.nvim_create_autocmd("TextYankPost", { callback = function() vim.hl.on_yank() end })
+          vim.api.nvim_create_autocmd("BufReadPost", { command = [[silent! normal! g`"]] })
+          vim.api.nvim_create_autocmd("BufWritePre", { callback = function(a) vim.fn.mkdir(vim.fn.fnamemodify(a.file, ":p:h"), "p") end })
+        '';
+      };
+      environment.variables.LESS = "-R";
+      environment.shellAliases =
+        let
+          ls = "ls -h --group-directories-first --color=auto";
+        in
+        {
+          v = "$EDITOR";
+          c = "clear";
+          l = ls;
+          ll = "${ls} -l";
+          la = "${ls} -A";
+          rm = "rm -v";
+          cp = "cp -v";
+          mv = "mv -v";
+          "7z" = "7zz";
+          ns = lib.getExe pkgs.nix-search-cli;
+          nsp = "nix-shell -p";
+        };
 
       users.users.${user} = {
         isNormalUser = true;
