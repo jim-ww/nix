@@ -127,7 +127,7 @@
                 "${mod}+Shift+Down" = "move down";
                 # programs
                 "${mod}+q" = "exec footclient";
-                "${mod}+Shift+q" = "exec ${pkgs.foot}";
+                "${mod}+Shift+q" = "exec foot";
                 "${mod}+t" = "exec footclient --title=term-float";
                 "${mod}+Shift+t" = "exec ${ipc} panel-toggle launcher '/tr '";
                 "${mod}+e" = "exec ${fileManager}";
