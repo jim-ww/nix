@@ -61,7 +61,8 @@ widget_order = [ "desktop-widget-0000000000000001", "desktop-widget-000000000000
 background_opacity = 0.94999999999999996
 
 [location]
-auto_locate = true
+address = ""
+auto_locate = false
 
 [lockscreen_widgets]
 enabled = true

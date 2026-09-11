@@ -1,19 +1,21 @@
 { pkgs, lib, ... }:
 let
   user = "jim";
+  hostname = "nixos";
   hashedPassword = "$y$j9T$k9cTxhpl3769v0w3vtHHC.$RMnePBGaEHYBg3IZDSnGry3TBScXMfDpPAGXlM9EOJA";
+  initialRootHashPassword = hashedPassword;
   timezone = "Europe/Brussels";
-  term = "foot";
-  editor = "nvim";
-  browser = "librewolf";
   gitName = "jim-ww";
   gitEmail = "jim.w2610@proton.me";
+  authorizedKeys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHxGHWa43ZUlie9Tg6cxVkBFA41f2PSqniD3sn7TnDnK jim.w2610@proton.me"
+  ];
+  hardenedSSH = true;
 in
 {
-  # TODO: dbus, neovim, upower, gvfs
+  # TODO: dbus, upower?, gvfs?
 
   # hardware
-
   hardware.graphics.enable = true;
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = false;
@@ -22,18 +24,27 @@ in
   services.tlp.enable = true;
   services.fstrim.enable = true;
   services.earlyoom.enable = true;
+  systemd.oomd.enable = false;
+  services.upower.enable = true;
+  services.udisks2.enable = true;
+  services.speechd.enable = false;
   zramSwap.enable = true;
 
   # networking
-
-  networking.hostName = "nixos";
+  networking.hostName = hostname;
   networking.networkmanager.enable = true;
   systemd.services.NetworkManager-wait-online.enable = false;
 
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    settings = lib.mkIf hardenedSSH {
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+      PermitRootLogin = "prohibit-password";
+    };
+  };
 
   # audio
-
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -43,57 +54,72 @@ in
   programs.sway = {
     enable = true;
     extraPackages = with pkgs; [
+      noctalia
       foot
-      rofi
-      mako
-      swaylock
-      swayidle
-      grim
       wl-clipboard
-      brightnessctl
-      libnotify
       imv
-      mpv
+      (mpv.override { youtubeSupport = false; })
       zathura
-      keepassxc # TODO
+      keepassxc
       librewolf-bin
     ];
   };
 
-  environment.etc."sway/config.d/local.conf".text = ''
-    set $menu rofi -show drun
+  xdg.portal.extraPortals = lib.mkForce [ pkgs.xdg-desktop-portal-wlr ];
 
-    input * {
-      xkb_layout us,ru
-      xkb_options grp:win_space_toggle
-      xkb_numlock enabled
-      tap enabled
-      accel_profile flat
-      pointer_accel 0.0
-    }
+  environment.etc."sway/config.d/local.conf".text =
+    let
+      ipc = "noctalia msg";
+    in
+    ''
+      input * {
+        xkb_layout us,ru
+        xkb_options grp:win_space_toggle
+        xkb_numlock enabled
+        tap enabled
+        accel_profile flat
+        pointer_accel 0.0
+      }
 
-    bindsym $mod+q exec $term
-    bindsym $mod+c kill
-    bindsym $mod+e exec $term -e lf
-    bindsym $mod+d exec $term -e nvim
-    bindsym $mod+f exec librewolf
-    bindsym $mod+b exec keepassxc
-    bindsym $mod+r exec $menu
-    bindsym $mod+v floating toggle
-    bindsym $mod+l exec swaylock -efkl
-    bindsym $mod+Shift+f fullscreen toggle
-    bindsym Print exec grim - | wl-copy
+      bindsym $mod+q exec $term
+      bindsym $mod+c kill
+      bindsym $mod+e exec $term -e lf
+      bindsym $mod+d exec $term -e nvim
+      bindsym $mod+f exec librewolf
+      bindsym $mod+b exec keepassxc
+      bindsym $mod+v floating toggle
+      bindsym $mod+Shift+f fullscreen toggle
+      bindsym $mod+Tab exec ${ipc} panel-toggle control-center
+      bindsym $mod+p exec ${ipc} panel-toggle control-center audio
+      bindsym $mod+r exec ${ipc} panel-toggle launcher
+      bindsym $mod+Shift+a exec ${ipc} panel-toggle control-center system
+      bindsym $mod+k exec ${ipc} panel-toggle launcher '/calc '
+      bindsym $mod+w exec ${ipc} panel-toggle wallpaper
+      bindsym $mod+Shift+c exec ${ipc} panel-toggle clipboard
+      bindsym $mod+l exec ${ipc} session lock
+      bindsym --locked Alt+Tab exec ${ipc} window-switcher
+      bindsym Print exec ${ipc} screenshot-region
+      bindsym $mod+Print exec ${ipc} screenshot-fullscreen
+      bindsym $mod+F1 exec ${ipc} dpms-on
+      bindsym $mod+F2 exec ${ipc} dpms-off
+      bindsym --locked XF86AudioRaiseVolume exec ${ipc} volume-up
+      bindsym --locked XF86AudioLowerVolume exec ${ipc} volume-down
+      bindsym --locked XF86AudioMute exec ${ipc} volume-mute
+      bindsym --locked XF86AudioPlay exec ${ipc} media toggle
+      bindsym --locked XF86AudioPause exec ${ipc} media pause
+      bindsym --locked XF86AudioNext exec ${ipc} media next
+      bindsym --locked XF86AudioPrev exec ${ipc} media previous
+      bindsym --locked XF86MonBrightnessUp exec ${ipc} brightness-up 10
+      bindsym --locked XF86MonBrightnessDown exec ${ipc} brightness-down 10
 
-    exec mako
-    exec swayidle -w timeout 600 'swaylock -efkl' before-sleep 'swaylock -efkl'
+      exec noctalia
 
-    default_border pixel 1
-    gaps inner 4
-    smart_gaps on
-  '';
+      default_border pixel 1
+      gaps inner 4
+      smart_gaps on
+    '';
 
   security.polkit.enable = true;
-  security.pam.services.swaylock = { };
   programs.dconf.enable = true;
 
   services.getty = {
@@ -110,8 +136,17 @@ in
     noto-fonts-cjk-sans
   ];
 
-  services.mpd.enable = true;
-  services.mpd.settings.music_directory = "$HOME/Music";
+  services.mpd = {
+    enable = true;
+    inherit user;
+    settings.music_directory = "/home/${user}/Music";
+  };
+  systemd.services.mpd.environment.XDG_RUNTIME_DIR = "/run/user/1000";
+  nixpkgs.overlays = [
+    (final: prev: {
+      mpd = prev.callPackage "${prev.path}/pkgs/by-name/mp/mpd-small/package.nix" { mpd = prev.mpd; };
+    })
+  ];
 
   programs.git = {
     enable = true;
@@ -125,11 +160,45 @@ in
     };
   };
 
-  # packages
+  programs.neovim = {
+    enable = true;
+    vimAlias = true;
+    defaultEditor = true;
+    configure.customLuaRC = ''
+      vim.o.number = true
+      vim.o.relativenumber = true
+      vim.o.clipboard = "unnamedplus"
+      vim.o.undofile = true
+      vim.o.swapfile = false
+      vim.opt.path:append("**")
+      vim.o.ignorecase = true
+      vim.o.smartcase = true
+      vim.o.breakindent = true
+      vim.o.linebreak = true
+      vim.o.splitright = true
+      vim.o.splitbelow = true
+      vim.o.cursorline = true
+      vim.o.scrolloff = 10
+      vim.o.confirm = true
+      vim.o.inccommand = "split"
+      vim.o.list = true
+      vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 
+      vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
+      vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>")
+      for _, k in ipairs({ "h", "j", "k", "l" }) do
+        vim.keymap.set("n", "<C-" .. k .. ">", "<C-w><C-" .. k .. ">")
+      end
+
+      vim.api.nvim_create_autocmd("TextYankPost", { callback = function() vim.hl.on_yank() end })
+      vim.api.nvim_create_autocmd("BufReadPost", { command = [[silent! normal! g`"]] })
+      vim.api.nvim_create_autocmd("BufWritePre", { callback = function(a) vim.fn.mkdir(vim.fn.fnamemodify(a.file, ":p:h"), "p") end })
+    '';
+  };
+
+  # packages
   environment.systemPackages = with pkgs; [
     # cli
-    neovim
     nh
     fd
     lf
@@ -147,8 +216,7 @@ in
     tealdeer
     fastfetch-unwrapped
     jujutsu
-    steam-run-free
-    ffmpeg-headless
+    ffmpeg
     monero-cli
     (pkgs.writeShellScriptBin "ms2pdf" ''${lib.getExe' pkgs.groff "groff"} -mms -Kutf8 -Tps "$1" | ${pkgs.ghostscript}/bin/ps2pdf - "$2"'') # usage: ms2pdf <input.ms> <output.pdf>
 
@@ -160,6 +228,8 @@ in
     dosfstools
     e2fsprogs
     testdisk
+    pciutils
+    usbutils
 
     # secrets & files
     age
@@ -169,7 +239,6 @@ in
     restic
 
     # net
-    bluetuith
     transmission_4
     wormhole-william
   ];
@@ -179,28 +248,31 @@ in
   programs.bash.blesh.enable = true;
 
   environment.variables = {
-    EDITOR = editor;
-    VISUAL = editor;
-    BROWSER = browser;
-    TERMINAL = term;
+    BROWSER = "librewolf";
+    TERMINAL = "foot";
     LESS = "-R";
   };
 
-  environment.shellAliases = {
-    v = "$EDITOR";
-    c = "clear";
-    l = "ls -h --group-directories-first --color=auto";
-    la = "ls -hA --group-directories-first --color=auto";
-    conf = "$EDITOR /etc/nixos/configuration.nix";
-    ns = lib.getExe pkgs.nix-search-cli;
-    nsp = "nix-shell -p";
-  };
+  environment.shellAliases =
+    let
+      ls = "ls -h --group-directories-first --color=auto";
+    in
+    {
+      v = "$EDITOR";
+      c = "clear";
+      l = ls;
+      la = "${ls} -A";
+      conf = "$EDITOR /etc/nixos/configuration.nix";
+      ns = lib.getExe pkgs.nix-search-cli;
+      nsp = "nix-shell -p";
+      busybox = lib.getExe pkgs.busybox;
+    };
 
   # users
-
   users.users.${user} = {
     isNormalUser = true;
     inherit hashedPassword;
+    openssh.authorizedKeys.keys = authorizedKeys;
     extraGroups = [
       "networkmanager"
       "wheel"
@@ -209,12 +281,14 @@ in
     ];
   };
 
+  users.users.root.initialHashedPassword = lib.mkForce initialRootHashPassword;
+  users.users.root.openssh.authorizedKeys.keys = authorizedKeys;
+
   security.sudo.extraConfig = ''
     Defaults lecture = never
   '';
 
   # nix
-
   nixpkgs.config.allowUnfree = true;
 
   nix.settings = {
@@ -238,7 +312,6 @@ in
   };
 
   # locale
-
   time.timeZone = timezone;
   i18n.defaultLocale = "en_US.UTF-8";
 
