@@ -44,10 +44,14 @@ in
   home.activation.noctaliaConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p "$(dirname ${target})"
     rm -f ${target}
-    ${lib.getExe pkgs.yq-go} -p toml -o toml \
-      '.plugin_settings."yocraft/web-launcher" = {"links": (load("${bookmarks}") | map((. | sub("^[a-z]+://(www\\.)?"; "") | sub("[/:?#].*$"; "")) + "|" + .))}
-      | .plugin_settings."noctalia/wallhaven".api_key = (load_str("${wallhavenKey}") | trim)' \
-      ${./noctalia.toml} > ${target}
+    if [ -r ${bookmarks} ] && [ -r ${wallhavenKey} ]; then
+      ${lib.getExe pkgs.yq-go} -p toml -o toml \
+        '.plugin_settings."yocraft/web-launcher" = {"links": (load("${bookmarks}") | map((. | sub("^[a-z]+://(www\\.)?"; "") | sub("[/:?#].*$"; "")) + "|" + .))}
+        | .plugin_settings."noctalia/wallhaven".api_key = (load_str("${wallhavenKey}") | trim)' \
+        ${./noctalia.toml} > ${target}
+    else
+      install -m 0644 ${./noctalia.toml} ${target}
+    fi
     if [ -f ${state} ]; then
       ${lib.getExe pkgs.yq-go} -i -p toml -o toml \
         'del(.plugin_settings."yocraft/web-launcher") | del(.plugin_settings."noctalia/wallhaven".api_key)' \
