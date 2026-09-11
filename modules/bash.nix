@@ -23,9 +23,9 @@
         bleopt prompt_eol_mark=
         ble-face command_builtin=fg=4
 
-        ble-import contrib/integration/fzf-initialize
-        ble-import contrib/integration/fzf-completion
-        ble-import contrib/integration/fzf-key-bindings
+        ble-import -d contrib/integration/fzf-initialize
+        ble-import -d contrib/integration/fzf-completion
+        ble-import -d contrib/integration/fzf-key-bindings
 
         __custom_prompt() {
           local last_status=$?
