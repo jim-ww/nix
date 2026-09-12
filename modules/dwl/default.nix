@@ -177,6 +177,7 @@ let
     patches = (old.patches or [ ]) ++ [
       ./keybindings.patch
       ./gaps.patch
+      ./ipc.patch
     ];
   });
 in
