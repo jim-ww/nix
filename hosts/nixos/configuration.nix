@@ -47,11 +47,8 @@
   powerManagement.powertop.enable = true;
   zramSwap.enable = true;
 
-  networking.networkmanager = {
-    enable = true;
-    wifi.powersave = true;
-    wifi.backend = "iwd";
-  };
+  networking.networkmanager.enable = true;
+  networking.networkmanager.wifi.powersave = true;
   # systemd.services.NetworkManager-wait-online.enable = false;
 
   time.timeZone = "Europe/Brussels";
