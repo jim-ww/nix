@@ -139,7 +139,6 @@ let
         { MODKEY,       XKB_KEY_Right,      focusstack,       {.i = +1} },
         { ALT,          XKB_KEY_Tab,        spawn,            CMD(${ipc}, "window-switcher") },
 
-        { MODKEY,       XKB_KEY_space,      setlayout,        {0} },
         { MODKEY,       XKB_KEY_g,          setlayout,        {.v = &layouts[0]} },
         { MODKEY,       XKB_KEY_n,          setlayout,        {.v = &layouts[3]} },
 
