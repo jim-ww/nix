@@ -2,7 +2,6 @@
   pkgs,
   config,
   lib,
-  modulesPath,
   ...
 }:
 let
@@ -295,17 +294,27 @@ in
 
   services.speechd.enable = false;
 
-  imports = [
-    (import "${modulesPath}/programs/wayland/wayland-session.nix" {
-      inherit lib pkgs;
+  # xdg-desktop-portal pulls geoclue in only for the Location portal
+  nixpkgs.overlays = [
+    (_: prev: {
+      xdg-desktop-portal = prev.xdg-desktop-portal.override { enableGeoLocation = false; };
     })
   ];
 
-  xdg.portal.config.dwl = lib.mkForce {
-    default = [ "gtk" ];
-    "org.freedesktop.impl.portal.ScreenCast" = "wlr";
-    "org.freedesktop.impl.portal.Screenshot" = "wlr";
-    "org.freedesktop.impl.portal.Inhibit" = "none";
+  # normally set by services.graphical-desktop, which we do not enable
+  services.pipewire.pulse.enable = true;
+  services.xserver.desktopManager.runXdgAutostartIfNone = true;
+
+  xdg.portal = {
+    enable = true;
+    wlr.enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    config.dwl = lib.mkForce {
+      default = [ "gtk" ];
+      "org.freedesktop.impl.portal.ScreenCast" = "wlr";
+      "org.freedesktop.impl.portal.Screenshot" = "wlr";
+      "org.freedesktop.impl.portal.Inhibit" = "none";
+    };
   };
 
   environment.etc."xdg/dwl-session".text = lib.mkForce ''
