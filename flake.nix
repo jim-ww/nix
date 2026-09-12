@@ -100,7 +100,6 @@
         ./modules/rclone.nix
         ./modules/bash.nix
         ./modules/nix.nix
-        # ./modules/sway.nix
         ./modules/dwl
         ./home.nix
         nur.modules.nixos.default
