@@ -1,0 +1,51 @@
+--- a/dwl.c
++++ c/dwl.c	2026-09-12 02:41:44.061550438 +0200
+@@ -2713,7 +2713,7 @@
+ tile(Monitor *m)
+ {
+ 	unsigned int mw, my, ty;
+-	int i, n = 0;
++	int i, n = 0, g, aw, ah, rest;
+ 	Client *c;
+ 
+ 	wl_list_for_each(c, &clients, link)
+@@ -2722,22 +2722,31 @@
+ 	if (n == 0)
+ 		return;
+ 
++	g = smartgaps && n == 1 ? 0 : (int)gappx;
++	aw = m->w.width - 2 * g;
++	ah = m->w.height - 2 * g;
++
+ 	if (n > m->nmaster)
+-		mw = m->nmaster ? (int)roundf(m->w.width * m->mfact) : 0;
++		mw = m->nmaster ? (int)roundf((aw - g) * m->mfact) : 0;
+ 	else
+-		mw = m->w.width;
++		mw = aw;
+ 	i = my = ty = 0;
+ 	wl_list_for_each(c, &clients, link) {
+ 		if (!VISIBLEON(c, m) || c->isfloating || c->isfullscreen)
+ 			continue;
++		c->bw = smartborders && n == 1 ? 0 : borderpx;
+ 		if (i < m->nmaster) {
+-			resize(c, (struct wlr_box){.x = m->w.x, .y = m->w.y + my, .width = mw,
+-				.height = (m->w.height - my) / (MIN(n, m->nmaster) - i)}, 0);
+-			my += c->geom.height;
++			rest = MIN(n, m->nmaster) - i;
++			resize(c, (struct wlr_box){.x = m->w.x + g, .y = m->w.y + g + my,
++				.width = mw,
++				.height = (ah - my - (rest - 1) * g) / rest}, 0);
++			my += c->geom.height + g;
+ 		} else {
+-			resize(c, (struct wlr_box){.x = m->w.x + mw, .y = m->w.y + ty,
+-				.width = m->w.width - mw, .height = (m->w.height - ty) / (n - i)}, 0);
+-			ty += c->geom.height;
++			rest = n - i;
++			resize(c, (struct wlr_box){.x = m->w.x + g + mw + g, .y = m->w.y + g + ty,
++				.width = aw - mw - g,
++				.height = (ah - ty - (rest - 1) * g) / rest}, 0);
++			ty += c->geom.height + g;
+ 		}
+ 		i++;
+ 	}

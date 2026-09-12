@@ -20,6 +20,9 @@ let
     static const int sloppyfocus               = 1;
     static const int bypass_surface_visibility = 0;
     static const unsigned int borderpx         = 1;
+    static const unsigned int gappx            = 4;
+    static const int smartgaps                 = 1;
+    static const int smartborders              = 1;
     static const float rootcolor[]             = COLOR(0x222222ff);
     static const float bordercolor[]           = COLOR(0x444444ff);
     static const float focuscolor[]            = COLOR(0x005577ff);
@@ -173,6 +176,7 @@ let
   dwl = (pkgs.dwl.override { inherit configH; }).overrideAttrs (old: {
     patches = (old.patches or [ ]) ++ [
       ./keybindings.patch
+      ./gaps.patch
     ];
   });
 in
