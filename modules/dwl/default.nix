@@ -29,6 +29,34 @@ let
     static const float urgentcolor[]           = COLOR(0xff0000ff);
     static const float fullscreen_bg[]         = {0.0f, 0.0f, 0.0f, 1.0f};
 
+    static const int opacity = 0;
+    static const float opacity_inactive = 0.5;
+    static const float opacity_active = 1.0;
+
+    static const int shadow = 1;
+    static const int shadow_only_floating = 0;
+    static const float shadow_color[4] = COLOR(0x000000aa);
+    static const float shadow_color_focus[4] = COLOR(0x000000aa);
+    static const int shadow_blur_sigma = 15;
+    static const int shadow_blur_sigma_focus = 15;
+    static const char *const shadow_ignore_list[] = { NULL };
+
+    static const int corner_radius = 10;
+    static const int corner_radius_inner = 9;
+    static const int corner_radius_only_floating = 0;
+
+    static const int blur = 0;
+    static const int blur_xray = 0;
+    static const int blur_ignore_transparent = 1;
+    static const struct blur_data blur_data = {
+        .radius = 5,
+        .num_passes = 3,
+        .noise = (float)0.02,
+        .brightness = (float)0.9,
+        .contrast = (float)0.9,
+        .saturation = (float)1.1,
+    };
+
     #define TAGCOUNT (10)
 
     static int log_level = WLR_ERROR;
@@ -173,11 +201,27 @@ let
     ]
   );
 
+  scenefx = pkgs.scenefx.overrideAttrs (old: rec {
+    version = "0.4.1";
+    src = pkgs.fetchFromGitHub {
+      owner = "wlrfx";
+      repo = "scenefx";
+      tag = version;
+      hash = "sha256-XD5EcquaHBg5spsN06fPHAjVCb1vOMM7oxmjZZ/PxIE=";
+    };
+    buildInputs = (old.buildInputs or [ ]) ++ [ pkgs.wlroots_0_19 ];
+  });
+
   dwl = (pkgs.dwl.override { inherit configH; }).overrideAttrs (old: {
+    buildInputs = (old.buildInputs or [ ]) ++ [
+      scenefx
+      pkgs.libGL
+    ];
     patches = (old.patches or [ ]) ++ [
       ./keybindings.patch
       ./gaps.patch
       ./ipc.patch
+      ./scenefx.patch
     ];
   });
 in
