@@ -41,6 +41,10 @@
           mode = "0700";
         }
         {
+          directory = "/var/lib/iwd";
+          mode = "0700";
+        }
+        {
           directory = "/var/lib/ollama";
           mode = "0700";
           group = "ollama";
