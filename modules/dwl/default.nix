@@ -2,6 +2,7 @@
   pkgs,
   config,
   lib,
+  modulesPath,
   ...
 }:
 let
@@ -291,6 +292,19 @@ in
   };
 
   services.speechd.enable = false;
+
+  imports = [
+    (import "${modulesPath}/programs/wayland/wayland-session.nix" {
+      inherit lib pkgs;
+    })
+  ];
+
+  xdg.portal.config.dwl = lib.mkForce {
+    default = [ "gtk" ];
+    "org.freedesktop.impl.portal.ScreenCast" = "wlr";
+    "org.freedesktop.impl.portal.Screenshot" = "wlr";
+    "org.freedesktop.impl.portal.Inhibit" = "none";
+  };
 
   environment.etc."xdg/dwl-session".text = lib.mkForce ''
     #!${pkgs.runtimeShell}
