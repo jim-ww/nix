@@ -73,11 +73,11 @@ let
 
     #define CMD(...) { .v = (const char*[]){ __VA_ARGS__, NULL } }
 
-    #define TAGKEYS(KEY,SKEY,TAG) \
-        { MODKEY,       KEY,  view,       {.ui = 1 << TAG} }, \
-        { MODKEY|CTRL,  KEY,  toggleview, {.ui = 1 << TAG} }, \
-        { MODKEY|SHIFT, SKEY, tag,        {.ui = 1 << TAG} }, \
-        { MODKEY|CTRL|SHIFT, SKEY, toggletag, {.ui = 1 << TAG} }
+    #define TAGKEYS(KEY,TAG) \
+        { MODKEY,       KEY, view,       {.ui = 1 << TAG} }, \
+        { MODKEY|CTRL,  KEY, toggleview, {.ui = 1 << TAG} }, \
+        { MODKEY|SHIFT, KEY, tag,        {.ui = 1 << TAG} }, \
+        { MODKEY|CTRL|SHIFT, KEY, toggletag, {.ui = 1 << TAG} }
 
     static const Key keys[] = {
         { MODKEY,       XKB_KEY_c,          killclient,       {0} },
@@ -126,28 +126,28 @@ let
         { MODKEY,       XKB_KEY_F1,         spawn,            CMD(${ipc}, "dpms-on") },
         { MODKEY,       XKB_KEY_F2,         spawn,            CMD(${ipc}, "dpms-off") },
 
-        { 0, XKB_KEY_XF86AudioRaiseVolume,  spawn,            CMD(${ipc}, "volume-up") },
-        { 0, XKB_KEY_XF86AudioLowerVolume,  spawn,            CMD(${ipc}, "volume-down") },
-        { 0, XKB_KEY_XF86AudioMute,         spawn,            CMD(${ipc}, "volume-mute") },
+        { LOCKED, XKB_KEY_XF86AudioRaiseVolume,  spawn,            CMD(${ipc}, "volume-up") },
+        { LOCKED, XKB_KEY_XF86AudioLowerVolume,  spawn,            CMD(${ipc}, "volume-down") },
+        { LOCKED, XKB_KEY_XF86AudioMute,         spawn,            CMD(${ipc}, "volume-mute") },
 
-        { 0, XKB_KEY_XF86AudioPlay,         spawn,            CMD("playerctl", "-p", "mpd", "play-pause") },
-        { 0, XKB_KEY_XF86AudioPause,        spawn,            CMD("playerctl", "-p", "mpd", "pause") },
-        { 0, XKB_KEY_XF86AudioNext,         spawn,            CMD("playerctl", "-p", "mpd", "next") },
-        { 0, XKB_KEY_XF86AudioPrev,         spawn,            CMD("playerctl", "-p", "mpd", "previous") },
+        { LOCKED, XKB_KEY_XF86AudioPlay,         spawn,            CMD("playerctl", "-p", "mpd", "play-pause") },
+        { LOCKED, XKB_KEY_XF86AudioPause,        spawn,            CMD("playerctl", "-p", "mpd", "pause") },
+        { LOCKED, XKB_KEY_XF86AudioNext,         spawn,            CMD("playerctl", "-p", "mpd", "next") },
+        { LOCKED, XKB_KEY_XF86AudioPrev,         spawn,            CMD("playerctl", "-p", "mpd", "previous") },
 
-        { 0, XKB_KEY_XF86MonBrightnessUp,   spawn,            CMD(${ipc}, "brightness-up", "10") },
-        { 0, XKB_KEY_XF86MonBrightnessDown, spawn,            CMD(${ipc}, "brightness-down", "10") },
+        { LOCKED, XKB_KEY_XF86MonBrightnessUp,   spawn,            CMD(${ipc}, "brightness-up", "10") },
+        { LOCKED, XKB_KEY_XF86MonBrightnessDown, spawn,            CMD(${ipc}, "brightness-down", "10") },
 
-        TAGKEYS( XKB_KEY_1, XKB_KEY_exclam,      0),
-        TAGKEYS( XKB_KEY_2, XKB_KEY_at,          1),
-        TAGKEYS( XKB_KEY_3, XKB_KEY_numbersign,  2),
-        TAGKEYS( XKB_KEY_4, XKB_KEY_dollar,      3),
-        TAGKEYS( XKB_KEY_5, XKB_KEY_percent,     4),
-        TAGKEYS( XKB_KEY_6, XKB_KEY_asciicircum, 5),
-        TAGKEYS( XKB_KEY_7, XKB_KEY_ampersand,   6),
-        TAGKEYS( XKB_KEY_8, XKB_KEY_asterisk,    7),
-        TAGKEYS( XKB_KEY_9, XKB_KEY_parenleft,   8),
-        TAGKEYS( XKB_KEY_0, XKB_KEY_parenright,  9),
+        TAGKEYS( XKB_KEY_1, 0),
+        TAGKEYS( XKB_KEY_2, 1),
+        TAGKEYS( XKB_KEY_3, 2),
+        TAGKEYS( XKB_KEY_4, 3),
+        TAGKEYS( XKB_KEY_5, 4),
+        TAGKEYS( XKB_KEY_6, 5),
+        TAGKEYS( XKB_KEY_7, 6),
+        TAGKEYS( XKB_KEY_8, 7),
+        TAGKEYS( XKB_KEY_9, 8),
+        TAGKEYS( XKB_KEY_0, 9),
 
         { CTRL|ALT, XKB_KEY_Terminate_Server, quit, {0} },
     #define CHVT(n) { CTRL|ALT, XKB_KEY_XF86Switch_VT_##n, chvt, {.ui = (n)} }
@@ -170,7 +170,11 @@ let
     ]
   );
 
-  dwl = pkgs.dwl.override { inherit configH; };
+  dwl = (pkgs.dwl.override { inherit configH; }).overrideAttrs (old: {
+    patches = (old.patches or [ ]) ++ [
+      ./keybindings.patch
+    ];
+  });
 in
 {
   programs.dwl = {
