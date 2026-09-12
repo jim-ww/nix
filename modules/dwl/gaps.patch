@@ -1,51 +1,105 @@
+From 50e3dd4746b6cb719efb9f8213b94ac52a5320d9 Mon Sep 17 00:00:00 2001
+From: peesock <kcormn@gmail.com>
+Date: Mon, 24 Jun 2024 20:06:42 -0700
+Subject: [PATCH] gaps!
+
+Co-authored-by: sewn <sewn@disroot.org>
+Co-authored-by: serenevoid <ajuph9224@gmail.com>
+---
+ config.def.h |  4 ++++
+ dwl.c        | 34 ++++++++++++++++++++++++++--------
+ 2 files changed, 30 insertions(+), 8 deletions(-)
+
+diff --git a/dwl.c b/dwl.c
+index dc0437e..dc851df 100644
 --- a/dwl.c
-+++ c/dwl.c	2026-09-12 02:41:44.061550438 +0200
-@@ -2713,7 +2713,7 @@
++++ b/dwl.c
+@@ -199,6 +199,7 @@ struct Monitor {
+ 	struct wlr_box w; /* window area, layout-relative */
+ 	struct wl_list layers[4]; /* LayerSurface.link */
+ 	const Layout *lt[2];
++	int gaps;
+ 	unsigned int seltags;
+ 	unsigned int sellt;
+ 	uint32_t tagset[2];
+@@ -336,6 +337,7 @@ static void tagmon(const Arg *arg);
+ static void tile(Monitor *m);
+ static void togglefloating(const Arg *arg);
+ static void togglefullscreen(const Arg *arg);
++static void togglegaps(const Arg *arg);
+ static void toggletag(const Arg *arg);
+ static void toggleview(const Arg *arg);
+ static void unlocksession(struct wl_listener *listener, void *data);
+@@ -949,6 +951,8 @@ createmon(struct wl_listener *listener, void *data)
+ 
+ 	wlr_output_state_init(&state);
+ 	/* Initialize monitor state using configured rules */
++	m->gaps = gaps;
++
+ 	m->tagset[0] = m->tagset[1] = 1;
+ 	for (r = monrules; r < END(monrules); r++) {
+ 		if (!r->name || strstr(wlr_output->name, r->name)) {
+@@ -2638,7 +2642,7 @@ tagmon(const Arg *arg)
+ void
  tile(Monitor *m)
  {
- 	unsigned int mw, my, ty;
--	int i, n = 0;
-+	int i, n = 0, g, aw, ah, rest;
+-	unsigned int mw, my, ty;
++	unsigned int h, r, e = m->gaps, mw, my, ty;
+ 	int i, n = 0;
  	Client *c;
  
- 	wl_list_for_each(c, &clients, link)
-@@ -2722,22 +2722,31 @@
+@@ -2647,23 +2651,30 @@ tile(Monitor *m)
+ 			n++;
  	if (n == 0)
  		return;
++	if (smartgaps == n)
++		e = 0;
  
-+	g = smartgaps && n == 1 ? 0 : (int)gappx;
-+	aw = m->w.width - 2 * g;
-+	ah = m->w.height - 2 * g;
-+
  	if (n > m->nmaster)
 -		mw = m->nmaster ? (int)roundf(m->w.width * m->mfact) : 0;
-+		mw = m->nmaster ? (int)roundf((aw - g) * m->mfact) : 0;
++		mw = m->nmaster ? (int)roundf((m->w.width + gappx*e) * m->mfact) : 0;
  	else
--		mw = m->w.width;
-+		mw = aw;
- 	i = my = ty = 0;
+ 		mw = m->w.width;
+-	i = my = ty = 0;
++	i = 0;
++	my = ty = gappx*e;
  	wl_list_for_each(c, &clients, link) {
  		if (!VISIBLEON(c, m) || c->isfloating || c->isfullscreen)
  			continue;
-+		c->bw = smartborders && n == 1 ? 0 : borderpx;
  		if (i < m->nmaster) {
 -			resize(c, (struct wlr_box){.x = m->w.x, .y = m->w.y + my, .width = mw,
 -				.height = (m->w.height - my) / (MIN(n, m->nmaster) - i)}, 0);
 -			my += c->geom.height;
-+			rest = MIN(n, m->nmaster) - i;
-+			resize(c, (struct wlr_box){.x = m->w.x + g, .y = m->w.y + g + my,
-+				.width = mw,
-+				.height = (ah - my - (rest - 1) * g) / rest}, 0);
-+			my += c->geom.height + g;
++			r = MIN(n, m->nmaster) - i;
++			h = (m->w.height - my - gappx*e - gappx*e * (r - 1)) / r;
++			resize(c, (struct wlr_box){.x = m->w.x + gappx*e, .y = m->w.y + my,
++				.width = mw - 2*gappx*e, .height = h}, 0);
++			my += c->geom.height + gappx*e;
  		} else {
--			resize(c, (struct wlr_box){.x = m->w.x + mw, .y = m->w.y + ty,
++			r = n - i;
++			h = (m->w.height - ty - gappx*e - gappx*e * (r - 1)) / r;
+ 			resize(c, (struct wlr_box){.x = m->w.x + mw, .y = m->w.y + ty,
 -				.width = m->w.width - mw, .height = (m->w.height - ty) / (n - i)}, 0);
 -			ty += c->geom.height;
-+			rest = n - i;
-+			resize(c, (struct wlr_box){.x = m->w.x + g + mw + g, .y = m->w.y + g + ty,
-+				.width = aw - mw - g,
-+				.height = (ah - ty - (rest - 1) * g) / rest}, 0);
-+			ty += c->geom.height + g;
++				.width = m->w.width - mw - gappx*e, .height = h}, 0);
++			ty += c->geom.height + gappx*e;
  		}
  		i++;
  	}
+@@ -2686,6 +2697,13 @@ togglefullscreen(const Arg *arg)
+ 		setfullscreen(sel, !sel->isfullscreen);
+ }
+ 
++void
++togglegaps(const Arg *arg)
++{
++	selmon->gaps = !selmon->gaps;
++	arrange(selmon);
++}
++
+ void
+ toggletag(const Arg *arg)
+ {
+-- 
+2.45.2
+

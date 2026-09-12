@@ -10,15 +10,16 @@ let
 
   effects = true;
 
-  # "tile" (master-stack), "dwindle" (fibonacci split), "monocle" or "floating"
-  layout = "dwindle";
+  # "btrtile" (splits the focused window toward the pointer), "tile"
+  # (master-stack), "monocle" or "floating"
+  layout = "btrtile";
 
   layoutIndex =
     {
       tile = 0;
       floating = 1;
       monocle = 2;
-      dwindle = 3;
+      btrtile = 3;
     }
     .${layout};
 
@@ -35,8 +36,12 @@ let
     static const int bypass_surface_visibility = 0;
     static const unsigned int borderpx         = 1;
     static const unsigned int gappx            = 4;
+    static int gaps                            = 1;
     static const int smartgaps                 = 1;
-    static const int smartborders              = 1;
+    static const float resize_factor           = 0.0002f;
+    static const uint32_t resize_interval_ms   = 16;
+
+    enum Direction { DIR_LEFT, DIR_RIGHT, DIR_UP, DIR_DOWN };
     static const float rootcolor[]             = COLOR(0x222222ff);
     static const float bordercolor[]           = COLOR(0x444444ff);
     static const float focuscolor[]            = COLOR(0x005577ff);
@@ -85,7 +90,7 @@ let
         { "[]=",      tile },
         { "><>",      NULL },
         { "[M]",      monocle },
-        { "[\\]",     dwindle },
+        { "|w|",      btrtile },
     };
 
     static const MonitorRule monrules[] = {
@@ -142,10 +147,15 @@ let
         { MODKEY,       XKB_KEY_g,          setlayout,        {.v = &layouts[0]} },
         { MODKEY,       XKB_KEY_n,          setlayout,        {.v = &layouts[3]} },
 
-        { MODKEY|SHIFT, XKB_KEY_Up,         zoom,             {0} },
-        { MODKEY|SHIFT, XKB_KEY_Down,       zoom,             {0} },
-        { MODKEY|SHIFT, XKB_KEY_Left,       tagmon,           {.i = WLR_DIRECTION_LEFT} },
-        { MODKEY|SHIFT, XKB_KEY_Right,      tagmon,           {.i = WLR_DIRECTION_RIGHT} },
+        { MODKEY|SHIFT, XKB_KEY_Up,         swapclients,      {.i = DIR_UP} },
+        { MODKEY|SHIFT, XKB_KEY_Down,       swapclients,      {.i = DIR_DOWN} },
+        { MODKEY|SHIFT, XKB_KEY_Left,       swapclients,      {.i = DIR_LEFT} },
+        { MODKEY|SHIFT, XKB_KEY_Right,      swapclients,      {.i = DIR_RIGHT} },
+
+        { MODKEY|CTRL,  XKB_KEY_Left,       setratio_h,       {.f = -0.025f} },
+        { MODKEY|CTRL,  XKB_KEY_Right,      setratio_h,       {.f = +0.025f} },
+        { MODKEY|CTRL,  XKB_KEY_Up,         setratio_v,       {.f = -0.025f} },
+        { MODKEY|CTRL,  XKB_KEY_Down,       setratio_v,       {.f = +0.025f} },
 
         { MODKEY,       XKB_KEY_q,          spawn,            CMD("footclient") },
         { MODKEY|SHIFT, XKB_KEY_q,          spawn,            CMD("foot") },
@@ -255,7 +265,7 @@ let
         ./keybindings.patch
         ./gaps.patch
         ./ipc.patch
-        ./dwindle.patch
+        ./btrtile.patch
       ]
       ++ lib.optional effects ./scenefx.patch;
   });

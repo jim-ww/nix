@@ -1,39 +1,6 @@
-diff -ruN -x config.def.h a/client.h s/client.h
---- a/client.h
-+++ b/client.h
-@@ -137,8 +137,8 @@
- 	*clip = (struct wlr_box){
- 		.x = 0,
- 		.y = 0,
--		.width = c->geom.width - c->bw,
--		.height = c->geom.height - c->bw,
-+		.width = c->geom.width - c->bw * 2,
-+		.height = c->geom.height - c->bw * 2,
- 	};
- 
- #ifdef XWAYLAND
-@@ -314,6 +314,17 @@
- client_set_border_color(Client *c, const float color[static 4])
- {
- 	int i;
-+
-+#ifdef XWAYLAND
-+	if (!client_is_x11(c)) {
-+#endif
-+	if (corner_radius > 0) {
-+		return;
-+	}
-+#ifdef XWAYLAND
-+	}
-+#endif
-+
- 	for (i = 0; i < 4; i++)
- 		wlr_scene_rect_set_color(c->border[i], color);
- }
-diff -ruN -x config.def.h a/dwl.c s/dwl.c
 --- a/dwl.c
 +++ b/dwl.c
-@@ -10,8 +10,14 @@
+@@ -11,8 +11,14 @@
  #include <stdlib.h>
  #include <sys/wait.h>
  #include <time.h>
@@ -48,7 +15,7 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  #include <wlr/backend.h>
  #include <wlr/backend/libinput.h>
  #include <wlr/render/allocator.h>
-@@ -44,7 +50,6 @@
+@@ -45,7 +51,6 @@
  #include <wlr/types/wlr_primary_selection.h>
  #include <wlr/types/wlr_primary_selection_v1.h>
  #include <wlr/types/wlr_relative_pointer_v1.h>
@@ -56,7 +23,7 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  #include <wlr/types/wlr_screencopy_v1.h>
  #include <wlr/types/wlr_seat.h>
  #include <wlr/types/wlr_server_decoration.h>
-@@ -84,7 +89,7 @@
+@@ -87,7 +92,7 @@
  /* enums */
  enum { CurNormal, CurPressed, CurMove, CurResize }; /* cursor */
  enum { XDGShell, LayerShell, X11 }; /* client types */
@@ -65,9 +32,9 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  
  typedef union {
  	int i;
-@@ -139,6 +144,12 @@
+@@ -143,6 +148,12 @@
  	uint32_t tags;
- 	int isfloating, isurgent, isfullscreen;
+ 	int isfloating, isurgent, isfullscreen, was_tiled;
  	uint32_t resize; /* configure serial of a pending resize */
 +
 +	float opacity;
@@ -78,15 +45,15 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  } Client;
  
  typedef struct {
-@@ -205,6 +216,7 @@
- 	int nmaster;
+@@ -218,6 +229,7 @@
  	char ltsymbol[16];
  	int asleep;
+ 	LayoutNode *root;
 +	struct wlr_scene_optimized_blur *blur_layer;
  };
  
  typedef struct {
-@@ -351,6 +363,18 @@
+@@ -381,6 +393,18 @@
  static void xytonode(double x, double y, struct wlr_surface **psurface,
  		Client **pc, LayerSurface **pl, double *nx, double *ny);
  static void zoom(const Arg *arg);
@@ -105,16 +72,16 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  
  /* variables */
  static pid_t child_pid = -1;
-@@ -436,6 +460,8 @@
- static struct wl_listener start_drag = {.notify = startdrag};
- static struct wl_listener new_session_lock = {.notify = locksession};
+@@ -469,6 +493,8 @@
+ static struct zdwl_ipc_manager_v2_interface dwl_manager_implementation = {.release = dwl_ipc_manager_release, .get_output = dwl_ipc_manager_get_output};
+ static struct zdwl_ipc_output_v2_interface dwl_output_implementation = {.release = dwl_ipc_output_release, .set_tags = dwl_ipc_output_set_tags, .set_layout = dwl_ipc_output_set_layout, .set_client_tags = dwl_ipc_output_set_client_tags};
  
 +static float transparent[4] = {0.1f, 0.1f, 0.1f, 0.0f};
 +
  #ifdef XWAYLAND
  static void activatex11(struct wl_listener *listener, void *data);
  static void associatex11(struct wl_listener *listener, void *data);
-@@ -521,6 +547,10 @@
+@@ -555,6 +581,10 @@
  	wlr_scene_node_set_enabled(&m->fullscreen_bg->node,
  			(c = focustop(m)) && c->isfullscreen);
  
@@ -125,8 +92,8 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  	strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, LENGTH(m->ltsymbol));
  
  	/* We move all clients (except fullscreen and unmanaged) to LyrTile while
-@@ -748,6 +778,11 @@
- 
+@@ -802,6 +832,11 @@
+ 	destroy_tree(m);
  	closemon(m);
  	wlr_scene_node_destroy(&m->fullscreen_bg->node);
 +
@@ -137,7 +104,7 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  	free(m);
  }
  
-@@ -850,6 +885,18 @@
+@@ -904,6 +939,18 @@
  	}
  
  	arrangelayers(l->mon);
@@ -156,7 +123,7 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  }
  
  void
-@@ -1103,6 +1150,12 @@
+@@ -1162,6 +1209,12 @@
  	m->fullscreen_bg = wlr_scene_rect_create(layers[LyrFS], 0, 0, fullscreen_bg);
  	wlr_scene_node_set_enabled(&m->fullscreen_bg->node, 0);
  
@@ -169,7 +136,7 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  	/* Adds this to the output layout in the order it was configured.
  	 *
  	 * The output layout utility automatically adds a wl_output global to the
-@@ -1128,6 +1181,9 @@
+@@ -1187,6 +1240,9 @@
  	c->surface.xdg = toplevel->base;
  	c->bw = borderpx;
  
@@ -179,7 +146,7 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  	LISTEN(&toplevel->base->surface->events.commit, &c->commit, commitnotify);
  	LISTEN(&toplevel->base->surface->events.map, &c->map, mapnotify);
  	LISTEN(&toplevel->base->surface->events.unmap, &c->unmap, unmapnotify);
-@@ -1432,8 +1488,11 @@
+@@ -1685,8 +1741,11 @@
  
  		/* Don't change border color if there is an exclusive focus or we are
  		 * handling a drag operation */
@@ -192,7 +159,7 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  	}
  
  	/* Deactivate old client if focus is changing */
-@@ -1452,6 +1511,8 @@
+@@ -1705,6 +1764,8 @@
  		} else if (old_c && !client_is_unmanaged(old_c) && (!c || !client_wants_focus(c))) {
  			client_set_border_color(old_c, bordercolor);
  
@@ -201,7 +168,7 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  			client_activate_surface(old, 0);
  		}
  	}
-@@ -1538,7 +1599,7 @@
+@@ -1791,7 +1852,7 @@
  	struct wlr_renderer *old_drw = drw;
  	struct wlr_allocator *old_alloc = alloc;
  	struct Monitor *m;
@@ -210,7 +177,7 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  		die("couldn't recreate renderer");
  
  	if (!(alloc = wlr_allocator_autocreate(backend, drw)))
-@@ -1773,6 +1834,38 @@
+@@ -2029,6 +2090,38 @@
  		c->border[i]->node.data = c;
  	}
  
@@ -249,7 +216,7 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  	/* Initialize client geometry with room for border */
  	client_set_tiled(c, WLR_EDGE_TOP | WLR_EDGE_BOTTOM | WLR_EDGE_LEFT | WLR_EDGE_RIGHT);
  	c->geom.width += 2 * c->bw;
-@@ -1794,6 +1887,13 @@
+@@ -2050,6 +2143,13 @@
  	}
  	printstatus();
  
@@ -263,7 +230,7 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  unset_fullscreen:
  	m = c->mon ? c->mon : xytomon(c->geom.x, c->geom.y);
  	wl_list_for_each(w, &clients, link) {
-@@ -2164,6 +2264,8 @@
+@@ -2447,6 +2547,8 @@
  			goto skip;
  	}
  
@@ -272,7 +239,7 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  	wlr_scene_output_commit(m->scene_output, NULL);
  
  skip:
-@@ -2233,6 +2335,19 @@
+@@ -2516,6 +2618,19 @@
  			c->geom.height - 2 * c->bw);
  	client_get_clip(c, &clip);
  	wlr_scene_subsurface_tree_set_clip(&c->scene_surface->node, &clip);
@@ -292,7 +259,7 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  }
  
  void
-@@ -2335,6 +2450,11 @@
+@@ -2618,6 +2733,11 @@
  {
  	Client *p = client_get_parent(c);
  	c->isfloating = floating;
@@ -304,7 +271,7 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  	/* If in floating layout do not change the client's layer */
  	if (!c->mon || !client_surface(c)->mapped || !c->mon->lt[c->mon->sellt]->arrange)
  		return;
-@@ -2364,6 +2484,11 @@
+@@ -2647,6 +2767,11 @@
  		 * client positions are set by the user and cannot be recalculated */
  		resize(c, c->prev, 0);
  	}
@@ -316,7 +283,7 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  	arrange(c->mon);
  	printstatus();
  }
-@@ -2478,7 +2603,12 @@
+@@ -2761,7 +2886,12 @@
  	 * can also specify a renderer using the WLR_RENDERER env var.
  	 * The renderer is responsible for defining the various pixel formats it
  	 * supports for shared memory, this configures that for clients. */
@@ -330,7 +297,7 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  		die("couldn't create renderer");
  	wl_signal_add(&drw->events.lost, &gpu_reset);
  
-@@ -2892,6 +3022,10 @@
+@@ -3206,6 +3336,10 @@
  
  		wlr_scene_node_set_position(&m->fullscreen_bg->node, m->m.x, m->m.y);
  		wlr_scene_rect_set_size(m->fullscreen_bg, m->m.width, m->m.height);
@@ -341,7 +308,7 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  
  		if (m->lock_surface) {
  			struct wlr_scene_tree *scene_tree = m->lock_surface->surface->data;
-@@ -2962,8 +3096,11 @@
+@@ -3276,8 +3410,11 @@
  	c->isurgent = 1;
  	printstatus();
  
@@ -354,7 +321,7 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  }
  
  void
-@@ -3075,6 +3212,268 @@
+@@ -3389,6 +3526,268 @@
  	arrange(selmon);
  }
  
@@ -623,7 +590,37 @@ diff -ruN -x config.def.h a/dwl.c s/dwl.c
  #ifdef XWAYLAND
  void
  activatex11(struct wl_listener *listener, void *data)
-diff -ruN -x config.def.h a/Makefile s/Makefile
+--- a/client.h
++++ b/client.h
+@@ -137,8 +137,8 @@
+ 	*clip = (struct wlr_box){
+ 		.x = 0,
+ 		.y = 0,
+-		.width = c->geom.width - c->bw,
+-		.height = c->geom.height - c->bw,
++		.width = c->geom.width - c->bw * 2,
++		.height = c->geom.height - c->bw * 2,
+ 	};
+ 
+ #ifdef XWAYLAND
+@@ -314,6 +314,17 @@
+ client_set_border_color(Client *c, const float color[static 4])
+ {
+ 	int i;
++
++#ifdef XWAYLAND
++	if (!client_is_x11(c)) {
++#endif
++	if (corner_radius > 0) {
++		return;
++	}
++#ifdef XWAYLAND
++	}
++#endif
++
+ 	for (i = 0; i < 4; i++)
+ 		wlr_scene_rect_set_color(c->border[i], color);
+ }
 --- a/Makefile
 +++ b/Makefile
 @@ -12,7 +12,7 @@
