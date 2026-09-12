@@ -145,6 +145,8 @@ let
         { MODKEY,       XKB_KEY_Down,       focusdir,         {.ui = 3} },
         { ALT,          XKB_KEY_Tab,        spawn,            CMD(${ipc}, "window-switcher") },
 
+        { MODKEY,       XKB_KEY_Return,     zoom,             {0} },
+
         { MODKEY,       XKB_KEY_g,          setlayout,        {.v = &layouts[0]} },
         { MODKEY,       XKB_KEY_n,          setlayout,        {.v = &layouts[3]} },
 
