@@ -1,4 +1,7 @@
+{ self, ... }:
 {
+  system.systemBuilderCommands = "ln -s ${self.outPath} $out/flake";
+
   nix.optimise.automatic = true;
   nix.optimise.dates = [ "weekly" ];
 

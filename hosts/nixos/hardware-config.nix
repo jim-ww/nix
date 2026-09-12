@@ -7,7 +7,11 @@
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
-  _module.args.device = "/dev/nvme0n1";
+  _module.args = {
+    device = "/dev/nvme0n1";
+    diskName = "main";
+    luksName = "crypt";
+  };
 
   networking.hostName = "nixos";
 

@@ -1,6 +1,8 @@
 {
   pkgs,
   device ? throw "Set this to your disk device, e.g. /dev/disk/by-id/...",
+  diskName,
+  luksName,
   ...
 }:
 {
@@ -34,7 +36,7 @@
   };
 
   # luks-interactive-login + impermanence(preservation) + btrfs + swap
-  disko.devices.disk.main = {
+  disko.devices.disk.${diskName} = {
     inherit device;
     type = "disk";
 
@@ -61,7 +63,7 @@
       size = "100%";
       content = {
         type = "luks";
-        name = "crypt";
+        name = luksName;
         settings.allowDiscards = true;
         passwordFile = "/tmp/secret.key"; # `echo -n "password" > /tmp/secret.key` (on target machine)
         content = {

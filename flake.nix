@@ -80,6 +80,13 @@
         system.configurationRevision = self.rev or self.dirtyRev or null;
       };
       #stablePkgs = nixpkgs-stable.legacyPackages.${system};
+      mainArgs = {
+        inherit
+          inputs
+          system
+          self
+          ;
+      };
       commonModules = [
         revision
         ./prefs.nix
@@ -135,6 +142,20 @@
           ];
         }
       ];
+      mainModules = [
+        ./hosts/nixos/configuration.nix
+        ./hosts/nixos/hardware-config.nix
+        ./hosts/nixos/disko.nix
+        ./hosts/nixos/impermanence.nix
+        inputs.disko.nixosModules.disko
+        inputs.preservation.nixosModules.default
+      ]
+      ++ commonModules;
+
+      mainSystem = nixpkgs.lib.nixosSystem {
+        specialArgs = mainArgs;
+        modules = mainModules;
+      };
     in
     {
       packages.${system} = {
@@ -143,6 +164,14 @@
         iso = self.nixosConfigurations.iso.config.system.build.isoImage;
         iso-minimal = self.nixosConfigurations.iso-minimal.config.system.build.isoImage;
         boomer-iso = self.nixosConfigurations.boomer-iso.config.system.build.isoImage;
+        install-usb = import ./pkgs/installer.nix {
+          inherit pkgs;
+          lib = nixpkgs.lib;
+          name = "install-usb";
+          target = self.nixosConfigurations.portable.config;
+          usbOnly = true;
+          symlinkDevice = true;
+        };
       };
 
       apps.${system}.default = {
@@ -205,6 +234,22 @@
         ];
       };
 
+      nixosConfigurations.portable = nixpkgs.lib.nixosSystem {
+        specialArgs = mainArgs // {
+          installTarget = mainSystem.config;
+        };
+        modules = [
+          inputs.disko.nixosModules.disko
+          inputs.preservation.nixosModules.default
+          ./hosts/nixos/configuration.nix
+          ./hosts/nixos/impermanence.nix
+          ./hosts/portable/hardware.nix
+          ./hosts/nixos/disko.nix
+          ./hosts/portable/install-system.nix
+        ]
+        ++ commonModules;
+      };
+
       nixosConfigurations.boomer = nixpkgs.lib.nixosSystem {
         modules = [
           inputs.disko.nixosModules.disko
@@ -232,22 +277,10 @@
       };
 
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit
-            inputs
-            system
-            self
-            ;
-        };
-        modules = [
-          ./hosts/nixos/configuration.nix
-          ./hosts/nixos/hardware-config.nix
-          ./hosts/nixos/disko.nix
-          ./hosts/nixos/impermanence.nix
-          inputs.disko.nixosModules.disko
-          inputs.preservation.nixosModules.default
-        ]
-        ++ commonModules;
+        specialArgs = mainArgs;
+        modules = mainModules ++ [
+          { environment.systemPackages = [ self.packages.${system}.install-usb ]; }
+        ];
       };
     };
 }
