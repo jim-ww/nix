@@ -294,13 +294,6 @@ in
 
   services.speechd.enable = false;
 
-  # xdg-desktop-portal pulls geoclue in only for the Location portal
-  nixpkgs.overlays = [
-    (_: prev: {
-      xdg-desktop-portal = prev.xdg-desktop-portal.override { enableGeoLocation = false; };
-    })
-  ];
-
   # normally set by services.graphical-desktop, which we do not enable
   services.pipewire.pulse.enable = true;
   services.xserver.desktopManager.runXdgAutostartIfNone = true;
