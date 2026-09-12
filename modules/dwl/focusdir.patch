@@ -1,0 +1,53 @@
+--- a/dwl.c
++++ b/dwl.c
+@@ -309,6 +309,7 @@
+ static void dwl_ipc_output_release(struct wl_client *client, struct wl_resource *resource);
+ static void focusclient(Client *c, int lift);
+ static void focusmon(const Arg *arg);
++static void focusdir(const Arg *arg);
+ static void focusstack(const Arg *arg);
+ static Client *focustop(Monitor *m);
+ static void fullscreennotify(struct wl_listener *listener, void *data);
+@@ -1739,6 +1740,42 @@
+ }
+ 
+ void
++focusdir(const Arg *arg)
++{
++	/* Focus the left, right, up, down client relative to the current focused client on selmon */
++	Client *c, *sel = focustop(selmon);
++	int dist = INT_MAX;
++	Client *newsel = NULL;
++	int newdist = INT_MAX;
++
++	if (!sel || sel->isfullscreen)
++		return;
++
++	wl_list_for_each(c, &clients, link) {
++		if (!VISIBLEON(c, selmon) || c == sel)
++			continue; /* skip non visible windows */
++
++		if (arg->ui == 0 && sel->geom.x <= c->geom.x)
++			continue; /* Client isn't on our left */
++		if (arg->ui == 1 && sel->geom.x >= c->geom.x)
++			continue; /* Client isn't on our right */
++		if (arg->ui == 2 && sel->geom.y <= c->geom.y)
++			continue; /* Client isn't above us */
++		if (arg->ui == 3 && sel->geom.y >= c->geom.y)
++			continue; /* Client isn't below us */
++
++		dist = abs(sel->geom.x - c->geom.x) + abs(sel->geom.y - c->geom.y);
++		if (dist < newdist) {
++			newdist = dist;
++			newsel = c;
++		}
++	}
++
++	if (newsel)
++		focusclient(newsel, 1);
++}
++
++void
+ focusstack(const Arg *arg)
+ {
+ 	/* Focus the next or previous client (in tiling order) on selmon */

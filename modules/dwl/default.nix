@@ -138,10 +138,10 @@ let
         { MODKEY,       XKB_KEY_v,          togglefloating,   {0} },
         { MODKEY|SHIFT, XKB_KEY_f,          togglefullscreen, {0} },
 
-        { MODKEY,       XKB_KEY_Up,         focusstack,       {.i = -1} },
-        { MODKEY,       XKB_KEY_Down,       focusstack,       {.i = +1} },
-        { MODKEY,       XKB_KEY_Left,       focusstack,       {.i = -1} },
-        { MODKEY,       XKB_KEY_Right,      focusstack,       {.i = +1} },
+        { MODKEY,       XKB_KEY_Left,       focusdir,         {.ui = 0} },
+        { MODKEY,       XKB_KEY_Right,      focusdir,         {.ui = 1} },
+        { MODKEY,       XKB_KEY_Up,         focusdir,         {.ui = 2} },
+        { MODKEY,       XKB_KEY_Down,       focusdir,         {.ui = 3} },
         { ALT,          XKB_KEY_Tab,        spawn,            CMD(${ipc}, "window-switcher") },
 
         { MODKEY,       XKB_KEY_g,          setlayout,        {.v = &layouts[0]} },
@@ -267,6 +267,7 @@ let
         ./ipc.patch
         ./btrtile.patch
         ./alwayscenter.patch
+        ./focusdir.patch
       ]
       ++ lib.optional effects ./scenefx.patch;
   });
