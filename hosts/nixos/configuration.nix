@@ -5,6 +5,7 @@
 }:
 {
   # programs.wshowkeys.enable = true;
+  # services.tailscale.enable = true;
 
   programs.dconf.enable = true;
   programs.gamemode.enable = true;
