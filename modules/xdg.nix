@@ -1,6 +1,6 @@
 {
   xdg.terminal-exec.enable = true;
-  xdg.terminal-exec.settings.default = [ "footclient.desktop" ];
+  xdg.terminal-exec.settings.default = [ "foot.desktop" ];
 
   hm =
     { config, ... }:
@@ -23,7 +23,7 @@
       xdg.desktopEntries.nvim = {
         name = "Neovim";
         genericName = "Text Editor";
-        exec = "xdg-terminal-exec -- nvim %F";
+        exec = "foot nvim %F";
         terminal = false;
         type = "Application";
         mimeType = [
@@ -35,7 +35,7 @@
       xdg.desktopEntries.lf = {
         name = "lf";
         genericName = "File Manager";
-        exec = "xdg-terminal-exec -- lf %f";
+        exec = "foot lf %f";
         terminal = false;
         type = "Application";
         mimeType = [

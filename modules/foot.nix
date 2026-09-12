@@ -7,7 +7,6 @@
   home.sessionVariables.TERMINAL = "foot";
   programs.foot = {
     enable = true;
-    server.enable = true;
     settings = {
       main = {
         shell = config.shell;

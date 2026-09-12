@@ -24,7 +24,7 @@ let
     .${layout};
 
   ipc = ''"noctalia", "msg"'';
-  term = ''"xdg-terminal-exec", "--"'';
+  term = ''"foot"'';
 
   configH = ''
     #define COLOR(hex)    { ((hex >> 24) & 0xFF) / 255.0f, \
@@ -157,9 +157,9 @@ let
         { MODKEY|CTRL,  XKB_KEY_Up,         setratio_v,       {.f = -0.025f} },
         { MODKEY|CTRL,  XKB_KEY_Down,       setratio_v,       {.f = +0.025f} },
 
-        { MODKEY,       XKB_KEY_q,          spawn,            CMD("footclient") },
+        { MODKEY,       XKB_KEY_q,          spawn,            CMD("foot") },
         { MODKEY|SHIFT, XKB_KEY_q,          spawn,            CMD("foot") },
-        { MODKEY,       XKB_KEY_t,          spawn,            CMD("footclient", "--title=term-float") },
+        { MODKEY,       XKB_KEY_t,          spawn,            CMD("foot", "--title=term-float") },
         { MODKEY|SHIFT, XKB_KEY_t,          spawn,            CMD(${ipc}, "panel-toggle", "launcher", "/tr ") },
         { MODKEY,       XKB_KEY_e,          spawn,            CMD(${term}, "${lib.getExe pkgs.lf}") },
         { MODKEY,       XKB_KEY_f,          spawn,            CMD("${config.browser}") },
