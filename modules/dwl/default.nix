@@ -158,7 +158,7 @@ let
         { MODKEY|CTRL,  XKB_KEY_Down,       setratio_v,       {.f = +0.025f} },
 
         { MODKEY,       XKB_KEY_q,          spawn,            CMD("foot") },
-        { MODKEY|SHIFT, XKB_KEY_q,          spawn,            CMD("foot") },
+        { MODKEY|SHIFT, XKB_KEY_q,          spawn,            CMD("sh", "-c", "nix-shell -p st fish --run 'st fish'") },
         { MODKEY,       XKB_KEY_t,          spawn,            CMD("foot", "--title=term-float") },
         { MODKEY|SHIFT, XKB_KEY_t,          spawn,            CMD(${ipc}, "panel-toggle", "launcher", "/tr ") },
         { MODKEY,       XKB_KEY_e,          spawn,            CMD(${term}, "${lib.getExe pkgs.lf}") },
