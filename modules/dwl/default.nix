@@ -192,12 +192,22 @@ let
         { MODKEY, BTN_RIGHT,  moveresize,     {.ui = CurResize} },
     };
   '';
+  kage = lib.findFirst (
+    p: (p.pname or p.name or "") == "kage"
+  ) (throw "dwl: kage not found in config.packages") config.packages;
+
+  fcitx5 = config.i18n.inputMethod.package;
+
   startup = pkgs.writeShellScript "dwl-startup" (
     lib.concatStringsSep "\n" [
-      "kage daemon start &"
-      "keepassxc --minimized &"
-      "lf -server &"
-      "fcitx5 &"
+      "exec >>\"\${XDG_RUNTIME_DIR:-/tmp}/dwl-startup.log\" 2>&1"
+      "set -x"
+      "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE"
+      "systemctl --user start dwl-session.target"
+      "${lib.getExe' kage "kage"} daemon start &"
+      "${lib.getExe pkgs.keepassxc} --minimized &"
+      "${lib.getExe pkgs.lf} -server &"
+      "${lib.getExe' fcitx5 "fcitx5"} &"
     ]
   );
 
@@ -244,6 +254,13 @@ in
   };
 
   services.speechd.enable = false;
+
+  environment.etc."xdg/dwl-session".text = lib.mkForce ''
+    #!${pkgs.runtimeShell}
+    ${config.programs.dwl.extraSessionCommands}
+    ${lib.getExe config.programs.dwl.package}
+    systemctl --user stop dwl-session.target
+  '';
 
   environment.loginShellInit = ''
     if [[ "$(tty)" == /dev/tty1 ]]; then
