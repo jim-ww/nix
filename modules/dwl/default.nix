@@ -266,6 +266,7 @@ let
         ./gaps.patch
         ./ipc.patch
         ./btrtile.patch
+        ./alwayscenter.patch
       ]
       ++ lib.optional effects ./scenefx.patch;
   });
