@@ -10,6 +10,18 @@ let
 
   effects = true;
 
+  # "tile" (master-stack), "dwindle" (fibonacci split), "monocle" or "floating"
+  layout = "dwindle";
+
+  layoutIndex =
+    {
+      tile = 0;
+      floating = 1;
+      monocle = 2;
+      dwindle = 3;
+    }
+    .${layout};
+
   ipc = ''"noctalia", "msg"'';
   term = ''"xdg-terminal-exec", "--"'';
 
@@ -73,10 +85,11 @@ let
         { "[]=",      tile },
         { "><>",      NULL },
         { "[M]",      monocle },
+        { "[\\]",     dwindle },
     };
 
     static const MonitorRule monrules[] = {
-        { NULL,       0.55f, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL,   -1,  -1 },
+        { NULL,       0.55f, 1,      1,    &layouts[${toString layoutIndex}], WL_OUTPUT_TRANSFORM_NORMAL,   -1,  -1 },
     };
 
     static const struct xkb_rule_names xkb_rules = {
@@ -125,6 +138,10 @@ let
         { MODKEY,       XKB_KEY_Left,       focusstack,       {.i = -1} },
         { MODKEY,       XKB_KEY_Right,      focusstack,       {.i = +1} },
         { ALT,          XKB_KEY_Tab,        spawn,            CMD(${ipc}, "window-switcher") },
+
+        { MODKEY,       XKB_KEY_space,      setlayout,        {0} },
+        { MODKEY,       XKB_KEY_g,          setlayout,        {.v = &layouts[0]} },
+        { MODKEY,       XKB_KEY_n,          setlayout,        {.v = &layouts[3]} },
 
         { MODKEY|SHIFT, XKB_KEY_Up,         zoom,             {0} },
         { MODKEY|SHIFT, XKB_KEY_Down,       zoom,             {0} },
@@ -239,6 +256,7 @@ let
         ./keybindings.patch
         ./gaps.patch
         ./ipc.patch
+        ./dwindle.patch
       ]
       ++ lib.optional effects ./scenefx.patch;
   });
