@@ -145,6 +145,7 @@ widget_order = [
 
 [nightlight]
 enabled = true
+temperature_night = 5100
 
 [notification]
 background_opacity = 0.94999999999999996
@@ -217,13 +218,13 @@ transition_on_startup = true
     recursive = false
 
     [wallpaper.default]
-    path = "/home/jim/Projects/nix/wallpapers/signalis.jpg"
+    path = "/home/jim/Projects/nix/wallpapers/wallhaven-0wzlzq.jpg"
 
     [wallpaper.last]
-    path = "/home/jim/Projects/nix/wallpapers/signalis.jpg"
+    path = "/home/jim/Projects/nix/wallpapers/wallhaven-0wzlzq.jpg"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/jim/Projects/nix/wallpapers/signalis.jpg"
+    path = "/home/jim/Projects/nix/wallpapers/wallhaven-0wzlzq.jpg"
 
     [[wallpaper.favorite]]
     builtin_palette = "Tokyo-Night"
@@ -235,6 +236,12 @@ transition_on_startup = true
     builtin_palette = "Tokyo-Night"
     palette_source = "builtin"
     path = "/home/jim/Projects/nix/wallpapers/wallhaven-dg82zl.jpg"
+    theme_mode = "dark"
+
+    [[wallpaper.favorite]]
+    builtin_palette = "Tokyo-Night"
+    palette_source = "builtin"
+    path = "/home/jim/Projects/nix/wallpapers/wallhaven-0qqe7l.jpg"
     theme_mode = "dark"
 
 [widget.battery]
@@ -263,5 +270,6 @@ type = "nightwatch75/todo:todo"
 type = "aabidk20/yt-music:widget"
 
 [widget.workspaces]
+hide_when_empty = true
 scale = 1.1000000000000001
 show_labels = true
