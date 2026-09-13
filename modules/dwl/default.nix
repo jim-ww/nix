@@ -40,6 +40,7 @@ let
     static const unsigned int gappx            = 4;
     static int gaps                            = 1;
     static const int smartgaps                 = 1;
+    static const int smartborders              = 1;
     static const float resize_factor           = 0.0004f;
     static const uint32_t resize_interval_ms   = 25;
 
@@ -272,7 +273,8 @@ let
         ./alwayscenter.patch
         ./focusdir.patch
       ]
-      ++ lib.optional effects ./scenefx.patch;
+      ++ lib.optional effects ./scenefx.patch
+      ++ [ ./smartborders.patch ];
   });
 in
 {

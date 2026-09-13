@@ -1,0 +1,18 @@
+diff --git a/dwl.c b/dwl.c
+--- a/dwl.c
++++ b/dwl.c
+@@ -1743,7 +1743,13 @@ focusclient(Client *c, int lift)
+ 		/* Don't change border color if there is an exclusive focus or we are
+ 		 * handling a drag operation */
+ 		if (!exclusive_focus && !seat->drag) {
+-			client_set_border_color(c, focuscolor);
++			Client *countc;
++			int nvisible = 0;
++			wl_list_for_each(countc, &clients, link)
++				if (VISIBLEON(countc, c->mon) && !countc->isfullscreen)
++					nvisible++;
++			client_set_border_color(c,
++				(smartborders && nvisible <= 1) ? bordercolor : focuscolor);
+ 
+ 			update_client_focus_decorations(c, 1, 0);
+ 		}
