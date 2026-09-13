@@ -107,7 +107,7 @@
         ./modules/rclone.nix
         ./modules/bash.nix
         ./modules/nix.nix
-        ./modules/dwl
+        ./modules/wayland/dwl
         ./home.nix
         nur.modules.nixos.default
         stylix.nixosModules.stylix

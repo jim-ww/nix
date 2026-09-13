@@ -32,9 +32,8 @@
         ./modules/bwrap.nix
         ./modules/pnpm.nix
         ./modules/theme.nix
-        ./modules/foot.nix
-        ./modules/noctalia.nix
         ./modules/kage.nix
+        ./modules/wayland
         inputs.kage.homeManagerModules.default
       ];
 

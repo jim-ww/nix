@@ -11,6 +11,7 @@ with pkgs;
   file
   lsof
   tealdeer
+  bluetuith
   fastfetch-unwrapped
   nixfmt
   nh
@@ -18,6 +19,7 @@ with pkgs;
   tmux
   ripgrep
   _7zz-rar
+  udiskie
 
   imv
   mpv
