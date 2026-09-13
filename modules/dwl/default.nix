@@ -26,6 +26,8 @@ let
   ipc = ''"noctalia", "msg"'';
   term = ''"foot"'';
 
+  base16 = config.lib.stylix.colors;
+
   configH = ''
     #define COLOR(hex)    { ((hex >> 24) & 0xFF) / 255.0f, \
                             ((hex >> 16) & 0xFF) / 255.0f, \
@@ -34,18 +36,18 @@ let
 
     static const int sloppyfocus               = 1;
     static const int bypass_surface_visibility = 0;
-    static const unsigned int borderpx         = 1;
+    static const unsigned int borderpx         = 3;
     static const unsigned int gappx            = 4;
     static int gaps                            = 1;
     static const int smartgaps                 = 1;
-    static const float resize_factor           = 0.0002f;
-    static const uint32_t resize_interval_ms   = 16;
+    static const float resize_factor           = 0.0004f;
+    static const uint32_t resize_interval_ms   = 25;
 
     enum Direction { DIR_LEFT, DIR_RIGHT, DIR_UP, DIR_DOWN };
-    static const float rootcolor[]             = COLOR(0x222222ff);
-    static const float bordercolor[]           = COLOR(0x444444ff);
-    static const float focuscolor[]            = COLOR(0x005577ff);
-    static const float urgentcolor[]           = COLOR(0xff0000ff);
+    static const float rootcolor[]             = COLOR(0x${base16.base00}ff);
+    static const float bordercolor[]           = COLOR(0x${base16.base03}ff);
+    static const float focuscolor[]            = COLOR(0x${base16.base09}ff);
+    static const float urgentcolor[]           = COLOR(0x${base16.base08}ff);
     static const float fullscreen_bg[]         = {0.0f, 0.0f, 0.0f, 1.0f};
 
     ${lib.optionalString effects ''
