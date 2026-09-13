@@ -14,6 +14,9 @@
         keepassxc-browser
         single-file
         darkreader
+        decentraleyes
+        vim-vixen
+        istilldontcareaboutcookies
         # proton-vpn
         # yomitan # Japanese
         # disabled:
