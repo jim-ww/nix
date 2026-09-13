@@ -224,9 +224,6 @@ let
         { MODKEY, BTN_RIGHT,  moveresize,     {.ui = CurResize} },
     };
   '';
-  kage = lib.findFirst (
-    p: (p.pname or p.name or "") == "kage"
-  ) (throw "dwl: kage not found in config.packages") config.packages;
 
   fcitx5 = config.i18n.inputMethod.package;
 
@@ -236,7 +233,6 @@ let
       "set -x"
       "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE"
       "systemctl --user start dwl-session.target"
-      "${lib.getExe' kage "kage"} daemon start &"
       "${lib.getExe pkgs.keepassxc} --minimized &"
       "${lib.getExe pkgs.lf} -server &"
       "${lib.getExe' fcitx5 "fcitx5"} &"

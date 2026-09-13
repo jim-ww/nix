@@ -1,4 +1,5 @@
 {
+  inputs,
   config,
   lib,
   ...
@@ -33,8 +34,8 @@
         ./modules/theme.nix
         ./modules/foot.nix
         ./modules/noctalia.nix
-        # ./modules/kage.nix
-        # inputs.kage.homeManagerModules.default
+        ./modules/kage.nix
+        inputs.kage.homeManagerModules.default
       ];
 
       stylix.targets.fzf.enable = false;

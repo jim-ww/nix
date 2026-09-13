@@ -19,9 +19,6 @@
     hcloud-token = { };
     oa-server.owner = config.user;
     oa-db-url = { };
-    kage-key.owner = config.user;
-    kage-acc1-passw.owner = config.user;
-    kage-acc2-passw.owner = config.user;
     bookmarks.owner = config.user;
     wallhaven-api-key.owner = config.user;
     xmr-daemon.owner = config.user;
@@ -30,5 +27,8 @@
     shardic-key.owner = config.user;
     shardic-providers.owner = config.user;
     tailscale-boomer.owner = config.user;
+    kage-key.owner = config.user;
+    kage-acc1-passw.owner = config.user;
+    kage-acc2-passw.owner = config.user;
   };
 }

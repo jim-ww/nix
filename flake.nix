@@ -124,7 +124,6 @@
             "gtr"
             "anitui"
             "bdraw"
-            "kage"
             "todo"
           ];
         }
