@@ -19,6 +19,7 @@ let
       /^[[:space:]]*\[\[?[A-Za-z_]/ { sec = $0; gsub(/^[[:space:]]+|[[:space:]]+$/, "", sec) }
       sec == "[plugin_settings.\"yocraft/web-launcher\"]" { next }
       sec == "[plugin_settings.\"noctalia/wallhaven\"]" && /^[[:space:]]*api_key[[:space:]]*=/ { next }
+      sec == "[location]" && /^[[:space:]]*address[[:space:]]*=/ { print "address = \"\""; next }
       { print }
     ' > "$tmp"
     if ${lib.getExe pkgs.gnugrep} -qF -f <({ cat ${wallhavenKey}; echo; ${lib.getExe pkgs.yq-go} '.[]' ${bookmarks}; } | ${lib.getExe pkgs.gnugrep} -v '^[[:space:]]*$') "$tmp"; then
