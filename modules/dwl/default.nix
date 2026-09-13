@@ -137,7 +137,7 @@ let
 
     static const Key keys[] = {
         { MODKEY,       XKB_KEY_c,          killclient,       {0} },
-        { MODKEY|SHIFT, XKB_KEY_m,          spawn,            CMD("sh", "-c", "touch \"''${XDG_RUNTIME_DIR}/dwl-stop\"; kill -TERM $PPID") },
+        { MODKEY|SHIFT, XKB_KEY_m,          spawn,            CMD("sh", "-c", "touch \"''${XDG_RUNTIME_DIR}/dwl-stop\"; loginctl terminate-session \"$XDG_SESSION_ID\" 2>/dev/null; kill -TERM $PPID") },
         { MODKEY|SHIFT, XKB_KEY_r,          quit,             {0} },
         { MODKEY,       XKB_KEY_v,          togglefloating,   {0} },
         { MODKEY|SHIFT, XKB_KEY_f,          togglefullscreen, {0} },
@@ -218,7 +218,7 @@ let
         { MODKEY,       XKB_KEY_0, view, {.ui = ~0} },
         { MODKEY|SHIFT, XKB_KEY_0, tag,  {.ui = ~0} },
 
-        { CTRL|ALT, XKB_KEY_Terminate_Server, spawn, CMD("sh", "-c", "touch \"''${XDG_RUNTIME_DIR}/dwl-stop\"; kill -TERM $PPID") },
+        { CTRL|ALT, XKB_KEY_Terminate_Server, spawn, CMD("sh", "-c", "touch \"''${XDG_RUNTIME_DIR}/dwl-stop\"; loginctl terminate-session \"$XDG_SESSION_ID\" 2>/dev/null; kill -TERM $PPID") },
     #define CHVT(n) { CTRL|ALT, XKB_KEY_XF86Switch_VT_##n, chvt, {.ui = (n)} }
         CHVT(1), CHVT(2), CHVT(3), CHVT(4), CHVT(5), CHVT(6),
         CHVT(7), CHVT(8), CHVT(9), CHVT(10), CHVT(11), CHVT(12),
@@ -317,15 +317,15 @@ in
     #!${pkgs.runtimeShell}
     ${config.programs.dwl.extraSessionCommands}
     stopfile="''${XDG_RUNTIME_DIR:-/tmp}/dwl-stop"
-    rm -f "$stopfile"
-    while true; do
-      ${lib.getExe config.programs.dwl.package} 2>>"''${XDG_RUNTIME_DIR:-/tmp}/dwl.log"
-      if [ -e "$stopfile" ]; then
-        rm -f "$stopfile"
-        break
-      fi
-    done
-    systemctl --user stop dwl-session.target
+    ${lib.getExe config.programs.dwl.package} 2>>"''${XDG_RUNTIME_DIR:-/tmp}/dwl.log"
+    if [ -e "$stopfile" ]; then
+      rm -f "$stopfile"
+      systemctl --user stop dwl-session.target
+    else
+      # Re-exec from disk (not the store path baked into this running
+      # script) so a smooth restart picks up whatever dwl was rebuilt to.
+      exec /etc/xdg/dwl-session
+    fi
   '';
 
   environment.loginShellInit = ''
