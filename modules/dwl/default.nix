@@ -239,9 +239,11 @@ let
       "set -x"
       "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE"
       "systemctl --user start dwl-session.target"
-      "${lib.getExe pkgs.keepassxc} --minimized &"
-      "${lib.getExe pkgs.lf} -server &"
-      "${lib.getExe' fcitx5 "fcitx5"} &"
+      # Restarting dwl (super+shift+r) re-runs this script without killing
+      # these helpers, so guard each one to avoid spawning duplicates.
+      "${pkgs.procps}/bin/pgrep -x keepassxc >/dev/null || ${lib.getExe pkgs.keepassxc} --minimized &"
+      "${pkgs.procps}/bin/pgrep -f '${lib.getExe pkgs.lf} -server' >/dev/null || ${lib.getExe pkgs.lf} -server &"
+      "${pkgs.procps}/bin/pgrep -x fcitx5 >/dev/null || ${lib.getExe' fcitx5 "fcitx5"} &"
     ]
   );
 
