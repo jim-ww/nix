@@ -136,7 +136,8 @@ let
 
     static const Key keys[] = {
         { MODKEY,       XKB_KEY_c,          killclient,       {0} },
-        { MODKEY|SHIFT, XKB_KEY_m,          quit,             {0} },
+        { MODKEY|SHIFT, XKB_KEY_m,          spawn,            CMD("sh", "-c", "touch \"''${XDG_RUNTIME_DIR}/dwl-stop\"; kill -TERM $PPID") },
+        { MODKEY|SHIFT, XKB_KEY_r,          quit,             {0} },
         { MODKEY,       XKB_KEY_v,          togglefloating,   {0} },
         { MODKEY|SHIFT, XKB_KEY_f,          togglefullscreen, {0} },
 
