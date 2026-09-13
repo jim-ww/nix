@@ -76,6 +76,10 @@ in
         itpec-sensei-mcp = "tmux new-session -s itpec-sensei-mcp 'NGROK_AUTHTOKEN=$(cat /run/secrets/ngrok-token) NGROK_RESERVED_URL=$(cat /run/secrets/ngrok-url) itpec-sensei serve --ngrok --remote'";
         bc = "busybox bc -q";
         gtr = "gtr -t ru";
+        cld = ''
+          tmux new-session -s "$(basename "$(pwd)")" -n shell \; \
+                      new-window -n claude "bwrap-cwd claude" \; \
+                      select-window -t 1'';
         tns = ''
           tmux new-session -s "$(basename "$(pwd)")" -n edit "$EDITOR ." \; \
                         new-window -n claude "bwrap-cwd claude" \; '';
