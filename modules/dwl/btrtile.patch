@@ -7,10 +7,10 @@ Subject: [PATCH] btrtile: bug fixes and readability improvement
 - Improved readability of the client sanitization loop inside btrtile function
 - Removed fullscreened client's from the sanitization loop to retain their geometry
 ---
- btrtile.c    | 575 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ btrtile.c    | 585 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
  config.def.h |  12 ++
  dwl.c        | 151 +++++++++++---
- 3 files changed, 711 insertions(+), 27 deletions(-)
+ 3 files changed, 721 insertions(+), 27 deletions(-)
  create mode 100644 btrtile.c
 
 diff --git a/btrtile.c b/btrtile.c
@@ -18,7 +18,7 @@ new file mode 100644
 index 0000000..24bf4d9
 --- /dev/null
 +++ b/btrtile.c
-@@ -0,0 +1,575 @@
+@@ -0,0 +1,585 @@
 +/* ************************************************************************** */
 +/*                                                 @@@            @@@@@@@@    */
 +/*                                                  @@@          @@@@@@@@@@   */
@@ -307,7 +307,8 @@ index 0000000..24bf4d9
 +	Client *old_client;
 +	LayoutNode **root = &m->root, *old_root,
 +	*focused_node, *new_client_node, *old_client_node;
-+	unsigned int wider, mid_x, mid_y;
++	unsigned int vertical;
++	double rel_x, rel_y, dist_x, dist_y;
 +
 +	/* If no root , new client becomes the root. */
 +	if (!*root) {
@@ -332,19 +333,28 @@ index 0000000..24bf4d9
 +	old_client_node = create_client_node(old_client);
 +	new_client_node = create_client_node(new_client);
 +
-+	/* Decide split direction. */
-+	wider = (focused_client->geom.width >= focused_client->geom.height);
++	/* Decide split direction from where inside the focused window the
++	 * drop happened: split along whichever axis the cursor is farther
++	 * off-center on, so dropping near the left/right edge splits
++	 * vertically and dropping near the top/bottom edge splits
++	 * horizontally, like opening a new window at that spot. */
++	rel_x = (cursor->x - focused_client->geom.x) / (double)focused_client->geom.width;
++	rel_y = (cursor->y - focused_client->geom.y) / (double)focused_client->geom.height;
++	dist_x = rel_x - 0.5;
++	dist_y = rel_y - 0.5;
++	if (dist_x < 0)
++		dist_x = -dist_x;
++	if (dist_y < 0)
++		dist_y = -dist_y;
++	vertical = (dist_x >= dist_y);
++
 +	focused_node->is_client_node = 0;
 +	focused_node->client         = NULL;
-+	focused_node->is_split_vertically = (wider ? 1 : 0);
++	focused_node->is_split_vertically = vertical;
 +
-+	/* Pick new_client side depending on the cursor position. */
-+	mid_x = focused_client->geom.x + focused_client->geom.width / 2;
-+	mid_y = focused_client->geom.y + focused_client->geom.height / 2;
-+
-+	if (wider) {
++	if (vertical) {
 +		/* vertical split => left vs right */
-+		if (cursor->x <= mid_x) {
++		if (rel_x <= 0.5) {
 +			focused_node->left  = new_client_node;
 +			focused_node->right = old_client_node;
 +		} else {
@@ -353,7 +363,7 @@ index 0000000..24bf4d9
 +		}
 +	} else {
 +		/* horizontal split => top vs bottom */
-+		if (cursor->y <= mid_y) {
++		if (rel_y <= 0.5) {
 +			focused_node->left  = new_client_node;
 +			focused_node->right = old_client_node;
 +		} else {
