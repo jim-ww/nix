@@ -46,7 +46,7 @@ let
     enum Direction { DIR_LEFT, DIR_RIGHT, DIR_UP, DIR_DOWN };
     static const float rootcolor[]             = COLOR(0x${base16.base00}ff);
     static const float bordercolor[]           = COLOR(0x${base16.base03}ff);
-    static const float focuscolor[]            = COLOR(0x${base16.base09}ff);
+    static const float focuscolor[]            = COLOR(0x${base16.base0C}ff);
     static const float urgentcolor[]           = COLOR(0x${base16.base08}ff);
     static const float fullscreen_bg[]         = {0.0f, 0.0f, 0.0f, 1.0f};
 
