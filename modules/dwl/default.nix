@@ -216,7 +216,7 @@ let
         { MODKEY,       XKB_KEY_0, view, {.ui = ~0} },
         { MODKEY|SHIFT, XKB_KEY_0, tag,  {.ui = ~0} },
 
-        { CTRL|ALT, XKB_KEY_Terminate_Server, quit, {0} },
+        { CTRL|ALT, XKB_KEY_Terminate_Server, spawn, CMD("sh", "-c", "touch \"''${XDG_RUNTIME_DIR}/dwl-stop\"; kill -TERM $PPID") },
     #define CHVT(n) { CTRL|ALT, XKB_KEY_XF86Switch_VT_##n, chvt, {.ui = (n)} }
         CHVT(1), CHVT(2), CHVT(3), CHVT(4), CHVT(5), CHVT(6),
         CHVT(7), CHVT(8), CHVT(9), CHVT(10), CHVT(11), CHVT(12),
@@ -313,7 +313,15 @@ in
   environment.etc."xdg/dwl-session".text = lib.mkForce ''
     #!${pkgs.runtimeShell}
     ${config.programs.dwl.extraSessionCommands}
-    ${lib.getExe config.programs.dwl.package} 2>>"''${XDG_RUNTIME_DIR:-/tmp}/dwl.log"
+    stopfile="''${XDG_RUNTIME_DIR:-/tmp}/dwl-stop"
+    rm -f "$stopfile"
+    while true; do
+      ${lib.getExe config.programs.dwl.package} 2>>"''${XDG_RUNTIME_DIR:-/tmp}/dwl.log"
+      if [ -e "$stopfile" ]; then
+        rm -f "$stopfile"
+        break
+      fi
+    done
     systemctl --user stop dwl-session.target
   '';
 
