@@ -210,7 +210,9 @@ let
         TAGKEYS( XKB_KEY_7, 6),
         TAGKEYS( XKB_KEY_8, 7),
         TAGKEYS( XKB_KEY_9, 8),
-        TAGKEYS( XKB_KEY_0, 9),
+
+        { MODKEY,       XKB_KEY_0, view, {.ui = ~0} },
+        { MODKEY|SHIFT, XKB_KEY_0, tag,  {.ui = ~0} },
 
         { CTRL|ALT, XKB_KEY_Terminate_Server, quit, {0} },
     #define CHVT(n) { CTRL|ALT, XKB_KEY_XF86Switch_VT_##n, chvt, {.ui = (n)} }
