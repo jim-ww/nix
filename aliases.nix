@@ -85,7 +85,7 @@ in
                         new-window -n claude "bwrap-cwd claude" \; '';
         gomod2nix-init = "nix flake init -t github:nix-community/gomod2nix#app";
         xmr = "monero-wallet-cli --wallet-file $(cat /run/secrets/xmr-wallet) --daemon-address $(cat /run/secrets/xmr-daemon) --log-file ${home}/.cache/monero-wallet-cli.log";
-        anitui = "anitui -status watching -sort last-watch -hide-airing -emit status,title,last,progress -external-terminal";
+        anitui = "anitui -status watching -sort last-watch -hide-airing -emit status,title,last,progress";
         todo = "todo -date-format 02-01-2006";
         restic = "restic --password-command 'sudo cat /run/secrets/restic-repo-password'";
         # shardic = "shardic --providers $(cat /run/secrets/shardic-providers)";

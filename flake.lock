@@ -19,11 +19,11 @@
     "ani-cli-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1788616733,
-        "narHash": "sha256-H//rbOiJGss0tmpHiJvV1DjGs3hK1KOzisbU93kUvjY=",
+        "lastModified": 1789305001,
+        "narHash": "sha256-zF4ulfV+w5EEsl+uWhGmemQG8Z2XZkRCBjcx462xVbg=",
         "owner": "pystardust",
         "repo": "ani-cli",
-        "rev": "a6e178bc5eff3538ca5ffe39f6d1459eeecaa7f1",
+        "rev": "2a956db02bf83760bf8f28b720d58fe8014b0e9b",
         "type": "github"
       },
       "original": {
@@ -604,11 +604,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1788881743,
-        "narHash": "sha256-2V9GZGvPfrNzxFozhI9dcqV+c3QdA8YZrvAAzqEB+dI=",
+        "lastModified": 1789286504,
+        "narHash": "sha256-eiEK7cKZORNEvX0GeF3RtNEF/JXhgf2RqSp3230q13E=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "d6524aaca2ff07876657ae2b323f24be4874944b",
+        "rev": "ef34387ddd751e1ab8857adf4676492d32eb24ec",
         "type": "github"
       },
       "original": {
