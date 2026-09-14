@@ -325,6 +325,7 @@ let
         { MODKEY,       XKB_KEY_Down,       focusdir,         {.ui = 3} },
 
         { MODKEY,       XKB_KEY_Return,     zoom,             {0} },
+        { MODKEY|SHIFT, XKB_KEY_Return,     incnmaster,       {.i = +1} },
 
         { MODKEY,       XKB_KEY_g,          setlayout,        {.v = &layouts[0]} },
         { MODKEY,       XKB_KEY_n,          setlayout,        {.v = &layouts[3]} },
