@@ -18,24 +18,33 @@
     };
   };
 
-  # gopls can organize imports itself (source.organizeImports), so we don't
-  # need a separate goimports/gotools dependency just for conform.
   autoCmd = [
     {
       event = "BufWritePre";
       group = "gopls-organize-imports";
       pattern = "*.go";
       callback.__raw = ''
-        function()
-          local params = vim.lsp.util.make_range_params(0, "utf-8")
+        function(args)
+          local bufnr = args.buf
+          if #vim.lsp.get_clients({ bufnr = bufnr, name = "gopls" }) == 0 then return end
+
+          local params = vim.lsp.util.make_range_params(0, "utf-16")
           params.context = { only = { "source.organizeImports" } }
-          local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 3000)
-          for _, res in pairs(result or {}) do
-            for _, r in pairs(res.result or {}) do
-              if r.edit then
-                vim.lsp.util.apply_workspace_edit(r.edit, "utf-8")
-              elseif r.command then
-                vim.lsp.buf.execute_command(r.command)
+
+          local ok, result = pcall(vim.lsp.buf_request_sync, bufnr,
+            "textDocument/codeAction", params, 3000)
+          if not ok or not result then return end
+
+          for _, res in pairs(result) do
+            if not res.err then
+              for _, action in pairs(res.result or {}) do
+                pcall(function()
+                  if action.edit then
+                    vim.lsp.util.apply_workspace_edit(action.edit, "utf-16")
+                  elseif action.command then
+                    vim.lsp.buf.execute_command(action.command)
+                  end
+                end)
               end
             end
           end
