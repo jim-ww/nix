@@ -85,12 +85,52 @@ let
     "cd ${documents} && exec ${config.editor} ."
   ];
 
-  wallpaper = pkgs.writeShellScriptBin "dwl-wallpaper" ''
-    ${lib.getExe pkgs.swaybg} -i "$NH_FLAKE/wallpaper" -m fill &
+  wallpaperApply = pkgs.writeShellScriptBin "dwl-wallpaper-apply" ''
+    [ -n "$1" ] && [ -f "$1" ] || exit 0
+    ${pkgs.procps}/bin/pkill -x swaybg
+    ${lib.getExe pkgs.swaybg} -i "$1" -m fill &
     disown
   '';
 
-  wallpaper-selector = null;
+  wallpaperSet = pkgs.writeShellScriptBin "dwl-wallpaper-set" ''
+    dir="${config.flakeDir}/wallpapers"
+    fallback="${config.flakeDir}/wallpaper"
+
+    pick="$fallback"
+    if [ -d "$dir" ]; then
+      mapfile -t files < <(find "$dir" -maxdepth 1 -type f)
+      if [ "''${#files[@]}" -gt 0 ]; then
+        pick="''${files[$RANDOM % ''${#files[@]}]}"
+      fi
+    fi
+
+    exec ${lib.getExe wallpaperApply} "$pick"
+  '';
+
+  wallpaper = pkgs.writeShellScriptBin "dwl-wallpaper" ''
+    exec ${lib.getExe wallpaperSet}
+  '';
+
+  wallpaperDaemon = pkgs.writeShellScriptBin "dwl-wallpaper-daemon" ''
+    while true; do
+      ${lib.getExe wallpaperSet}
+      sleep 1800
+    done
+  '';
+
+  wallpaper-selector = pkgs.writeShellScriptBin "dwl-wallpaper-selector" ''
+    dir="${config.flakeDir}/wallpapers"
+    [ -d "$dir" ] || exit 0
+
+    shopt -s nullglob
+    files=("$dir"/*)
+    [ "''${#files[@]}" -gt 0 ] || exit 0
+
+    pick=$(${lib.getExe pkgs.nsxiv} -to "''${files[@]}" 2>/dev/null | head -n1)
+    [ -n "$pick" ] || exit 0
+
+    exec ${lib.getExe wallpaperApply} "$pick"
+  '';
 
   calculator = [
     term
@@ -358,11 +398,8 @@ let
           ]
         } },
         { MODKEY|SHIFT, XKB_KEY_a,          spawn,            ${cCmd resourceMonitor} },
-        { MODKEY,       XKB_KEY_w,          spawn,            ${cCmd [ (lib.getExe wallpaper) ]} },
-
-        ${lib.optionalString (wallpaper-selector != null) ''
-          { MODKEY|SHIFT, XKB_KEY_w,          spawn,            ${cCmd wallpaper-selector} },
-        ''}
+        { MODKEY,       XKB_KEY_w,          spawn,            ${cCmd [ (lib.getExe wallpaper-selector) ]} },
+        { MODKEY|SHIFT, XKB_KEY_w,          spawn,            ${cCmd [ (lib.getExe wallpaper) ]} },
 
         { MODKEY,       XKB_KEY_b,          spawn,            ${cCmd passwords} },
         { MODKEY,       XKB_KEY_k,          spawn,            ${cCmd calculator} },
@@ -445,12 +482,12 @@ let
       "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE"
       "systemctl --user start dwl-session.target"
 
-      "${pkgs.procps}/bin/pgrep -x dwlb >/dev/null || ${lib.getExe pkgs.dwlb} -font \"monospace:size=11\" -ipc -custom-title -hide-vacant-tags -vertical-padding 0 -active-fg-color \"#${base16.base00}\" -active-bg-color \"#${base16.base0C}\" -occupied-fg-color \"#${base16.base05}\" -occupied-bg-color \"#${base16.base02}\" -inactive-fg-color \"#${base16.base03}\" -inactive-bg-color \"#${base16.base01}\" -urgent-fg-color \"#${base16.base00}\" -urgent-bg-color \"#${base16.base08}\" -middle-bg-color \"#${base16.base00}\" -middle-bg-color-selected \"#${base16.base01}\" &"
+      "${pkgs.procps}/bin/pgrep -x dwlb >/dev/null || ${lib.getExe pkgs.dwlb} -font \"monospace:size=11\" -ipc -custom-title -hide-vacant-tags -vertical-padding 0 -active-fg-color \"#${base16.base00}\" -active-bg-color \"#${base16.base0C}\" -occupied-fg-color \"#${base16.base05}\" -occupied-bg-color \"#${base16.base02}\" -inactive-fg-color \"#${base16.base04}\" -inactive-bg-color \"#${base16.base01}\" -urgent-fg-color \"#${base16.base00}\" -urgent-bg-color \"#${base16.base08}\" -middle-bg-color \"#${base16.base00}\" -middle-bg-color-selected \"#${base16.base01}\" &"
 
       "sleep 1"
 
       "${pkgs.procps}/bin/pgrep -x mako >/dev/null || ${lib.getExe pkgs.mako} &"
-      "${lib.getExe pkgs.swaybg} -i ${config.flakeDir}/wallpaper -m fill &"
+      "${pkgs.procps}/bin/pgrep -f dwl-wallpaper-daemon >/dev/null || ${lib.getExe wallpaperDaemon} &"
 
       ''
         i3_config="${home}/.config/i3status-rust/config-main.toml"
