@@ -118,6 +118,111 @@ let
     done
   '';
 
+  dwlStatus = pkgs.writeShellScriptBin "dwl-status" ''
+    set -u
+
+    fifo="''${XDG_RUNTIME_DIR:-/tmp}/dwl-status.fifo"
+    rm -f "$fifo"
+    mkfifo "$fifo"
+    exec 3<>"$fifo"
+
+    order=(mpd audio time battery)
+    declare -A blocks=()
+
+    render() {
+      local out="" sep=""
+      for name in "''${order[@]}"; do
+        local text="''${blocks[$name]:-}"
+        [ -n "$text" ] || continue
+        out+="''${sep}''${text}"
+        sep="   "
+      done
+      ${lib.getExe pkgs.dwlb} -status all "$out"
+    }
+
+    update_mpd() {
+      local song state symbol text=""
+      if song=$(${lib.getExe pkgs.mpc} current -f '%artist% - %title%' 2>/dev/null) && [ -n "$song" ]; then
+        state=$(${lib.getExe pkgs.mpc} status 2>/dev/null | sed -n '2{s/.*\[\([a-z]*\)\].*/\1/p}')
+        case "$state" in
+          playing) symbol=$'\uf04b' ;;
+          paused) symbol=$'\uf04c' ;;
+          *) symbol=$'\uf04d' ;;
+        esac
+        [ "''${#song}" -gt 40 ] && song="''${song:0:39}…"
+        text="^lm(${lib.getExe pkgs.playerctl} -p mpd play-pause)^mm(${lib.getExe pkgs.playerctl} -p mpd previous)^rm(${lib.getExe pkgs.playerctl} -p mpd next)$symbol $song^rm()^mm()^lm()"
+      fi
+      printf 'mpd\t%s\n' "$text" >&3
+    }
+
+    mpd_loop() {
+      while true; do
+        update_mpd
+        ${lib.getExe pkgs.mpc} idle player >/dev/null 2>&1 || sleep 5
+      done
+    }
+
+    update_audio() {
+      local vol mute label text=""
+      if vol=$(${lib.getExe pkgs.pamixer} --get-volume 2>/dev/null) && [ -n "$vol" ]; then
+        mute=$(${lib.getExe pkgs.pamixer} --get-mute 2>/dev/null)
+        if [ "$mute" = "true" ]; then icon=$'\uf026'; label="mute"; else icon=$'\uf028'; label="''${vol}%"; fi
+        text="^lm(${lib.getExe pkgs.pamixer} -t)$icon $label^lm()"
+      fi
+      printf 'audio\t%s\n' "$text" >&3
+    }
+
+    audio_loop() {
+      update_audio
+      ${pkgs.pulseaudio}/bin/pactl subscribe 2>/dev/null | while read -r line; do
+        case "$line" in
+          *sink*) update_audio ;;
+        esac
+      done
+    }
+
+    update_time() {
+      local icon=$'\uf017'
+      printf 'time\t%s %s\n' "$icon" "$(${lib.getExe' pkgs.coreutils "date"} '+%a %Y-%m-%d %H:%M')" >&3
+    }
+
+    time_loop() {
+      while true; do
+        update_time
+        sleep 15
+      done
+    }
+
+    update_battery() {
+      local bat=/sys/class/power_supply/BAT0 status capacity text="" icon=$'\uf240'
+      if [ -d "$bat" ]; then
+        status=$(${lib.getExe' pkgs.coreutils "cat"} "$bat/status" 2>/dev/null)
+        if [ "$status" = "Discharging" ]; then
+          capacity=$(${lib.getExe' pkgs.coreutils "cat"} "$bat/capacity" 2>/dev/null)
+          text="$icon ''${capacity}%"
+        fi
+      fi
+      printf 'battery\t%s\n' "$text" >&3
+    }
+
+    battery_loop() {
+      while true; do
+        update_battery
+        sleep 30
+      done
+    }
+
+    mpd_loop &
+    audio_loop &
+    time_loop &
+    battery_loop &
+
+    while IFS=$'\t' read -r name text <&3; do
+      blocks[$name]="$text"
+      render
+    done
+  '';
+
   wallpaper-selector = pkgs.writeShellScriptBin "dwl-wallpaper-selector" ''
     dir="${config.flakeDir}/wallpapers"
     [ -d "$dir" ] || exit 0
@@ -482,29 +587,14 @@ let
       "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE"
       "systemctl --user start dwl-session.target"
 
-      "${pkgs.procps}/bin/pgrep -x dwlb >/dev/null || ${lib.getExe pkgs.dwlb} -font \"monospace:size=11\" -ipc -custom-title -hide-vacant-tags -vertical-padding 0 -active-fg-color \"#${base16.base00}\" -active-bg-color \"#${base16.base0C}\" -occupied-fg-color \"#${base16.base05}\" -occupied-bg-color \"#${base16.base02}\" -inactive-fg-color \"#${base16.base04}\" -inactive-bg-color \"#${base16.base01}\" -urgent-fg-color \"#${base16.base00}\" -urgent-bg-color \"#${base16.base08}\" -middle-bg-color \"#${base16.base00}\" -middle-bg-color-selected \"#${base16.base01}\" &"
+      "${pkgs.procps}/bin/pgrep -x dwlb >/dev/null || ${lib.getExe pkgs.dwlb} -font \"monospace:size=11,Symbols Nerd Font Mono:size=11\" -ipc -custom-title -hide-vacant-tags -vertical-padding 0 -active-fg-color \"#${base16.base00}\" -active-bg-color \"#${base16.base0C}\" -occupied-fg-color \"#${base16.base05}\" -occupied-bg-color \"#${base16.base02}\" -inactive-fg-color \"#${base16.base04}\" -inactive-bg-color \"#${base16.base01}\" -urgent-fg-color \"#${base16.base00}\" -urgent-bg-color \"#${base16.base08}\" -middle-bg-color \"#${base16.base00}\" -middle-bg-color-selected \"#${base16.base01}\" &"
 
       "sleep 1"
 
       "${pkgs.procps}/bin/pgrep -x mako >/dev/null || ${lib.getExe pkgs.mako} &"
       "${pkgs.procps}/bin/pgrep -f dwl-wallpaper-daemon >/dev/null || ${lib.getExe wallpaperDaemon} &"
 
-      ''
-        i3_config="${home}/.config/i3status-rust/config-main.toml"
-        log_file="''${XDG_RUNTIME_DIR:-/tmp}/i3status.log"
-
-        if [ -f "$i3_config" ]; then
-          ${pkgs.coreutils}/bin/stdbuf -oL ${lib.getExe pkgs.i3status-rust} "$i3_config" 2>>"$log_file" | \
-          while IFS= read -r line; do
-            status=$(echo "$line" | ${lib.getExe pkgs.jq} -r 'if type=="array" then map(.full_text // empty) | join("") else empty end' 2>/dev/null)
-            if [ -n "$status" ]; then
-              ${lib.getExe pkgs.dwlb} -status all "$status"
-            fi
-          done &
-        else
-          echo "i3status-rust config not found at $i3_config" >> "$log_file"
-        fi
-      ''
+      "${pkgs.procps}/bin/pgrep -x dwl-status >/dev/null || ${lib.getExe dwlStatus} &"
 
       "cliphist wipe &"
       "${pkgs.procps}/bin/pgrep -x keepassxc >/dev/null || ${lib.getExe pkgs.keepassxc} --minimized &"
