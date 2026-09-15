@@ -192,12 +192,11 @@ rec {
     exec 9>"$lock"
     ${lib.getExe' pkgs.util-linux "flock"} -x 9
 
-    ${pkgs.procps}/bin/pkill -x swaybg
-    for _ in $(seq 1 40); do
-      ${pkgs.procps}/bin/pgrep -x swaybg >/dev/null || break
-      sleep 0.05
-    done
-    ${pkgs.procps}/bin/pkill -9 -x swaybg 2>/dev/null
+    # swaybg's nix wrapper execs into a binary named ".swaybg-wrapped", so
+    # its kernel comm is never "swaybg" -- pkill -x swaybg silently never
+    # matched it. drop -x so it's a substring match instead, which still
+    # catches ".swaybg-wrapped".
+    ${pkgs.procps}/bin/pkill swaybg 2>/dev/null
 
     # close the lock fd in the child so swaybg (which outlives this script)
     # doesn't hold the flock open forever and deadlock the next invocation.
