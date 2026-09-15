@@ -590,6 +590,7 @@ let
         { MODKEY, BTN_LEFT,   moveresize,     {.ui = CurMove} },
         { MODKEY, BTN_MIDDLE, togglefloating, {0} },
         { MODKEY, BTN_RIGHT,  moveresize,     {.ui = CurResize} },
+        { MODKEY|SHIFT, BTN_MIDDLE, moveresize, {.ui = Curmfact} },
     };
   '';
 
@@ -661,6 +662,7 @@ let
       ++ [
         ./smartborders.patch
         ./togglenmaster.patch
+        ./dragmfact.patch
       ];
   });
 in
