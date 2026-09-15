@@ -8,16 +8,40 @@
  static void incnmaster(const Arg *arg);
  static void inputdevice(struct wl_listener *listener, void *data);
  static int keybinding(uint32_t mods, xkb_keysym_t sym);
-@@ -1575,6 +1576,15 @@
+@@ -1575,6 +1576,39 @@
  	arrange(selmon);
  }
  
 +void
 +togglenmaster(const Arg *arg)
 +{
++	Client *c, *sel;
++
 +	if (!selmon)
 +		return;
-+	selmon->nmaster = selmon->nmaster > 1 ? 1 : 2;
++
++	if (selmon->nmaster > 1) {
++		selmon->nmaster = 1;
++		arrange(selmon);
++		return;
++	}
++
++	/* Going from one master to two: make sure the focused client ends up
++	 * in the master area instead of whichever client happened to be next
++	 * in the tiling order. */
++	sel = focustop(selmon);
++	if (sel && !sel->isfloating) {
++		wl_list_for_each(c, &clients, link) {
++			if (VISIBLEON(c, selmon) && !c->isfloating)
++				break;
++		}
++		if (&c->link != &clients && c != sel) {
++			wl_list_remove(&sel->link);
++			wl_list_insert(&clients, &sel->link);
++		}
++	}
++
++	selmon->nmaster = 2;
 +	arrange(selmon);
 +}
 +
