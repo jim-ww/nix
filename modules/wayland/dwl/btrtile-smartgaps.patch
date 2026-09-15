@@ -1,0 +1,12 @@
+--- a/btrtile.c	2026-09-15 14:19:01.264406123 +0200
++++ b/btrtile.c	2026-09-15 14:19:01.325332615 +0200
+@@ -58,6 +58,9 @@
+ 	if (!node)
+ 		return;
+ 
++	if (is_root && (unsigned int)smartgaps == visible_count(m->root, m))
++		e = 0;
++
+ 	if (is_root && e) {
+ 		area.x += gappx;
+ 		area.y += gappx;

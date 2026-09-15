@@ -233,6 +233,10 @@ let
     files=("$dir"/*)
     [ "''${#files[@]}" -gt 0 ] || exit 0
 
+    # dwl's session never runs xrdb, so XWayland clients (nsxiv included)
+    # never see our ~/.Xresources colors without this.
+    [ -r "$HOME/.Xresources" ] && ${lib.getExe pkgs.xrdb} -merge "$HOME/.Xresources"
+
     pick=$(${lib.getExe pkgs.nsxiv} -to "''${files[@]}" 2>/dev/null | head -n1)
     [ -n "$pick" ] || exit 0
 
@@ -309,8 +313,10 @@ let
     text=$(${lib.getExe pkgs.bemenu} -p "translate:" < /dev/null)
     [ -n "$text" ] || exit 0
 
-    result=$(gtr "$text" 2>/dev/null)
-    [ -n "$result" ] || exit 0
+    if ! result=$(gtr "$text" 2>&1); then
+      ${lib.getExe' pkgs.libnotify "notify-send"} -u critical "translate failed" "$result"
+      exit 1
+    fi
 
     printf '%s' "$result" | ${lib.getExe' pkgs.wl-clipboard "wl-copy"}
     ${lib.getExe' pkgs.libnotify "notify-send"} "translate" "$result"
@@ -606,7 +612,7 @@ let
       "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE"
       "systemctl --user start dwl-session.target"
 
-      (guardX "dwlb" "${lib.getExe pkgs.dwlb} -font \"monospace:size=11,Symbols Nerd Font Mono:size=11\" -ipc -custom-title -hide-vacant-tags -vertical-padding 0 -active-fg-color \"#${base16.base00}\" -active-bg-color \"#${base16.base0C}\" -occupied-fg-color \"#${base16.base05}\" -occupied-bg-color \"#${base16.base02}\" -inactive-fg-color \"#${base16.base04}\" -inactive-bg-color \"#${base16.base01}\" -urgent-fg-color \"#${base16.base00}\" -urgent-bg-color \"#${base16.base08}\" -middle-bg-color \"#${base16.base00}\" -middle-bg-color-selected \"#${base16.base01}\"")
+      (guardX "dwlb" "${lib.getExe pkgs.dwlb} -font \"monospace,Symbols Nerd Font Mono:size=11\" -ipc -custom-title -hide-vacant-tags -vertical-padding 0 -active-fg-color \"#${base16.base00}\" -active-bg-color \"#${base16.base0C}\" -occupied-fg-color \"#${base16.base05}\" -occupied-bg-color \"#${base16.base02}\" -inactive-fg-color \"#${base16.base04}\" -inactive-bg-color \"#${base16.base01}\" -urgent-fg-color \"#${base16.base00}\" -urgent-bg-color \"#${base16.base08}\" -middle-bg-color \"#${base16.base00}\" -middle-bg-color-selected \"#${base16.base01}\"")
 
       "sleep 1"
 
@@ -651,6 +657,7 @@ let
         ./gaps.patch
         ./ipc.patch
         ./btrtile.patch
+        ./btrtile-smartgaps.patch
         ./alwayscenter.patch
         ./focusdir.patch
         ./swallow.patch
@@ -729,6 +736,12 @@ in
       for f in /etc/profile.d/*.sh; do
         . "$f"
       done
+
+      # home-manager's session variables (e.g. BEMENU_OPTS) live in
+      # ~/.profile, which normal login shells source after /etc/profile.
+      # We exec away below before bash gets to do that, so source it
+      # ourselves.
+      [ -r "$HOME/.profile" ] && . "$HOME/.profile"
 
       exec /etc/xdg/dwl-session
     fi

@@ -8,7 +8,21 @@
  static void update_client_focus_decorations(Client *c, int focused, int urgent);
  static void update_client_blur(Client *c);
  static void update_buffer_corner_radius(Client *c, struct wlr_scene_buffer *buffer);
-@@ -2710,10 +2711,11 @@
+@@ -613,6 +613,13 @@
+ 
+ 	strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, LENGTH(m->ltsymbol));
+ 
++	if (smartborders) {
++		int bw = nvisible_on(m) <= 1 ? 0 : borderpx;
++		wl_list_for_each(c, &clients, link)
++			if (c->mon == m && VISIBLEON(c, m) && !c->isfloating && !c->isfullscreen)
++				c->bw = bw;
++	}
++
+ 	/* We move all clients (except fullscreen and unmanaged) to LyrTile while
+ 	 * in floating layout to avoid "real" floating clients be always on top */
+ 	wl_list_for_each(c, &clients, link) {
+@@ -2710,10 +2718,11 @@
  	wlr_scene_subsurface_tree_set_clip(&c->scene_surface->node, &clip);
  
  	if (corner_radius > 0 && c->round_border) {
@@ -51,3 +65,4 @@
  	}
  	if (shadow && c->shadow) {
  		client_set_shadow_blur_sigma(c, (int)round(focused ? shadow_blur_sigma_focus : shadow_blur_sigma));
+ 
