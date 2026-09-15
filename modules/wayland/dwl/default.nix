@@ -350,7 +350,7 @@ let
       (guardX "wl-status" (lib.getExe wl.status))
 
       "cliphist wipe &"
-      (guardX "keepassxc" "${lib.getExe pkgs.keepassxc} --minimized")
+      # (guardX "keepassxc" "${lib.getExe pkgs.keepassxc} --minimized")
       (guardF "${lib.getExe pkgs.lf} -server" "${lib.getExe pkgs.lf} -server")
       (guardX "fcitx5" (lib.getExe' fcitx5 "fcitx5"))
       (guardX "wl-clip-persist" "${lib.getExe' pkgs.wl-clip-persist "wl-clip-persist"} --clipboard regular")
