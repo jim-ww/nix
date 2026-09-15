@@ -85,40 +85,42 @@ rec {
   ];
 
   launcher = pkgs.writeShellScriptBin "launcher" ''
-    tmp=$(mktemp)
-    trap 'rm -f "$tmp"' EXIT
-
     # Format: <display>|<command>|<kind>
     # kind is "gui" (run directly) or "term" (run inside foot)
 
-    {
-      printf '%s|%s|%s\n' "Terminal"     "${term}"                                                        "gui"
+    cache="''${XDG_CACHE_HOME:-$HOME/.cache}/wl-launcher.cache"
 
-      for f in /run/current-system/sw/share/applications/*.desktop \
-               "$HOME"/.nix-profile/share/applications/*.desktop; do
-        [ -e "$f" ] || continue
-        name=$(grep -m1 '^Name=' "$f" | cut -d= -f2-)
-        exec_cmd=$(grep -m1 '^Exec=' "$f" | cut -d= -f2- | sed 's/ *%[fFuUdDnNickvm]//g')
-        kind="gui"
-        [ "$(grep -m1 '^Terminal=' "$f" | cut -d= -f2-)" = "true" ] && kind="term"
-        [ -n "$name" ] && [ -n "$exec_cmd" ] && printf '%s|%s|%s\n' "$name" "$exec_cmd" "$kind"
-      done
+    # .desktop files rarely change, so rebuild the cache only when it's
+    # missing or a day old instead of re-scanning on every launch -- that
+    # scan was the whole reason the menu took noticeably long to appear.
+    if [ ! -e "$cache" ] || [ -n "$(${lib.getExe' pkgs.findutils "find"} "$cache" -mmin +1440)" ]; then
+      mkdir -p "$(dirname "$cache")"
+      {
+        printf '%s|%s|%s\n' "Terminal"     "${term}"                                                        "gui"
 
-      compgen -c 2>/dev/null | sort -u | while read -r cmd; do
-        [ -n "$cmd" ] && printf '%s|%s|%s\n' "$cmd" "$cmd" "term"
-      done
-    } > "$tmp"
+        for f in /run/current-system/sw/share/applications/*.desktop \
+                 "$HOME"/.nix-profile/share/applications/*.desktop; do
+          [ -e "$f" ] || continue
+          name=$(grep -m1 '^Name=' "$f" | cut -d= -f2-)
+          exec_cmd=$(grep -m1 '^Exec=' "$f" | cut -d= -f2- | sed 's/ *%[fFuUdDnNickvm]//g')
+          kind="gui"
+          [ "$(grep -m1 '^Terminal=' "$f" | cut -d= -f2-)" = "true" ] && kind="term"
+          [ -n "$name" ] && [ -n "$exec_cmd" ] && printf '%s|%s|%s\n' "$name" "$exec_cmd" "$kind"
+        done
+      } > "$cache"
+    fi
 
-    choice=$(cut -d'|' -f1 "$tmp" | ${lib.getExe bemenuPatched} -i -p run --list 15)
+    choice=$(cut -d'|' -f1 "$cache" | ${lib.getExe bemenuPatched} -i -p run --list 15)
     [ -n "$choice" ] || exit 0
 
-    line=$(awk -F'|' -v choice="$choice" '$1 == choice { print; exit }' "$tmp")
+    line=$(awk -F'|' -v choice="$choice" '$1 == choice { print; exit }' "$cache")
 
     if [ -n "$line" ]; then
       cmd=$(printf '%s\n' "$line" | cut -d'|' -f2)
       kind=$(printf '%s\n' "$line" | cut -d'|' -f3)
     else
-      # Not in the list — treat whatever the user typed as a raw shell command.
+      # Not in the list -- treat whatever the user typed as a raw shell
+      # command, e.g. any PATH binary not backed by a .desktop file.
       cmd="$choice"
       kind="term"
     fi
