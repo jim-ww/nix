@@ -121,6 +121,10 @@ let
   dwlStatus = pkgs.writeShellScriptBin "dwl-status" ''
     set -u
 
+    lock="''${XDG_RUNTIME_DIR:-/tmp}/dwl-status.lock"
+    exec 4>"$lock"
+    ${lib.getExe' pkgs.util-linux "flock"} -n 4 || exit 0
+
     fifo="''${XDG_RUNTIME_DIR:-/tmp}/dwl-status.fifo"
     rm -f "$fifo"
     mkfifo "$fifo"
@@ -135,7 +139,7 @@ let
         local text="''${blocks[$name]:-}"
         [ -n "$text" ] || continue
         out+="''${sep}''${text}"
-        sep="   "
+        sep=" "
       done
       ${lib.getExe pkgs.dwlb} -status all "$out"
     }
@@ -199,11 +203,13 @@ let
     }
 
     update_battery() {
-      local bat=/sys/class/power_supply/BAT0 status capacity text="" icon=$'\uf240'
-      if [ -d "$bat" ]; then
+      local bat status capacity text="" icon=$'\uf240'
+      bat=$(${lib.getExe' pkgs.findutils "find"} /sys/class/power_supply -maxdepth 1 -name 'BAT*' 2>/dev/null | head -n1)
+      if [ -n "$bat" ]; then
         status=$(${lib.getExe' pkgs.coreutils "cat"} "$bat/status" 2>/dev/null)
-        if [ "$status" = "Discharging" ]; then
-          capacity=$(${lib.getExe' pkgs.coreutils "cat"} "$bat/capacity" 2>/dev/null)
+        capacity=$(${lib.getExe' pkgs.coreutils "cat"} "$bat/capacity" 2>/dev/null)
+        # show whenever not sitting fully-charged on the charger
+        if [ "$status" != "Charging" ] && [ "$status" != "Full" ] || [ "''${capacity:-100}" -lt 100 ]; then
           text="$icon ''${capacity}%"
         fi
       fi
@@ -613,7 +619,7 @@ let
       "exec >>\"\${XDG_RUNTIME_DIR:-/tmp}/dwl-startup.log\" 2>&1"
       "set -x"
       "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE"
-      "systemctl --user start graphical-session.target"
+      "systemctl --user start --no-block graphical-session.target"
 
       (guardX "dwlb" "${lib.getExe pkgs.dwlb} -font \"monospace,Symbols Nerd Font Mono:size=11\" -ipc -custom-title -hide-vacant-tags -vertical-padding 0 -active-fg-color \"#${base16.base00}\" -active-bg-color \"#${base16.base0C}\" -occupied-fg-color \"#${base16.base05}\" -occupied-bg-color \"#${base16.base02}\" -inactive-fg-color \"#${base16.base04}\" -inactive-bg-color \"#${base16.base01}\" -urgent-fg-color \"#${base16.base00}\" -urgent-bg-color \"#${base16.base08}\" -middle-bg-color \"#${base16.base00}\" -middle-bg-color-selected \"#${base16.base01}\"")
 
