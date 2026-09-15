@@ -654,7 +654,10 @@ let
         ./focusdir.patch
         ./swallow.patch
       ]
-      ++ lib.optional effects ./scenefx.patch
+      ++ lib.optionals effects [
+        ./scenefx.patch
+        ./smartcorners.patch
+      ]
       ++ [
         ./smartborders.patch
         ./togglenmaster.patch
