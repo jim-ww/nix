@@ -13,6 +13,20 @@ let
 
   cCmd = args: "CMD(${lib.concatMapStringsSep ", " builtins.toJSON args})";
 
+  # plain left/right move the text cursor upstream; remap them to page
+  # up/down (shift+left/right jumps to top/bottom), same override as
+  # ../bemenu.nix's programs.bemenu.package.
+  bemenuPatched = pkgs.bemenu.overrideAttrs (old: {
+    patches = (old.patches or [ ]) ++ [ ../bemenu-leftright-page.patch ];
+  });
+
+  # upstream only wires scroll-to-command up to the deprecated
+  # wl_pointer.axis_discrete event; dwl (like most current compositors)
+  # sends axis_value120 instead, so status-bar scroll actions never fire.
+  dwlbPatched = pkgs.dwlb.overrideAttrs (old: {
+    patches = (old.patches or [ ]) ++ [ ./dwlb-scroll-value120.patch ];
+  });
+
   screenshotTo = ''"${home}/Pictures/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png"'';
   screenshotPipe = "${pkgs.coreutils}/bin/tee ${screenshotTo} | ${lib.getExe' pkgs.wl-clipboard "wl-copy"} -t image/png";
 
@@ -46,7 +60,7 @@ let
   bookmarks = [
     shell
     "-c"
-    "${lib.getExe pkgs.yq-go} -r '.[]' /run/secrets/bookmarks | ${lib.getExe pkgs.bemenu} -i -p bookmarks | ${lib.getExe' pkgs.wl-clipboard "wl-copy"}"
+    "${lib.getExe pkgs.yq-go} -r '.[]' /run/secrets/bookmarks | ${lib.getExe bemenuPatched} -i -p bookmarks | ${lib.getExe' pkgs.wl-clipboard "wl-copy"}"
   ];
 
   clipboard = [
@@ -65,7 +79,7 @@ let
   kaomojiData = "${kaomojiRepo}/kaomoji.csv";
 
   kaomoji = pkgs.writeShellScriptBin "kaomoji" ''
-    ${lib.getExe pkgs.bemenu} -i -p kaomoji --width-factor 0.4 < ${kaomojiData} |
+    ${lib.getExe bemenuPatched} -i -p kaomoji --width-factor 0.4 < ${kaomojiData} |
       awk '{print $1}' |
       sed 's/\\xc2\\xa0/ /g' |
       ${lib.getExe' pkgs.wl-clipboard "wl-copy"}
@@ -134,14 +148,17 @@ let
     declare -A blocks=()
 
     render() {
-      local out="" sep=""
+      # dwlb draws status text with inactive-fg-color by default, which
+      # in our theme is a dim shade meant for unfocused tags; force the
+      # brighter default foreground instead.
+      local out="^fg(${base16.base05})" sep=""
       for name in "''${order[@]}"; do
         local text="''${blocks[$name]:-}"
         [ -n "$text" ] || continue
         out+="''${sep}''${text}"
         sep=" ^fg(${base16.base03})|^fg() "
       done
-      ${lib.getExe pkgs.dwlb} -status all "$out"
+      ${lib.getExe dwlbPatched} -status all "$out"
     }
 
     update_mpd() {
@@ -183,16 +200,10 @@ let
 
     audio_loop() {
       update_audio
-      ${pkgs.pulseaudio}/bin/pactl subscribe 2>/dev/null | while true; do
-        # also poll every few seconds in case an event is missed or its
-        # format doesn't match, e.g. keyboard mute/volume keys
-        if read -r -t 3 line; then
-          case "$line" in
-            *sink*) update_audio ;;
-          esac
-        else
-          update_audio
-        fi
+      ${pkgs.pulseaudio}/bin/pactl subscribe 2>/dev/null | while read -r line; do
+        case "$line" in
+          *sink*) update_audio ;;
+        esac
       done
     }
 
@@ -270,7 +281,7 @@ let
   '';
 
   calculatorScript = pkgs.writeShellScriptBin "dwl-calculator" ''
-    expr=$(${lib.getExe pkgs.bemenu} -p "calc:" < /dev/null)
+    expr=$(${lib.getExe bemenuPatched} -p "calc:" < /dev/null)
     [ -n "$expr" ] || exit 0
 
     if ! result=$(printf '%s\n' "$expr" | ${lib.getExe pkgs.bc} -lq 2>&1); then
@@ -310,7 +321,7 @@ let
       done
     } > "$tmp"
 
-    choice=$(cut -d'|' -f1 "$tmp" | ${lib.getExe pkgs.bemenu} -i -p run --list 15)
+    choice=$(cut -d'|' -f1 "$tmp" | ${lib.getExe bemenuPatched} -i -p run --list 15)
     [ -n "$choice" ] || exit 0
 
     line=$(awk -F'|' -v choice="$choice" '$1 == choice { print; exit }' "$tmp")
@@ -334,7 +345,7 @@ let
   audioOutputSelect = [
     shell
     "-c"
-    "choice=$(wpctl status | sed -n '/Sinks:/,/Sources:/p' | grep -E '[0-9]+\\.' | ${lib.getExe pkgs.bemenu} -p output)"
+    "choice=$(wpctl status | sed -n '/Sinks:/,/Sources:/p' | grep -E '[0-9]+\\.' | ${lib.getExe bemenuPatched} -p output)"
   ];
 
   screenlock = [
@@ -347,7 +358,7 @@ let
   screenOff = null;
 
   translatorScript = pkgs.writeShellScriptBin "dwl-translate" ''
-    text=$(${lib.getExe pkgs.bemenu} -p "translate:" < /dev/null)
+    text=$(${lib.getExe bemenuPatched} -p "translate:" < /dev/null)
     [ -n "$text" ] || exit 0
 
     if ! result=$(gtr "$text" 2>&1); then
@@ -649,7 +660,7 @@ let
       "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE"
       "systemctl --user start --no-block graphical-session.target"
 
-      (guardX "dwlb" "${lib.getExe pkgs.dwlb} -font \"monospace,Symbols Nerd Font Mono:size=11\" -ipc -custom-title -hide-vacant-tags -vertical-padding 0 -active-fg-color \"#${base16.base00}\" -active-bg-color \"#${base16.base0C}\" -occupied-fg-color \"#${base16.base05}\" -occupied-bg-color \"#${base16.base02}\" -inactive-fg-color \"#${base16.base04}\" -inactive-bg-color \"#${base16.base01}\" -urgent-fg-color \"#${base16.base00}\" -urgent-bg-color \"#${base16.base08}\" -middle-bg-color \"#${base16.base00}\" -middle-bg-color-selected \"#${base16.base01}\"")
+      (guardX "dwlb" "${lib.getExe dwlbPatched} -font \"monospace,Symbols Nerd Font Mono:size=11\" -ipc -custom-title -hide-vacant-tags -vertical-padding 0 -active-fg-color \"#${base16.base00}\" -active-bg-color \"#${base16.base0C}\" -occupied-fg-color \"#${base16.base05}\" -occupied-bg-color \"#${base16.base02}\" -inactive-fg-color \"#${base16.base04}\" -inactive-bg-color \"#${base16.base01}\" -urgent-fg-color \"#${base16.base00}\" -urgent-bg-color \"#${base16.base08}\" -middle-bg-color \"#${base16.base00}\" -middle-bg-color-selected \"#${base16.base01}\"")
 
       "sleep 1"
 
@@ -798,9 +809,8 @@ in
         playerctl
         swaybg
         brightnessctl
-        dwlb
         pamixer
-        bemenu
+        dwlbPatched
       ];
 
       programs.swaylock.enable = true;

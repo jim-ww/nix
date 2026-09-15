@@ -1,0 +1,12 @@
+--- a/dwlb.c	2026-09-15 15:26:20.086545795 +0200
++++ b/dwlb.c	2026-09-15 15:26:20.106159884 +0200
+@@ -780,6 +780,9 @@
+ pointer_axis_value120(void *data, struct wl_pointer *pointer,
+ 		      uint32_t axis, int32_t discrete)
+ {
++	/* Modern compositors send this instead of the deprecated
++	 * axis_discrete event; reuse the same click-region logic. */
++	pointer_axis_discrete(data, pointer, axis, discrete);
+ }
+ 
+ static const struct wl_pointer_listener pointer_listener = {

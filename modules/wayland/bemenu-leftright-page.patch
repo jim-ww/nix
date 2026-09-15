@@ -1,0 +1,15 @@
+--- a/lib/renderers/wayland/wayland.c	2026-09-15 15:24:40.638265538 +0200
++++ b/lib/renderers/wayland/wayland.c	2026-09-15 15:24:40.657668494 +0200
+@@ -105,10 +105,10 @@
+             return BM_KEY_DOWN;
+ 
+         case XKB_KEY_Left:
+-            return (mods & MOD_SHIFT ? BM_KEY_UP : BM_KEY_LEFT);
++            return (mods & MOD_SHIFT ? BM_KEY_SHIFT_PAGE_UP : BM_KEY_PAGE_UP);
+ 
+         case XKB_KEY_Right:
+-            return (mods & MOD_SHIFT ? BM_KEY_DOWN : BM_KEY_RIGHT);
++            return (mods & MOD_SHIFT ? BM_KEY_SHIFT_PAGE_DOWN : BM_KEY_PAGE_DOWN);
+ 
+         case XKB_KEY_Home:
+             return BM_KEY_HOME;
