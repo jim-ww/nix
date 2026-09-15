@@ -193,7 +193,7 @@ let
       if vol=$(${lib.getExe pkgs.pamixer} --get-volume 2>/dev/null) && [ -n "$vol" ]; then
         mute=$(${lib.getExe pkgs.pamixer} --get-mute 2>/dev/null)
         if [ "$mute" = "true" ]; then icon=$'\uf026'; label="mute"; else icon=$'\uf028'; label="''${vol}%"; fi
-        text="^lm(${lib.getExe pkgs.pamixer} -t)^us(${lib.getExe pkgs.pamixer} -i 5)^ds(${lib.getExe pkgs.pamixer} -d 5)$icon $label^ds()^us()^lm()"
+        text="^lm(${lib.getExe pkgs.pamixer} -t)^rm(${term} -e ${lib.getExe pkgs.pulsemixer})^us(${lib.getExe pkgs.pamixer} -i 5)^ds(${lib.getExe pkgs.pamixer} -d 5)$icon $label^ds()^us()^rm()^lm()"
       fi
       printf 'audio\t%s\n' "$text" >&3
     }
@@ -810,6 +810,7 @@ in
         swaybg
         brightnessctl
         pamixer
+        pulsemixer
         dwlbPatched
       ];
 
