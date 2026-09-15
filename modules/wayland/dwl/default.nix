@@ -142,8 +142,11 @@ let
 
     update_mpd() {
       local full song state symbol text=""
-      full=$(${lib.getExe pkgs.mpc} -f '%artist% - %title%' status 2>/dev/null)
+      full=$(${lib.getExe pkgs.mpc} -f '[%artist% - %title%]|[FILE:%file%]' status 2>/dev/null)
       song=$(printf '%s\n' "$full" | sed -n '1p')
+      case "$song" in
+        FILE:*) song="''${song#FILE:}"; song="''${song##*/}" ;;
+      esac
       if [ -n "$song" ]; then
         state=$(printf '%s\n' "$full" | sed -n '2{s/.*\[\([a-z]*\)\].*/\1/p}')
         case "$state" in
