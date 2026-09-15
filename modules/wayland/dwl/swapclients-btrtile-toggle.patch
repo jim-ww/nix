@@ -1,0 +1,18 @@
+--- a/btrtile.c	2026-09-15 15:57:50.836345211 +0200
++++ b/btrtile.c	2026-09-15 15:57:50.872840134 +0200
+@@ -527,6 +527,15 @@
+ 			target_node->client = tmp;
+ 			arrange(selmon);
+ 		}
++		return;
++	}
++
++	/* No client in that direction: toggle the orientation of the focused
++	 * client's nearest split instead of doing nothing. */
++	sel_node = find_client_node(selmon->root, sel);
++	if (sel_node && sel_node->split_node) {
++		sel_node->split_node->is_split_vertically = !sel_node->split_node->is_split_vertically;
++		arrange(selmon);
+ 	}
+ }
+ 
