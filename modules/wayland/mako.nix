@@ -6,7 +6,7 @@
       border-radius = 7;
       padding = "10";
       margin = "5";
-      default-timeout = 3500;
+      default-timeout = 6500;
       ignore-timeout = false;
       icons = true;
       on-notify = "exec ${pkgs.libcanberra-gtk3}/bin/canberra-gtk-play -i message -V 15";
