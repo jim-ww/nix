@@ -442,6 +442,7 @@ in
   environment.loginShellInit = ''
     if [[ "$(tty)" == /dev/tty1 ]]; then
       for f in /etc/profile.d/*.sh; do
+        [ -e "$f" ] || continue
         . "$f"
       done
 

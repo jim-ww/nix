@@ -2,7 +2,7 @@
 
   environment.loginShellInit = ''
     if [[ "$(tty)" == /dev/tty1 ]]; then
-      for f in /etc/profile.d/*.sh; do . "$f"; done
+      for f in /etc/profile.d/*.sh; do [ -e "$f" ] && . "$f"; done
       exec sway
     fi
   '';
