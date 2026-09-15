@@ -141,9 +141,11 @@ let
     }
 
     update_mpd() {
-      local song state symbol text=""
-      if song=$(${lib.getExe pkgs.mpc} current -f '%artist% - %title%' 2>/dev/null) && [ -n "$song" ]; then
-        state=$(${lib.getExe pkgs.mpc} status 2>/dev/null | sed -n '2{s/.*\[\([a-z]*\)\].*/\1/p}')
+      local full song state symbol text=""
+      full=$(${lib.getExe pkgs.mpc} -f '%artist% - %title%' status 2>/dev/null)
+      song=$(printf '%s\n' "$full" | sed -n '1p')
+      if [ -n "$song" ]; then
+        state=$(printf '%s\n' "$full" | sed -n '2{s/.*\[\([a-z]*\)\].*/\1/p}')
         case "$state" in
           playing) symbol=$'\uf04b' ;;
           paused) symbol=$'\uf04c' ;;
@@ -303,6 +305,19 @@ let
   screenOn = null;
   screenOff = null;
 
+  translatorScript = pkgs.writeShellScriptBin "dwl-translate" ''
+    text=$(${lib.getExe pkgs.bemenu} -p "translate:" < /dev/null)
+    [ -n "$text" ] || exit 0
+
+    result=$(gtr "$text" 2>/dev/null)
+    [ -n "$result" ] || exit 0
+
+    printf '%s' "$result" | ${lib.getExe' pkgs.wl-clipboard "wl-copy"}
+    ${lib.getExe' pkgs.libnotify "notify-send"} "translate" "$result"
+  '';
+
+  translator = [ (lib.getExe translatorScript) ];
+
   volumeUp = [
     "sh"
     "-c"
@@ -329,8 +344,6 @@ let
     "brightnessctl s 10%- | sed -n 's/.*(\\([0-9]*\\)%).*/\\1/p' > $XDG_RUNTIME_DIR/wob.sock"
   ];
 
-  translator = null;
-
   effects = true;
 
   layout = "btrtile";
@@ -345,6 +358,8 @@ let
     .${layout};
 
   base16 = config.lib.stylix.colors;
+
+  logoutCmd = ''touch "''${XDG_RUNTIME_DIR}/dwl-stop"; loginctl terminate-session "$XDG_SESSION_ID" 2>/dev/null; kill -TERM $PPID'';
 
   configH = ''
     #define COLOR(hex)    { ((hex >> 24) & 0xFF) / 255.0f, \
@@ -459,7 +474,7 @@ let
 
     static const Key keys[] = {
         { MODKEY,       XKB_KEY_c,          killclient,       {0} },
-        { MODKEY|SHIFT, XKB_KEY_m,          spawn,            CMD("sh", "-c", "touch \"''${XDG_RUNTIME_DIR}/dwl-stop\"; loginctl terminate-session \"$XDG_SESSION_ID\" 2>/dev/null; kill -TERM $PPID") },
+        { MODKEY|SHIFT, XKB_KEY_m,          spawn,            ${cCmd [ "sh" "-c" logoutCmd ]} },
         { MODKEY|SHIFT, XKB_KEY_r,          quit,             {0} },
         { MODKEY,       XKB_KEY_v,          togglefloating,   {0} },
         { MODKEY|SHIFT, XKB_KEY_f,          togglefullscreen, {0} },
@@ -564,7 +579,7 @@ let
         { MODKEY,       XKB_KEY_0, view, {.ui = ~0} },
         { MODKEY|SHIFT, XKB_KEY_0, tag,  {.ui = ~0} },
 
-        { CTRL|ALT, XKB_KEY_Terminate_Server, spawn, CMD("sh", "-c", "touch \"''${XDG_RUNTIME_DIR}/dwl-stop\"; loginctl terminate-session \"$XDG_SESSION_ID\" 2>/dev/null; kill -TERM $PPID") },
+        { CTRL|ALT, XKB_KEY_Terminate_Server, spawn, ${cCmd [ "sh" "-c" logoutCmd ]} },
 
     #define CHVT(n) { CTRL|ALT, XKB_KEY_XF86Switch_VT_##n, chvt, {.ui = (n)} }
         CHVT(1), CHVT(2), CHVT(3), CHVT(4), CHVT(5), CHVT(6),
@@ -580,6 +595,9 @@ let
 
   fcitx5 = config.i18n.inputMethod.package;
 
+  guardX = bin: cmd: "${pkgs.procps}/bin/pgrep -x ${bin} >/dev/null || ${cmd} &";
+  guardF = pattern: cmd: "${pkgs.procps}/bin/pgrep -f '${pattern}' >/dev/null || ${cmd} &";
+
   startup = pkgs.writeShellScript "dwl-startup" (
     lib.concatStringsSep "\n" [
       "exec >>\"\${XDG_RUNTIME_DIR:-/tmp}/dwl-startup.log\" 2>&1"
@@ -587,21 +605,20 @@ let
       "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE"
       "systemctl --user start dwl-session.target"
 
-      "${pkgs.procps}/bin/pgrep -x dwlb >/dev/null || ${lib.getExe pkgs.dwlb} -font \"monospace:size=11,Symbols Nerd Font Mono:size=11\" -ipc -custom-title -hide-vacant-tags -vertical-padding 0 -active-fg-color \"#${base16.base00}\" -active-bg-color \"#${base16.base0C}\" -occupied-fg-color \"#${base16.base05}\" -occupied-bg-color \"#${base16.base02}\" -inactive-fg-color \"#${base16.base04}\" -inactive-bg-color \"#${base16.base01}\" -urgent-fg-color \"#${base16.base00}\" -urgent-bg-color \"#${base16.base08}\" -middle-bg-color \"#${base16.base00}\" -middle-bg-color-selected \"#${base16.base01}\" &"
+      (guardX "dwlb" "${lib.getExe pkgs.dwlb} -font \"monospace:size=11,Symbols Nerd Font Mono:size=11\" -ipc -custom-title -hide-vacant-tags -vertical-padding 0 -active-fg-color \"#${base16.base00}\" -active-bg-color \"#${base16.base0C}\" -occupied-fg-color \"#${base16.base05}\" -occupied-bg-color \"#${base16.base02}\" -inactive-fg-color \"#${base16.base04}\" -inactive-bg-color \"#${base16.base01}\" -urgent-fg-color \"#${base16.base00}\" -urgent-bg-color \"#${base16.base08}\" -middle-bg-color \"#${base16.base00}\" -middle-bg-color-selected \"#${base16.base01}\"")
 
       "sleep 1"
 
-      "${pkgs.procps}/bin/pgrep -x mako >/dev/null || ${lib.getExe pkgs.mako} &"
-      "${pkgs.procps}/bin/pgrep -f dwl-wallpaper-daemon >/dev/null || ${lib.getExe wallpaperDaemon} &"
-
-      "${pkgs.procps}/bin/pgrep -x dwl-status >/dev/null || ${lib.getExe dwlStatus} &"
+      (guardX "mako" (lib.getExe pkgs.mako))
+      (guardF "dwl-wallpaper-daemon" (lib.getExe wallpaperDaemon))
+      (guardX "dwl-status" (lib.getExe dwlStatus))
 
       "cliphist wipe &"
-      "${pkgs.procps}/bin/pgrep -x keepassxc >/dev/null || ${lib.getExe pkgs.keepassxc} --minimized &"
-      "${pkgs.procps}/bin/pgrep -f '${lib.getExe pkgs.lf} -server' >/dev/null || ${lib.getExe pkgs.lf} -server &"
-      "${pkgs.procps}/bin/pgrep -x fcitx5 >/dev/null || ${lib.getExe' fcitx5 "fcitx5"} &"
-      "${pkgs.procps}/bin/pgrep -x wl-clip-persist >/dev/null || ${lib.getExe' pkgs.wl-clip-persist "wl-clip-persist"} --clipboard regular &"
-      "${pkgs.procps}/bin/pgrep -x polkit-mate-authentication-agent >/dev/null || ${pkgs.mate-polkit}/libexec/polkit-mate-authentication-agent-1 &"
+      (guardX "keepassxc" "${lib.getExe pkgs.keepassxc} --minimized")
+      (guardF "${lib.getExe pkgs.lf} -server" "${lib.getExe pkgs.lf} -server")
+      (guardX "fcitx5" (lib.getExe' fcitx5 "fcitx5"))
+      (guardX "wl-clip-persist" "${lib.getExe' pkgs.wl-clip-persist "wl-clip-persist"} --clipboard regular")
+      (guardX "polkit-mate-authentication-agent" "${pkgs.mate-polkit}/libexec/polkit-mate-authentication-agent-1")
     ]
   );
 
