@@ -4,7 +4,7 @@
     ./mako.nix
     ./swayidle.nix
     ./cliphist.nix
-    # ./bemenu.nix
+    ./bemenu.nix
     ./wob.nix
   ];
 }

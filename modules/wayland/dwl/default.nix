@@ -269,12 +269,21 @@ let
     exec ${lib.getExe wallpaperApply} "$pick"
   '';
 
-  calculator = [
-    term
-    shell
-    "-c"
-    "echo calc; exec ${lib.getExe pkgs.bc} -q"
-  ];
+  calculatorScript = pkgs.writeShellScriptBin "dwl-calculator" ''
+    expr=$(${lib.getExe pkgs.bemenu} -p "calc:" < /dev/null)
+    [ -n "$expr" ] || exit 0
+
+    if ! result=$(printf '%s\n' "$expr" | ${lib.getExe pkgs.bc} -lq 2>&1); then
+      ${lib.getExe' pkgs.libnotify "notify-send"} -u critical "calc failed" "$result"
+      exit 1
+    fi
+    [ -n "$result" ] || exit 0
+
+    printf '%s' "$result" | ${lib.getExe' pkgs.wl-clipboard "wl-copy"}
+    ${lib.getExe' pkgs.libnotify "notify-send"} "calc" "$expr = $result"
+  '';
+
+  calculator = [ (lib.getExe calculatorScript) ];
 
   launcher = pkgs.writeShellScriptBin "launcher" ''
     tmp=$(mktemp)
@@ -718,7 +727,6 @@ in
     extraSessionCommands = lib.concatStringsSep "\n" [
       "export XDG_CURRENT_DESKTOP=dwl"
       "export XDG_SESSION_TYPE=wayland"
-      "export BEMENU_OPTS=\"--center --width-factor 0.15 --line-height 30 --border 1 --border-radius 4 --ignorecase --list 15 --prompt 'run: ' \""
     ];
   };
 

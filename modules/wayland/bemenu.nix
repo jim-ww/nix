@@ -8,7 +8,7 @@
       border = 1;
       border-radius = 4;
       ignorecase = true;
-      list = 10;
+      list = 15;
       prompt = "";
     };
   };
