@@ -144,6 +144,7 @@ in
       "<c-f>" = ''$lf -remote "send $id select \"$(fzf)\""'';
       "<tab>" = "!du -sh";
       "<enter>" = "open";
+      "<s-enter>" = "open-detached";
       "<esc>" = ":unselect; clear";
       "." = "set hidden!";
       R = "reload && redraw";
@@ -153,8 +154,7 @@ in
       copy-file = ''
         ''${{
           f_abs="$(realpath "$f")"
-          uri="file://$(printf '%s' "$f_abs" | jq -sRr @uri)"
-          printf 'copy\n%s\n' "$uri" | ${lib.getExe' pkgs.wl-clipboard "wl-copy"} -t x-special/gnome-copied-files
+          uri="file://$(printf '%s' "$f_abs" | jq -sRr 'split("/") | map(@uri) | join("/")')"
           printf '%s\r\n' "$uri" | ${lib.getExe' pkgs.wl-clipboard "wl-copy"} -t text/uri-list
         }}'';
       on-init = "";
@@ -172,6 +172,15 @@ in
           case "$(file -Lb --mime-type -- "$f")" in
             text/* | application/json | application/x-subrip | inode/x-empty)
               $EDITOR "$f"
+              ;;
+            image/gif | image/webp | video/* | audio/*)
+              exec ${lib.getExe pkgs.mpv} "$f"
+              ;;
+            image/*)
+              exec ${lib.getExe pkgs.imv} "$f"
+              ;;
+            application/pdf | application/epub+zip | application/vnd.comicbook+zip)
+              exec ${lib.getExe pkgs.zathura} "$f"
               ;;
             application/zip | application/x-zip* | application/x-tar | application/gzip | application/x-gzip | application/x-bzip2 | application/x-bzip | application/x-xz | application/x-7z-compressed | application/vnd.rar | application/x-rar-compressed | application/x-lzma | application/x-compress)
               mnt="$(dirname -- "$f")/.$(basename -- "$f").lfmount"
@@ -199,6 +208,27 @@ in
               ;;
             *)
               xdg-open "$f" > /dev/null 2>&1 &
+              ;;
+          esac
+        }}'';
+
+      open-detached = ''
+        ''${{
+          case "$(file -Lb --mime-type -- "$f")" in
+            image/gif | image/webp | video/* | audio/*)
+              setsid -f ${lib.getExe pkgs.mpv} "$f" </dev/null >/dev/null 2>&1 &
+              disown
+              ;;
+            image/*)
+              setsid -f ${lib.getExe pkgs.imv} "$f" </dev/null >/dev/null 2>&1 &
+              disown
+              ;;
+            application/pdf | application/epub+zip | application/vnd.comicbook+zip)
+              setsid -f ${lib.getExe pkgs.zathura} "$f" </dev/null >/dev/null 2>&1 &
+              disown
+              ;;
+            *)
+              lf -remote "send $id open"
               ;;
           esac
         }}'';
