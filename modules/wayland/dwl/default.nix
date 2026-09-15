@@ -99,24 +99,28 @@ let
     "cd ${documents} && exec ${config.editor} ."
   ];
 
-  wallpaperApply = pkgs.writeShellScriptBin "dwl-wallpaper-apply" ''
+  wallpaperApply = pkgs.writeShellScriptBin "wl-wallpaper-apply" ''
     [ -n "$1" ] && [ -f "$1" ] || exit 0
 
     # the keybinds and the autostart daemon can all call this independently;
     # without a lock, two concurrent kill+spawn cycles can interleave and
     # leave more than one swaybg alive.
-    lock="''${XDG_RUNTIME_DIR:-/tmp}/dwl-wallpaper.lock"
+    lock="''${XDG_RUNTIME_DIR:-/tmp}/wl-wallpaper.lock"
     exec 9>"$lock"
     ${lib.getExe' pkgs.util-linux "flock"} -x 9
 
     ${pkgs.procps}/bin/pkill -x swaybg
-    while ${pkgs.procps}/bin/pgrep -x swaybg >/dev/null; do sleep 0.05; done
+    for _ in $(seq 1 40); do
+      ${pkgs.procps}/bin/pgrep -x swaybg >/dev/null || break
+      sleep 0.05
+    done
+    ${pkgs.procps}/bin/pkill -9 -x swaybg 2>/dev/null
 
     ${lib.getExe pkgs.swaybg} -i "$1" -m fill &
     disown
   '';
 
-  wallpaperSet = pkgs.writeShellScriptBin "dwl-wallpaper-set" ''
+  wallpaperSet = pkgs.writeShellScriptBin "wl-wallpaper-set" ''
     dir="${config.flakeDir}/wallpapers"
     fallback="${config.flakeDir}/wallpaper"
 
@@ -131,25 +135,29 @@ let
     exec ${lib.getExe wallpaperApply} "$pick"
   '';
 
-  wallpaper = pkgs.writeShellScriptBin "dwl-wallpaper" ''
+  wallpaper = pkgs.writeShellScriptBin "wl-wallpaper" ''
     exec ${lib.getExe wallpaperSet}
   '';
 
-  wallpaperDaemon = pkgs.writeShellScriptBin "dwl-wallpaper-daemon" ''
+  wallpaperDaemon = pkgs.writeShellScriptBin "wl-wallpaper-daemon" ''
+    lock="''${XDG_RUNTIME_DIR:-/tmp}/wl-wallpaper-daemon.lock"
+    exec 9>"$lock"
+    ${lib.getExe' pkgs.util-linux "flock"} -n 9 || exit 0
+
     while true; do
       ${lib.getExe wallpaperSet}
       sleep 1800
     done
   '';
 
-  dwlStatus = pkgs.writeShellScriptBin "dwl-status" ''
+  dwlStatus = pkgs.writeShellScriptBin "wl-status" ''
     set -u
 
-    lock="''${XDG_RUNTIME_DIR:-/tmp}/dwl-status.lock"
+    lock="''${XDG_RUNTIME_DIR:-/tmp}/wl-status.lock"
     exec 4>"$lock"
     ${lib.getExe' pkgs.util-linux "flock"} -n 4 || exit 0
 
-    fifo="''${XDG_RUNTIME_DIR:-/tmp}/dwl-status.fifo"
+    fifo="''${XDG_RUNTIME_DIR:-/tmp}/wl-status.fifo"
     rm -f "$fifo"
     mkfifo "$fifo"
     exec 3<>"$fifo"
@@ -176,7 +184,7 @@ let
       full=$(${lib.getExe pkgs.mpc} -f '[%artist% - %title%]|[FILE:%file%]' status 2>/dev/null)
       song=$(printf '%s\n' "$full" | sed -n '1p')
       case "$song" in
-        FILE:*) song="''${song#FILE:}"; song="''${song##*/}" ;;
+        FILE:*) song="''${song#FILE:}"; song="''${song##*/}"; song="''${song%.*}" ;;
       esac
       if [ -n "$song" ]; then
         state=$(printf '%s\n' "$full" | sed -n '2{s/.*\[\([a-z]*\)\].*/\1/p}')
@@ -272,7 +280,7 @@ let
     done
   '';
 
-  wallpaper-selector = pkgs.writeShellScriptBin "dwl-wallpaper-selector" ''
+  wallpaper-selector = pkgs.writeShellScriptBin "wl-wallpaper-selector" ''
     dir="${config.flakeDir}/wallpapers"
     [ -d "$dir" ] || exit 0
 
@@ -290,7 +298,7 @@ let
     exec ${lib.getExe wallpaperApply} "$pick"
   '';
 
-  calculatorScript = pkgs.writeShellScriptBin "dwl-calculator" ''
+  calculatorScript = pkgs.writeShellScriptBin "wl-calculator" ''
     expr=$(${lib.getExe bemenuPatched} -p "calc:" < /dev/null)
     [ -n "$expr" ] || exit 0
 
@@ -367,7 +375,7 @@ let
   screenOn = null;
   screenOff = null;
 
-  translatorScript = pkgs.writeShellScriptBin "dwl-translate" ''
+  translatorScript = pkgs.writeShellScriptBin "wl-translate" ''
     text=$(${lib.getExe bemenuPatched} -p "translate:" < /dev/null)
     [ -n "$text" ] || exit 0
 
@@ -667,6 +675,12 @@ let
     lib.concatStringsSep "\n" [
       "exec >>\"\${XDG_RUNTIME_DIR:-/tmp}/dwl-startup.log\" 2>&1"
       "set -x"
+
+      # dwl re-spawns this on every restart (super+shift+r); make sure a
+      # previous instance that hasn't exited yet can't overlap with it.
+      "lock=\"\${XDG_RUNTIME_DIR:-/tmp}/dwl-startup.lock\""
+      "exec 8>\"$lock\""
+      "${lib.getExe' pkgs.util-linux "flock"} -n 8 || exit 0"
       "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE"
       "systemctl --user start --no-block graphical-session.target"
 
@@ -675,8 +689,8 @@ let
       "sleep 1"
 
       (guardX "mako" (lib.getExe pkgs.mako))
-      (guardF "dwl-wallpaper-daemon" (lib.getExe wallpaperDaemon))
-      (guardX "dwl-status" (lib.getExe dwlStatus))
+      (guardF "wl-wallpaper-daemon" (lib.getExe wallpaperDaemon))
+      (guardX "wl-status" (lib.getExe dwlStatus))
 
       "cliphist wipe &"
       (guardX "keepassxc" "${lib.getExe pkgs.keepassxc} --minimized")
