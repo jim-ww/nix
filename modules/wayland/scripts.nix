@@ -51,7 +51,7 @@ rec {
   clipboard = [
     shell
     "-c"
-    "cliphist list | bemenu | cliphist decode | ${lib.getExe' pkgs.wl-clipboard "wl-copy"}"
+    "${lib.getExe pkgs.cliphist} list | ${lib.getExe bemenuPatched} | ${lib.getExe pkgs.cliphist} decode | ${lib.getExe' pkgs.wl-clipboard "wl-copy"}"
   ];
 
   kaomojiRepo = pkgs.fetchFromGitHub {
@@ -305,7 +305,7 @@ rec {
           *) symbol=$'\uf04d' ;;
         esac
         [ "''${#song}" -gt 40 ] && song="''${song:0:39}…"
-        text="^lm(${lib.getExe pkgs.playerctl} -p mpd play-pause)^mm(${lib.getExe pkgs.playerctl} -p mpd previous)^rm(${lib.getExe pkgs.playerctl} -p mpd next)$symbol $song^rm()^mm()^lm()"
+        text="^lm(${lib.getExe pkgs.mpc} toggle)^mm(${lib.getExe pkgs.mpc} prev)^rm(${lib.getExe pkgs.mpc} next)$symbol $song^rm()^mm()^lm()"
       fi
       printf 'mpd\t%s\n' "$text" >&3
     }
@@ -368,6 +368,9 @@ rec {
         # show whenever not sitting fully-charged on the charger
         if [ "$status" != "Charging" ] && [ "$status" != "Full" ] || [ "''${capacity:-100}" -lt 100 ]; then
           text="$icon ''${capacity}%"
+          if [ "$status" = "Charging" ] && [ "''${capacity:-100}" -lt 100 ]; then
+            text="$'\uf0e7' $text"
+          fi
         fi
       fi
       printf 'battery\t%s\n' "$text" >&3
@@ -392,17 +395,22 @@ rec {
   '';
 
   calculator = pkgs.writeShellScriptBin "wl-calculator" ''
-    expr=$(${lib.getExe bemenuPatched} -p "calc:" < /dev/null)
-    [ -n "$expr" ] || exit 0
+    history=""
+    while true; do
+      expr=$(printf '%s' "$history" | ${lib.getExe bemenuPatched} -p "calc:")
+      [ -n "$expr" ] || exit 0
 
-    if ! result=$(printf '%s\n' "$expr" | ${lib.getExe pkgs.bc} -lq 2>&1); then
-      printf '%s\n' "$result" | ${lib.getExe bemenuPatched} -p "calc failed:" > /dev/null
-      exit 1
-    fi
-    [ -n "$result" ] || exit 0
+      if ! result=$(printf '%s\n' "$expr" | ${lib.getExe pkgs.bc} -lq 2>&1); then
+        history="$expr = error: $result
+$history"
+        continue
+      fi
+      [ -n "$result" ] || continue
 
-    printf '%s' "$result" | ${lib.getExe' pkgs.wl-clipboard "wl-copy"}
-    printf '%s\n' "$expr = $result" | ${lib.getExe bemenuPatched} -p "calc:" > /dev/null
+      printf '%s' "$result" | ${lib.getExe' pkgs.wl-clipboard "wl-copy"}
+      history="$expr = $result
+$history"
+    done
   '';
 
   translator = pkgs.writeShellScriptBin "wl-translate" ''

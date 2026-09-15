@@ -17,14 +17,19 @@ let
   # alongside the other shared wayland modules instead of here, so they
   # can be reused if this ever switches away from dwl.
   wl = import ../scripts.nix {
-    inherit pkgs lib term home documents;
+    inherit
+      pkgs
+      lib
+      term
+      home
+      documents
+      ;
     inherit (config) flakeDir;
     editor = config.editor;
     umountPersonal = config.shellAliases.umount-personal;
     base16 = config.lib.stylix.colors;
   };
   inherit (wl)
-    bemenuPatched
     dwlbPatched
     screenshot
     screenshotFull
@@ -182,7 +187,13 @@ let
 
     static const Key keys[] = {
         { MODKEY,       XKB_KEY_c,          killclient,       {0} },
-        { MODKEY|SHIFT, XKB_KEY_m,          spawn,            ${cCmd [ "sh" "-c" logoutCmd ]} },
+        { MODKEY|SHIFT, XKB_KEY_m,          spawn,            ${
+          cCmd [
+            "sh"
+            "-c"
+            logoutCmd
+          ]
+        } },
         { MODKEY|SHIFT, XKB_KEY_r,          quit,             {0} },
         { MODKEY,       XKB_KEY_v,          togglefloating,   {0} },
         { MODKEY|SHIFT, XKB_KEY_f,          togglefullscreen, {0} },
@@ -226,7 +237,9 @@ let
           ]
         } },
         { MODKEY|SHIFT, XKB_KEY_a,          spawn,            ${cCmd resourceMonitor} },
-        { MODKEY,       XKB_KEY_w,          spawn,            ${cCmd [ (lib.getExe wl.wallpaperSelector) ]} },
+        { MODKEY,       XKB_KEY_w,          spawn,            ${
+          cCmd [ (lib.getExe wl.wallpaperSelector) ]
+        } },
         { MODKEY|SHIFT, XKB_KEY_w,          spawn,            ${cCmd [ (lib.getExe wl.wallpaper) ]} },
 
         { MODKEY,       XKB_KEY_b,          spawn,            ${cCmd passwords} },
@@ -266,10 +279,10 @@ let
         { LOCKED, XKB_KEY_XF86AudioLowerVolume,  spawn,       ${cCmd volumeDown} },
         { LOCKED, XKB_KEY_XF86AudioMute,         spawn,       ${cCmd volumeMute} },
 
-        { LOCKED, XKB_KEY_XF86AudioPlay,         spawn,       CMD("playerctl", "-p", "mpd", "play-pause") },
-        { LOCKED, XKB_KEY_XF86AudioPause,        spawn,       CMD("playerctl", "-p", "mpd", "pause") },
-        { LOCKED, XKB_KEY_XF86AudioNext,         spawn,       CMD("playerctl", "-p", "mpd", "next") },
-        { LOCKED, XKB_KEY_XF86AudioPrev,         spawn,       CMD("playerctl", "-p", "mpd", "previous") },
+        { LOCKED, XKB_KEY_XF86AudioPlay,         spawn,       CMD("mpc", "toggle") },
+        { LOCKED, XKB_KEY_XF86AudioPause,        spawn,       CMD("mpc", "pause") },
+        { LOCKED, XKB_KEY_XF86AudioNext,         spawn,       CMD("mpc", "next") },
+        { LOCKED, XKB_KEY_XF86AudioPrev,         spawn,       CMD("mpc", "prev") },
 
         { LOCKED, XKB_KEY_XF86MonBrightnessUp,   spawn,       ${cCmd brightnessUp} },
         { LOCKED, XKB_KEY_XF86MonBrightnessDown, spawn,       ${cCmd brightnessDown} },
@@ -287,7 +300,13 @@ let
         { MODKEY,       XKB_KEY_0, view, {.ui = ~0} },
         { MODKEY|SHIFT, XKB_KEY_0, tag,  {.ui = ~0} },
 
-        { CTRL|ALT, XKB_KEY_Terminate_Server, spawn, ${cCmd [ "sh" "-c" logoutCmd ]} },
+        { CTRL|ALT, XKB_KEY_Terminate_Server, spawn, ${
+          cCmd [
+            "sh"
+            "-c"
+            logoutCmd
+          ]
+        } },
 
     #define CHVT(n) { CTRL|ALT, XKB_KEY_XF86Switch_VT_##n, chvt, {.ui = (n)} }
         CHVT(1), CHVT(2), CHVT(3), CHVT(4), CHVT(5), CHVT(6),
@@ -467,7 +486,7 @@ in
         wl-clip-persist
         wf-recorder
         libnotify
-        playerctl
+        mpc
         swaybg
         brightnessctl
         pamixer

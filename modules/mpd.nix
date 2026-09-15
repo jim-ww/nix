@@ -15,8 +15,6 @@
     '';
   };
 
-  services.mpdris2.enable = true;
-
   services.mpdscribble = {
     enable = true;
     endpoints."last.fm" = {
