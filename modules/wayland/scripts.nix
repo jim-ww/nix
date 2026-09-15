@@ -283,14 +283,23 @@ rec {
     }
 
     update_mpd() {
-      local full song state symbol text=""
+      local full state_line song state symbol text=""
       full=$(${lib.getExe pkgs.mpc} -f '[%artist% - %title%]|[FILE:%file%]' status 2>/dev/null)
-      song=$(printf '%s\n' "$full" | sed -n '1p')
+      # mpc only prints the song line when a track is actually loaded, so
+      # the [state] line isn't always on a fixed line number -- find it
+      # instead of assuming line 2 (otherwise, e.g. mid next/prev with no
+      # current track, we'd grab the volume/repeat/random line as "song").
+      state_line=$(printf '%s\n' "$full" | grep -n '^\[[a-z]*\]' | head -n1 | cut -d: -f1)
+      if [ -n "$state_line" ]; then
+        song=$(printf '%s\n' "$full" | sed -n "$((state_line - 1))p")
+      else
+        song=""
+      fi
       case "$song" in
         FILE:*) song="''${song#FILE:}"; song="''${song##*/}"; song="''${song%.*}" ;;
       esac
       if [ -n "$song" ]; then
-        state=$(printf '%s\n' "$full" | sed -n '2{s/.*\[\([a-z]*\)\].*/\1/p}')
+        state=$(printf '%s\n' "$full" | sed -n "''${state_line}{s/.*\[\([a-z]*\)\].*/\1/p}")
         case "$state" in
           playing) symbol=$'\uf04b' ;;
           paused) symbol=$'\uf04c' ;;
