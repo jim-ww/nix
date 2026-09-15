@@ -101,7 +101,17 @@ let
 
   wallpaperApply = pkgs.writeShellScriptBin "dwl-wallpaper-apply" ''
     [ -n "$1" ] && [ -f "$1" ] || exit 0
+
+    # the keybinds and the autostart daemon can all call this independently;
+    # without a lock, two concurrent kill+spawn cycles can interleave and
+    # leave more than one swaybg alive.
+    lock="''${XDG_RUNTIME_DIR:-/tmp}/dwl-wallpaper.lock"
+    exec 9>"$lock"
+    ${lib.getExe' pkgs.util-linux "flock"} -x 9
+
     ${pkgs.procps}/bin/pkill -x swaybg
+    while ${pkgs.procps}/bin/pgrep -x swaybg >/dev/null; do sleep 0.05; done
+
     ${lib.getExe pkgs.swaybg} -i "$1" -m fill &
     disown
   '';
