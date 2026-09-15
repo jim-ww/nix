@@ -147,8 +147,8 @@ in
         ''${{
           f_abs="$(realpath "$f")"
           uri="file://$(printf '%s' "$f_abs" | jq -sRr @uri)"
-          printf 'copy\n%s\n' "$uri" | $wl-copy -t x-special/gnome-copied-files
-          printf '%s\r\n' "$uri" | $wl-copy -t text/uri-list
+          printf 'copy\n%s\n' "$uri" | ${lib.getExe' pkgs.wl-clipboard "wl-copy"} -t x-special/gnome-copied-files
+          printf '%s\r\n' "$uri" | ${lib.getExe' pkgs.wl-clipboard "wl-copy"} -t text/uri-list
         }}'';
       on-init = "";
 
