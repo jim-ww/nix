@@ -209,7 +209,7 @@ let
 
     update_time() {
       local icon=$'\uf017'
-      printf 'time\t%s %s\n' "$icon" "$(${lib.getExe' pkgs.coreutils "date"} '+%a %Y-%m-%d %H:%M')" >&3
+      printf 'time\t%s %s\n' "$icon" "$(${lib.getExe' pkgs.coreutils "date"} '+%a %d %b %H:%M')" >&3
     }
 
     time_loop() {
