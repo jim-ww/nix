@@ -1,0 +1,25 @@
+--- a/dwl.c	2026-09-15 15:20:24.694049583 +0200
++++ b/dwl.c	2026-09-15 15:20:34.469126085 +0200
+@@ -1870,8 +1870,21 @@
+ 		}
+ 	}
+ 
+-	if (newsel)
++	if (newsel) {
+ 		focusclient(newsel, 1);
++		return;
++	}
++
++	/* No client in that direction: if we're on btrtile, toggle the
++	 * orientation of the focused client's nearest split instead of doing
++	 * nothing. */
++	if (selmon->lt[selmon->sellt]->arrange == btrtile) {
++		LayoutNode *node = find_client_node(selmon->root, sel);
++		if (node && node->split_node) {
++			node->split_node->is_split_vertically = !node->split_node->is_split_vertically;
++			apply_layout(selmon, selmon->root, selmon->w, 1);
++		}
++	}
+ }
+ 
+ void

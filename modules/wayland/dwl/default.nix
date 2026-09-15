@@ -707,6 +707,7 @@ let
         ./smartborders.patch
         ./togglenmaster.patch
         ./dragmfact.patch
+        ./focusdir-btrtile-toggle.patch
       ];
   });
 in
