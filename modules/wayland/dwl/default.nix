@@ -300,7 +300,9 @@ let
         [ -e "$f" ] || continue
         name=$(grep -m1 '^Name=' "$f" | cut -d= -f2-)
         exec_cmd=$(grep -m1 '^Exec=' "$f" | cut -d= -f2- | sed 's/ *%[fFuUdDnNickvm]//g')
-        [ -n "$name" ] && [ -n "$exec_cmd" ] && printf '%s|%s|%s\n' "$name" "$exec_cmd" "gui"
+        kind="gui"
+        [ "$(grep -m1 '^Terminal=' "$f" | cut -d= -f2-)" = "true" ] && kind="term"
+        [ -n "$name" ] && [ -n "$exec_cmd" ] && printf '%s|%s|%s\n' "$name" "$exec_cmd" "$kind"
       done
 
       compgen -c 2>/dev/null | sort -u | while read -r cmd; do
