@@ -369,7 +369,7 @@ rec {
         if [ "$status" != "Charging" ] && [ "$status" != "Full" ] || [ "''${capacity:-100}" -lt 100 ]; then
           text="$icon ''${capacity}%"
           if [ "$status" = "Charging" ] && [ "''${capacity:-100}" -lt 100 ]; then
-            text="$'\uf0e7' $text"
+            text=" $text"
           fi
         fi
       fi
