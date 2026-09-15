@@ -139,7 +139,7 @@ let
         local text="''${blocks[$name]:-}"
         [ -n "$text" ] || continue
         out+="''${sep}''${text}"
-        sep=" "
+        sep=" ^fg(${base16.base03})|^fg() "
       done
       ${lib.getExe pkgs.dwlb} -status all "$out"
     }
@@ -183,10 +183,16 @@ let
 
     audio_loop() {
       update_audio
-      ${pkgs.pulseaudio}/bin/pactl subscribe 2>/dev/null | while read -r line; do
-        case "$line" in
-          *sink*) update_audio ;;
-        esac
+      ${pkgs.pulseaudio}/bin/pactl subscribe 2>/dev/null | while true; do
+        # also poll every few seconds in case an event is missed or its
+        # format doesn't match, e.g. keyboard mute/volume keys
+        if read -r -t 3 line; then
+          case "$line" in
+            *sink*) update_audio ;;
+          esac
+        else
+          update_audio
+        fi
       done
     }
 
@@ -203,11 +209,22 @@ let
     }
 
     update_battery() {
-      local bat status capacity text="" icon=$'\uf240'
+      local bat status capacity text="" icon
       bat=$(${lib.getExe' pkgs.findutils "find"} /sys/class/power_supply -maxdepth 1 -name 'BAT*' 2>/dev/null | head -n1)
       if [ -n "$bat" ]; then
         status=$(${lib.getExe' pkgs.coreutils "cat"} "$bat/status" 2>/dev/null)
         capacity=$(${lib.getExe' pkgs.coreutils "cat"} "$bat/capacity" 2>/dev/null)
+        if [ "''${capacity:-100}" -ge 80 ]; then
+          icon=$'\uf240'
+        elif [ "''${capacity:-100}" -ge 60 ]; then
+          icon=$'\uf241'
+        elif [ "''${capacity:-100}" -ge 40 ]; then
+          icon=$'\uf242'
+        elif [ "''${capacity:-100}" -ge 20 ]; then
+          icon=$'\uf243'
+        else
+          icon=$'\uf244'
+        fi
         # show whenever not sitting fully-charged on the charger
         if [ "$status" != "Charging" ] && [ "$status" != "Full" ] || [ "''${capacity:-100}" -lt 100 ]; then
           text="$icon ''${capacity}%"
