@@ -1,5 +1,6 @@
 { pkgs, ... }:
 {
+  stylix.targets.bemenu.enable = false;
   programs.bemenu = {
     enable = true;
 
