@@ -9,181 +9,48 @@ let
   documents = "${home}/Documents";
 
   term = "foot";
-  shell = "${pkgs.busybox}/bin/sh";
 
   cCmd = args: "CMD(${lib.concatMapStringsSep ", " builtins.toJSON args})";
 
-  # wallpaper/status-bar/calc/translate helper scripts aren't dwl-specific,
-  # so they live alongside the other shared wayland modules.
+  # all WM-agnostic helper scripts and spawn actions (wallpaper tools,
+  # status bar, calculator/translator, screenshot, launcher, etc.) live
+  # alongside the other shared wayland modules instead of here, so they
+  # can be reused if this ever switches away from dwl.
   wl = import ../scripts.nix {
-    inherit pkgs lib term;
+    inherit pkgs lib term home documents;
     inherit (config) flakeDir;
+    editor = config.editor;
+    umountPersonal = config.shellAliases.umount-personal;
     base16 = config.lib.stylix.colors;
   };
-  inherit (wl) bemenuPatched dwlbPatched;
-
-  screenshotTo = ''"${home}/Pictures/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png"'';
-  screenshotPipe = "${pkgs.coreutils}/bin/tee ${screenshotTo} | ${lib.getExe' pkgs.wl-clipboard "wl-copy"} -t image/png";
-
-  screenshot = [
-    shell
-    "-c"
-    ''geometry="$(${lib.getExe pkgs.slurp})" || exit 1; ${lib.getExe pkgs.grim} -g "$geometry" - | ${screenshotPipe}''
-  ];
-
-  screenshotFull = [
-    shell
-    "-c"
-    "${lib.getExe pkgs.grim} - | ${screenshotPipe}"
-  ];
-
-  fileManager = [
-    term
-    (lib.getExe pkgs.lf)
-  ];
-
-  resourceMonitor = [
-    term
-    "btop"
-  ];
-
-  passwords = [
-    "keepassxc"
-    "${documents}/.vault.kdbx"
-  ];
-
-  bookmarks = [
-    shell
-    "-c"
-    "${lib.getExe pkgs.yq-go} -r '.[]' /run/secrets/bookmarks | ${lib.getExe bemenuPatched} -i -p bookmarks | ${lib.getExe' pkgs.wl-clipboard "wl-copy"}"
-  ];
-
-  clipboard = [
-    shell
-    "-c"
-    "cliphist list | bemenu | cliphist decode | ${lib.getExe' pkgs.wl-clipboard "wl-copy"}"
-  ];
-
-  kaomojiRepo = pkgs.fetchFromGitHub {
-    owner = "jim-ww";
-    repo = "kaomoji-csv";
-    rev = "9c7d5bbcc968cb9f2d077ed8dfeeabbd0b3b4c1a";
-    hash = "sha256-TnFvZWURAjUbtz8YBoaLsNYHLinC+urR/N2xPyJbLLM=";
-  };
-
-  kaomojiData = "${kaomojiRepo}/kaomoji.csv";
-
-  kaomoji = pkgs.writeShellScriptBin "kaomoji" ''
-    ${lib.getExe bemenuPatched} -i -p kaomoji --width-factor 0.4 < ${kaomojiData} |
-      awk '{print $1}' |
-      sed 's/\\xc2\\xa0/ /g' |
-      ${lib.getExe' pkgs.wl-clipboard "wl-copy"}
-  '';
-
-  notes = [
-    term
-    "sh"
-    "-c"
-    "cd ${documents} && exec ${config.editor} TODO.md"
-  ];
-
-  notesAll = [
-    term
-    "sh"
-    "-c"
-    "cd ${documents} && exec ${config.editor} ."
-  ];
+  inherit (wl)
+    bemenuPatched
+    dwlbPatched
+    screenshot
+    screenshotFull
+    fileManager
+    resourceMonitor
+    passwords
+    bookmarks
+    clipboard
+    kaomoji
+    notes
+    notesAll
+    launcher
+    audioOutputSelect
+    screenlock
+    volumeUp
+    volumeDown
+    volumeMute
+    brightnessUp
+    brightnessDown
+    ;
 
   calculator = [ (lib.getExe wl.calculator) ];
-
-  launcher = pkgs.writeShellScriptBin "launcher" ''
-    tmp=$(mktemp)
-    trap 'rm -f "$tmp"' EXIT
-
-    # Format: <display>|<command>|<kind>
-    # kind is "gui" (run directly) or "term" (run inside foot)
-
-    {
-      printf '%s|%s|%s\n' "Terminal"     "${term}"                                                        "gui"
-
-      for f in /run/current-system/sw/share/applications/*.desktop \
-               "$HOME"/.nix-profile/share/applications/*.desktop; do
-        [ -e "$f" ] || continue
-        name=$(grep -m1 '^Name=' "$f" | cut -d= -f2-)
-        exec_cmd=$(grep -m1 '^Exec=' "$f" | cut -d= -f2- | sed 's/ *%[fFuUdDnNickvm]//g')
-        kind="gui"
-        [ "$(grep -m1 '^Terminal=' "$f" | cut -d= -f2-)" = "true" ] && kind="term"
-        [ -n "$name" ] && [ -n "$exec_cmd" ] && printf '%s|%s|%s\n' "$name" "$exec_cmd" "$kind"
-      done
-
-      compgen -c 2>/dev/null | sort -u | while read -r cmd; do
-        [ -n "$cmd" ] && printf '%s|%s|%s\n' "$cmd" "$cmd" "term"
-      done
-    } > "$tmp"
-
-    choice=$(cut -d'|' -f1 "$tmp" | ${lib.getExe bemenuPatched} -i -p run --list 15)
-    [ -n "$choice" ] || exit 0
-
-    line=$(awk -F'|' -v choice="$choice" '$1 == choice { print; exit }' "$tmp")
-
-    if [ -n "$line" ]; then
-      cmd=$(printf '%s\n' "$line" | cut -d'|' -f2)
-      kind=$(printf '%s\n' "$line" | cut -d'|' -f3)
-    else
-      # Not in the list — treat whatever the user typed as a raw shell command.
-      cmd="$choice"
-      kind="term"
-    fi
-
-    if [ "$kind" = "gui" ]; then
-      exec sh -c "$cmd"
-    else
-      exec ${term} -e sh -c "$cmd"
-    fi
-  '';
-
-  audioOutputSelect = [
-    shell
-    "-c"
-    "choice=$(wpctl status | sed -n '/Sinks:/,/Sources:/p' | grep -E '[0-9]+\\.' | ${lib.getExe bemenuPatched} -p output)"
-  ];
-
-  screenlock = [
-    shell
-    "-c"
-    "${lib.getExe pkgs.swaylock} -efkli ${config.flakeDir}/wallpaper && ${config.shellAliases.umount-personal}"
-  ];
+  translator = [ (lib.getExe wl.translator) ];
 
   screenOn = null;
   screenOff = null;
-
-  translator = [ (lib.getExe wl.translator) ];
-
-  volumeUp = [
-    "sh"
-    "-c"
-    "pamixer -i 5 && pamixer --get-volume > $XDG_RUNTIME_DIR/wob.sock"
-  ];
-  volumeDown = [
-    "sh"
-    "-c"
-    "pamixer -d 5 && pamixer --get-volume > $XDG_RUNTIME_DIR/wob.sock"
-  ];
-  volumeMute = [
-    "sh"
-    "-c"
-    "pamixer -t && (pamixer --get-mute >/dev/null && echo 0 || pamixer --get-volume) > $XDG_RUNTIME_DIR/wob.sock"
-  ];
-  brightnessUp = [
-    "sh"
-    "-c"
-    "brightnessctl s +10% | sed -n 's/.*(\\([0-9]*\\)%).*/\\1/p' > $XDG_RUNTIME_DIR/wob.sock"
-  ];
-  brightnessDown = [
-    "sh"
-    "-c"
-    "brightnessctl s 10%- | sed -n 's/.*(\\([0-9]*\\)%).*/\\1/p' > $XDG_RUNTIME_DIR/wob.sock"
-  ];
 
   effects = true;
 
