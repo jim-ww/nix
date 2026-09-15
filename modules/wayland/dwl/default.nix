@@ -331,7 +331,7 @@ let
   volumeMute = [
     "sh"
     "-c"
-    "pamixer -t && (pamixer --get-mute && echo 0 || pamixer --get-volume) > $XDG_RUNTIME_DIR/wob.sock"
+    "pamixer -t && (pamixer --get-mute >/dev/null && echo 0 || pamixer --get-volume) > $XDG_RUNTIME_DIR/wob.sock"
   ];
   brightnessUp = [
     "sh"
