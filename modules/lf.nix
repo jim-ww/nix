@@ -83,6 +83,10 @@ in
         command = "${lib.getExe pkgs.chafa} --clear -f sixel -s %pistol-extra0%x%pistol-extra1% --animate off --polite on --scale max %pistol-filename%";
       }
       {
+        mime = "application/(zip|x-zip.*|x-tar|gzip|x-gzip|x-bzip2?|x-xz|x-7z-compressed|vnd\\.rar|x-rar-compressed|x-lzma|x-compress)";
+        command = "${lib.getExe pkgs._7zz-rar} l %pistol-filename%";
+      }
+      {
         mime = "video/.*";
         command = "${pkgs.writeShellScript "pistol-video" ''
           thumb=$(mktemp /tmp/lf-thumb.XXXXXX.jpg)
@@ -177,7 +181,17 @@ in
               fi
               if ! mountpoint -q "$mnt"; then
                 if ! fuse-archive "$f" "$mnt" 2>>"''${XDG_RUNTIME_DIR:-/tmp}/lf-archive-mount.log"; then
-                  xdg-open "$f" > /dev/null 2>&1 &
+                  rmdir "$mnt" 2>/dev/null
+                  dest="''${XDG_RUNTIME_DIR:-/tmp}/lf-archive-extract/$(realpath -- "$f" | md5sum | cut -d' ' -f1)"
+                  mkdir -p "$dest"
+                  case "$f" in
+                    *.tar.gz | *.tgz) ${lib.getExe pkgs.gnutar} -xzf "$f" -C "$dest" ;;
+                    *.tar.bz2 | *.tbz2) ${lib.getExe pkgs.gnutar} -xjf "$f" -C "$dest" ;;
+                    *.tar.xz | *.txz) ${lib.getExe pkgs.gnutar} -xJf "$f" -C "$dest" ;;
+                    *.tar) ${lib.getExe pkgs.gnutar} -xf "$f" -C "$dest" ;;
+                    *) ${lib.getExe pkgs._7zz-rar} x -o"$dest" "$f" ;;
+                  esac
+                  lf -remote "send $id cd \"$dest\""
                   exit 0
                 fi
               fi
