@@ -14,6 +14,9 @@ let
     fi
     [ "$#" -eq 0 ] && exit 0
     if [ "$yes" -ne 1 ]; then
+      if [ ! -t 0 ]; then
+        exit 0
+      fi
       read -r -p "trash $# item(s)? [y/N] " ans
       case "$ans" in
         y | Y) ;;
