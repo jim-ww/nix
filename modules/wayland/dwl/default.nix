@@ -337,7 +337,9 @@ let
       "exec 8>\"$lock\""
       "${lib.getExe' pkgs.util-linux "flock"} -n 8 || exit 0"
       "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE"
-      "systemctl --user start --no-block graphical-session.target"
+      # graphical-session.target refuses manual start; bind a session target
+      # to it so starting that pulls it in instead.
+      "systemctl --user start --no-block dwl-session.target"
 
       (guardX "dwlb" "${lib.getExe dwlbPatched} -font \"monospace,Symbols Nerd Font Mono:size=11\" -ipc -custom-title -hide-vacant-tags -vertical-padding 0 -active-fg-color \"#${base16.base00}\" -active-bg-color \"#${base16.base0C}\" -occupied-fg-color \"#${base16.base05}\" -occupied-bg-color \"#${base16.base02}\" -inactive-fg-color \"#${base16.base04}\" -inactive-bg-color \"#${base16.base01}\" -urgent-fg-color \"#${base16.base00}\" -urgent-bg-color \"#${base16.base08}\" -middle-bg-color \"#${base16.base00}\" -middle-bg-color-selected \"#${base16.base01}\"")
 
@@ -452,7 +454,7 @@ in
 
     if [ -e "$stopfile" ]; then
       rm -f "$stopfile"
-      systemctl --user stop graphical-session.target
+      systemctl --user stop dwl-session.target
     else
       exec /etc/xdg/dwl-session
     fi
@@ -480,6 +482,14 @@ in
   hm =
     { pkgs, lib, ... }:
     {
+      systemd.user.targets."dwl-session" = {
+        Unit = {
+          Description = "dwl compositor session";
+          BindsTo = [ "graphical-session.target" ];
+          Before = [ "graphical-session.target" ];
+        };
+      };
+
       home.packages = with pkgs; [
         xdg-utils
         wl-clipboard
