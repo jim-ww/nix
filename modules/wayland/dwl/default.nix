@@ -285,13 +285,13 @@ let
     [ -n "$expr" ] || exit 0
 
     if ! result=$(printf '%s\n' "$expr" | ${lib.getExe pkgs.bc} -lq 2>&1); then
-      ${lib.getExe' pkgs.libnotify "notify-send"} -u critical "calc failed" "$result"
+      printf '%s\n' "$result" | ${lib.getExe bemenuPatched} -p "calc failed:" > /dev/null
       exit 1
     fi
     [ -n "$result" ] || exit 0
 
     printf '%s' "$result" | ${lib.getExe' pkgs.wl-clipboard "wl-copy"}
-    ${lib.getExe' pkgs.libnotify "notify-send"} "calc" "$expr = $result"
+    printf '%s\n' "$expr = $result" | ${lib.getExe bemenuPatched} -p "calc:" > /dev/null
   '';
 
   calculator = [ (lib.getExe calculatorScript) ];
@@ -362,12 +362,12 @@ let
     [ -n "$text" ] || exit 0
 
     if ! result=$(gtr "$text" 2>&1); then
-      ${lib.getExe' pkgs.libnotify "notify-send"} -u critical "translate failed" "$result"
+      printf '%s\n' "$result" | ${lib.getExe bemenuPatched} -p "translate failed:" > /dev/null
       exit 1
     fi
 
     printf '%s' "$result" | ${lib.getExe' pkgs.wl-clipboard "wl-copy"}
-    ${lib.getExe' pkgs.libnotify "notify-send"} "translate" "$result"
+    printf '%s\n' "$result" | ${lib.getExe bemenuPatched} -p "translate:" > /dev/null
   '';
 
   translator = [ (lib.getExe translatorScript) ];
