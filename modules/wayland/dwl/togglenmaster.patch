@@ -1,0 +1,26 @@
+--- a/dwl.c
++++ b/dwl.c
+@@ -289,6 +289,7 @@
+ static void fullscreennotify(struct wl_listener *listener, void *data);
+ static void gpureset(struct wl_listener *listener, void *data);
+ static void handlesig(int signo);
++static void togglenmaster(const Arg *arg);
+ static void incnmaster(const Arg *arg);
+ static void inputdevice(struct wl_listener *listener, void *data);
+ static int keybinding(uint32_t mods, xkb_keysym_t sym);
+@@ -1575,6 +1576,15 @@
+ 	arrange(selmon);
+ }
+ 
++void
++togglenmaster(const Arg *arg)
++{
++	if (!selmon)
++		return;
++	selmon->nmaster = selmon->nmaster > 1 ? 1 : 2;
++	arrange(selmon);
++}
++
+ void
+ inputdevice(struct wl_listener *listener, void *data)
+ {
