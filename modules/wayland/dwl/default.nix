@@ -402,6 +402,7 @@ let
         ./dragmfact.patch
         ./swapclients-btrtile-toggle.patch
         ./floatcenter.patch
+        ./cursor-warp-focus.patch
       ];
   });
 in

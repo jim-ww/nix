@@ -1,0 +1,55 @@
+--- a/dwl.c
++++ b/dwl.c
+@@ -404,6 +404,7 @@
+ static void view(const Arg *arg);
+ static void virtualkeyboard(struct wl_listener *listener, void *data);
+ static void virtualpointer(struct wl_listener *listener, void *data);
++static void warpcursor(Client *c);
+ static Monitor *xytomon(double x, double y);
+ static void xytonode(double x, double y, struct wlr_surface **psurface,
+ 		Client **pc, LayerSurface **pl, double *nx, double *ny);
+@@ -1836,6 +1837,7 @@
+ 		while (!selmon->wlr_output->enabled && i++ < nmons);
+ 	}
+ 	focusclient(focustop(selmon), 1);
++	warpcursor(focustop(selmon));
+ }
+ 
+ void
+@@ -1870,8 +1872,10 @@
+ 		}
+ 	}
+ 
+-	if (newsel)
++	if (newsel) {
+ 		focusclient(newsel, 1);
++		warpcursor(newsel);
++	}
+ }
+ 
+ void
+@@ -1898,6 +1902,7 @@
+ 	}
+ 	/* If only one client is visible on selmon, then c == sel */
+ 	focusclient(c, 1);
++	warpcursor(c);
+ }
+ 
+ /* We probably should change the name of this: it sounds like it
+@@ -3711,6 +3716,16 @@
+ 		wlr_cursor_map_input_to_output(cursor, device, event->suggested_output);
+ }
+ 
++void
++warpcursor(Client *c)
++{
++	if (!c)
++		return;
++	wlr_cursor_warp_closest(cursor, NULL,
++			c->geom.x + c->geom.width / 2.0,
++			c->geom.y + c->geom.height / 2.0);
++}
++
+ Monitor *
+ xytomon(double x, double y)
+ {
