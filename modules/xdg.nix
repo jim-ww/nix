@@ -100,6 +100,8 @@
               document-viewer
             ];
             "application/epub+zip" = document-viewer;
+            "application/x-fictionbook+xml" = document-viewer;
+            "application/x-zip-compressed-fb2" = document-viewer;
 
             "text/plain" = editor;
             "text/markdown" = editor;
