@@ -42,6 +42,7 @@ in
     ./config/plugins/image.nix
     ./config/plugins/leetcode.nix
     ./config/plugins/render-markdown.nix
+    ./config/plugins/claudecode.nix
     #./config/plugins/noice.nix
     # ./config/plugins/bufferline.nix
   ];
