@@ -7,6 +7,16 @@
       window = {
         width = 40;
       };
+      event_handlers = [
+        {
+          event = "file_opened";
+          handler.__raw = ''
+            function()
+              require("neo-tree.command").execute({ action = "close" })
+            end
+          '';
+        }
+      ];
       filesystem = {
         follow_current_file = {
           enabled = true;
