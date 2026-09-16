@@ -386,6 +386,7 @@ let
         ./gaps.patch
         ./ipc.patch
         ./btrtile.patch
+        ./autotile-spawn.patch
         ./btrtile-smartgaps.patch
         ./alwayscenter.patch
         ./focusdir.patch

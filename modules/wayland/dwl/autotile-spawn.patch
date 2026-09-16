@@ -1,0 +1,128 @@
+--- a/btrtile.c
++++ b/btrtile.c
+@@ -34,7 +34,7 @@
+ static LayoutNode *find_suitable_split(Monitor *m, LayoutNode *start,
+                                        unsigned int need_vertical, int focused_on_left);
+ static void init_tree(Monitor *m);
+-static void insert_client(Monitor *m, Client *focused_client, Client *new_client);
++static void insert_client(Monitor *m, Client *focused_client, Client *new_client, int use_cursor);
+ static LayoutNode *remove_client_node(LayoutNode *node, Client *c);
+ static void remove_client(Monitor *m, Client *c);
+ static void setratio_h(const Arg *arg);
+@@ -165,7 +165,7 @@
+ 		if (VISIBLEON(c, m) && !c->isfloating && !c->isfullscreen && c->mon == m) {
+ 			found = find_client_node(m->root, c);
+ 			if (!found) {
+-				insert_client(m, focused, c);
++				insert_client(m, focused, c, 0);
+ 			}
+ 			n++;
+ 		}
+@@ -281,7 +281,7 @@
+ }
+ 
+ void
+-insert_client(Monitor *m, Client *focused_client, Client *new_client)
++insert_client(Monitor *m, Client *focused_client, Client *new_client, int use_cursor)
+ {
+ 	Client *old_client;
+ 	LayoutNode **root = &m->root, *old_root,
+@@ -312,43 +312,53 @@
+ 	old_client_node = create_client_node(old_client);
+ 	new_client_node = create_client_node(new_client);
+ 
+-	/* Decide split direction from where inside the focused window the
+-	 * drop happened: split along whichever axis the cursor is farther
+-	 * off-center on, so dropping near the left/right edge splits
+-	 * vertically and dropping near the top/bottom edge splits
+-	 * horizontally, like opening a new window at that spot. */
+-	rel_x = (cursor->x - focused_client->geom.x) / (double)focused_client->geom.width;
+-	rel_y = (cursor->y - focused_client->geom.y) / (double)focused_client->geom.height;
+-	dist_x = rel_x - 0.5;
+-	dist_y = rel_y - 0.5;
+-	if (dist_x < 0)
+-		dist_x = -dist_x;
+-	if (dist_y < 0)
+-		dist_y = -dist_y;
+-	vertical = (dist_x >= dist_y);
+-
+-	focused_node->is_client_node = 0;
+-	focused_node->client         = NULL;
+-	focused_node->is_split_vertically = vertical;
+-
+-	if (vertical) {
+-		/* vertical split => left vs right */
+-		if (rel_x <= 0.5) {
+-			focused_node->left  = new_client_node;
+-			focused_node->right = old_client_node;
++	if (use_cursor) {
++		/* Decide split direction from where inside the focused window the
++		 * drop happened: split along whichever axis the cursor is farther
++		 * off-center on, so dropping near the left/right edge splits
++		 * vertically and dropping near the top/bottom edge splits
++		 * horizontally, like opening a new window at that spot. */
++		rel_x = (cursor->x - focused_client->geom.x) / (double)focused_client->geom.width;
++		rel_y = (cursor->y - focused_client->geom.y) / (double)focused_client->geom.height;
++		dist_x = rel_x - 0.5;
++		dist_y = rel_y - 0.5;
++		if (dist_x < 0)
++			dist_x = -dist_x;
++		if (dist_y < 0)
++			dist_y = -dist_y;
++		vertical = (dist_x >= dist_y);
++
++		focused_node->is_client_node = 0;
++		focused_node->client         = NULL;
++		focused_node->is_split_vertically = vertical;
++
++		if (vertical) {
++			/* vertical split => left vs right */
++			if (rel_x <= 0.5) {
++				focused_node->left  = new_client_node;
++				focused_node->right = old_client_node;
++			} else {
++				focused_node->left  = old_client_node;
++				focused_node->right = new_client_node;
++			}
+ 		} else {
+-			focused_node->left  = old_client_node;
+-			focused_node->right = new_client_node;
++			/* horizontal split => top vs bottom */
++			if (rel_y <= 0.5) {
++				focused_node->left  = new_client_node;
++				focused_node->right = old_client_node;
++			} else {
++				focused_node->left  = old_client_node;
++				focused_node->right = new_client_node;
++			}
+ 		}
+ 	} else {
+-		/* horizontal split => top vs bottom */
+-		if (rel_y <= 0.5) {
+-			focused_node->left  = new_client_node;
+-			focused_node->right = old_client_node;
+-		} else {
+-			focused_node->left  = old_client_node;
+-			focused_node->right = new_client_node;
+-		}
++		vertical = focused_client->geom.width >= focused_client->geom.height;
++
++		focused_node->is_client_node = 0;
++		focused_node->client         = NULL;
++		focused_node->is_split_vertically = vertical;
++		focused_node->left  = old_client_node;
++		focused_node->right = new_client_node;
+ 	}
+ 	old_client_node->split_node = focused_node;
+ 	new_client_node->split_node = focused_node;
+--- a/dwl.c
++++ b/dwl.c
+@@ -695,7 +695,7 @@
+ 					target = xytoclient(cursor->x, cursor->y);
+ 
+ 					if (target && !target->isfloating && !target->isfullscreen)
+-						insert_client(selmon, target, c);
++						insert_client(selmon, target, c, 1);
+ 					else
+ 						selmon->root = create_client_node(c);
+ 
