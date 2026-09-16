@@ -50,7 +50,7 @@
   };
 
   stylix.icons = {
-    enable = true;
+    enable = false;
     package = pkgs.paper-icon-theme;
     dark = "Paper";
     light = "Paper";
