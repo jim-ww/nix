@@ -54,8 +54,8 @@ let
   calculator = [ (lib.getExe wl.calculator) ];
   translator = [ (lib.getExe wl.translator) ];
 
-  screenOn = null;
-  screenOff = null;
+  screenOn = [ (lib.getExe' pkgs.wlopm "wlopm") "--on" "*" ];
+  screenOff = [ (lib.getExe' pkgs.wlopm "wlopm") "--off" "*" ];
 
   effects = true;
 
