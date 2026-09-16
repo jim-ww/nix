@@ -174,7 +174,7 @@ rec {
   # up/down (shift+left/right jumps to top/bottom), same override as
   # ./bemenu.nix's programs.bemenu.package.
   bemenuPatched = pkgs.bemenu.overrideAttrs (old: {
-    patches = (old.patches or [ ]) ++ [ ./bemenu-leftright-page.patch ];
+    patches = (old.patches or [ ]) ++ [ ./bemenu/bemenu-leftright-page.patch ];
   });
 
   # upstream only wires scroll-to-command up to the deprecated
