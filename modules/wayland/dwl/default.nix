@@ -400,6 +400,7 @@ let
         ./togglenmaster.patch
         ./dragmfact.patch
         ./swapclients-btrtile-toggle.patch
+        ./floatcenter.patch
       ];
   });
 in
