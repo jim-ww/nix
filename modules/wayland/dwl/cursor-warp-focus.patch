@@ -36,7 +36,15 @@
  }
  
  /* We probably should change the name of this: it sounds like it
-@@ -3711,6 +3716,16 @@
+@@ -2417,6 +2422,7 @@ setmon(Client *c, Monitor *m, uint32_t newtags)
+ 		setfloating(c, c->isfloating);
+ 	}
+ 	focusclient(focustop(selmon), 1);
++	warpcursor(focustop(selmon));
+ 
+ 	if (c->swallowing)
+ 		setmon(c->swallowing, m, newtags);
+@@ -3711,6 +3717,16 @@
  		wlr_cursor_map_input_to_output(cursor, device, event->suggested_output);
  }
  
