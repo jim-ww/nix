@@ -21,6 +21,7 @@
 
       initExtra = ''
         HISTFILE="${config.xdg.dataHome}/bash/bash_history"
+        HISTCONTROL=ignoredups
         . "$HOME/.profile"
 
         # for foot interactive shell
