@@ -85,6 +85,7 @@
             "audio/x-flac" = audio-player;
             "audio/x-wav" = audio-player;
             "audio/x-vorbis+ogg" = audio-player;
+            "audio/x-opus+ogg" = audio-player;
             "audio/x-mpegurl" = audio-player;
             "audio/webm" = audio-player;
 
