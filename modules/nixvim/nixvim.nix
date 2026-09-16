@@ -8,6 +8,8 @@ let
   enable_nerd_fonts = true;
 in
 {
+  nixpkgs.useGlobalPackages = true;
+
   imports = [
     # Plugins
     ./config/plugins/kickstart/gitsigns.nix
