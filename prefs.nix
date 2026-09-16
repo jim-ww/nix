@@ -28,7 +28,7 @@ in
     musicDir = "${home}/Music";
     editor = "nvim";
     browser = "librewolf";
-    music-player = "xdg-terminal-exec -- rmpc --clean";
+    music-player = "xdg-terminal-exec -- rmpc";
     swaylock = "${lib.getExe pkgs.swaylock} -efkli ${config.flakeDir}/wallpaper && ${config.shellAliases.umount-personal}";
   };
   options = {

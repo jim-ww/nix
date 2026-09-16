@@ -19,6 +19,7 @@
         ./modules/git.nix
         ./modules/gpg.nix
         ./modules/mpd.nix
+        ./modules/rmpc
         ./modules/lf.nix
         ./modules/battery-low.nix
         ./modules/librewolf
