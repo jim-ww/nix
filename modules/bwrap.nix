@@ -129,6 +129,10 @@ let
     if cwdBind then
       pkgs.writeShellScriptBin name ''
         mkdir -p "$HOME/.cache/sandbox"
+        if [ "$PWD" = "$HOME" ]; then
+          echo "refusing to bind-mount your entire home directory into the sandbox; cd into a subdirectory first" >&2
+          exit 1
+        fi
         case "$PWD" in
           "$HOME"/*) CWDPATH="''${PWD#$HOME/}" ;;
           /*) CWDPATH="''${PWD#/}" ;;
