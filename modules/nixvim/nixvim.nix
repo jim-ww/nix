@@ -43,6 +43,7 @@ in
     ./config/plugins/leetcode.nix
     ./config/plugins/render-markdown.nix
     ./config/plugins/claudecode.nix
+    ./config/plugins/hex.nix
     #./config/plugins/noice.nix
     # ./config/plugins/bufferline.nix
   ];
