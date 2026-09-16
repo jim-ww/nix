@@ -7,4 +7,12 @@
   environment.systemPackages = [
     pkgs.umu-launcher
   ];
+
+  programs.steam = {
+    enable = true;
+    # protontricks.enable = true;
+    extraCompatPackages = with pkgs; [
+      proton-ge-bin
+    ];
+  };
 }
