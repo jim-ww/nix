@@ -503,11 +503,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1788223406,
-        "narHash": "sha256-Sl61Y/kfRJ2WBj5V1D2t+o+9w1T7wFgVPOl/P1Rc+jQ=",
+        "lastModified": 1789583237,
+        "narHash": "sha256-OrVIMJEXCLdvKGh16wZtU36ZpEEGkrde03BHAd3i5Sg=",
         "owner": "jim-ww",
         "repo": "gtr",
-        "rev": "d6000bc8a1c3b888c56d3bbab2e6980ea4b5d1ca",
+        "rev": "ec62a1f71c18c2f408a070757c4e1fd338525727",
         "type": "github"
       },
       "original": {
