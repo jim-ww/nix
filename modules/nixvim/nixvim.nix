@@ -41,6 +41,7 @@ in
     ./config/plugins/ts-autotag.nix
     ./config/plugins/image.nix
     ./config/plugins/leetcode.nix
+    ./config/plugins/render-markdown.nix
     #./config/plugins/noice.nix
     # ./config/plugins/bufferline.nix
   ];
@@ -229,6 +230,17 @@ in
     # Keep signcolumn on by default
     signcolumn = "yes";
 
+    # Treesitter-based folding (collapse headings/lists in markdown, etc.)
+    foldmethod = "expr";
+    foldexpr = "v:lua.vim.treesitter.foldexpr()";
+    foldlevel = 99;
+    foldlevelstart = 99;
+    foldenable = true;
+
+    # render-markdown.nvim needs conceal to hide raw markup (checkboxes, headings, etc.)
+    conceallevel = 2;
+    concealcursor = "nc";
+
     # Decrease update time
     updatetime = 250;
 
@@ -370,6 +382,15 @@ in
       ];
       pattern = [ "*.html" ];
       command = "set filetype=gotmpl";
+    }
+
+    {
+      event = [
+        "BufNewFile"
+        "BufRead"
+      ];
+      pattern = [ "*.md.age" ];
+      command = "set filetype=markdown";
     }
 
     # Auto run transparent mode
