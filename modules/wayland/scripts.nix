@@ -240,8 +240,7 @@ rec {
     dir="${flakeDir}/wallpapers"
     [ -d "$dir" ] || exit 0
 
-    shopt -s nullglob
-    files=("$dir"/*)
+    mapfile -t files < <(find "$dir" -maxdepth 1 -type f)
     [ "''${#files[@]}" -gt 0 ] || exit 0
 
     # this session never runs xrdb, so XWayland clients (nsxiv included)
