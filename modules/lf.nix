@@ -312,6 +312,26 @@ in
         ''${{
           lf_files="''${XDG_DATA_HOME:-$HOME/.local/share}/lf/files"
           [ -f "$lf_files" ] || exit 0
+          files=$(tail -n +2 "$lf_files")
+          [ -z "$files" ] && exit 0
+          conflict=0
+          printf '%s\n' "$files" | while IFS= read -r src; do
+            [ -z "$src" ] && continue
+            [ -e "$PWD/$(basename -- "$src")" ] && { echo conflict; break; }
+          done | grep -q conflict && conflict=1
+          if [ "$conflict" -eq 1 ]; then
+            lf -remote "send $id push :confirm-paste<space>"
+          else
+            lf -remote "send $id confirm-paste y"
+          fi
+        }}'';
+
+      confirm-paste = ''
+        ''${{
+          ans="$1"
+          case "$ans" in "" | n | N) mode_conflict=skip ;; y | Y) mode_conflict=overwrite ;; r | R) mode_conflict=rename ;; *) exit 0 ;; esac
+          lf_files="''${XDG_DATA_HOME:-$HOME/.local/share}/lf/files"
+          [ -f "$lf_files" ] || exit 0
           mode=$(head -1 "$lf_files")
           files=$(tail -n +2 "$lf_files")
           [ -z "$files" ] && exit 0
@@ -319,11 +339,19 @@ in
             [ -z "$src" ] && continue
             name=$(basename -- "$src")
             dst="$PWD/$name"
-            n=1
-            while [ -e "$dst" ]; do
-              dst="$PWD/$name.$n"
-              n=$((n + 1))
-            done
+            if [ -e "$dst" ]; then
+              case "$mode_conflict" in
+                skip) continue ;;
+                rename)
+                  n=1
+                  while [ -e "$dst" ]; do
+                    dst="$PWD/$name.$n"
+                    n=$((n + 1))
+                  done
+                  ;;
+                overwrite) rm -rf -- "$dst" ;;
+              esac
+            fi
             [ "$mode" = "move" ] && mv -- "$src" "$dst" || cp -r -- "$src" "$dst"
           done
           [ "$mode" = "move" ] && lf -remote "send clear"
