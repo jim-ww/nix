@@ -91,6 +91,8 @@ in
         # shardic = "shardic --providers $(cat /run/secrets/shardic-providers)";
         snapshots-size = "sudo btrfs filesystem du -s /persistent/.snapshots/*/snapshot";
         jrnl = ''SOPS_AGE_KEY="$(sudo cat $SOPS_AGE_KEY_FILE)" sops ${home}/Documents/journal.md.age'';
+        dns-fallback = "resolvectl dns wlo1 1.1.1.1";
+
         # unclutter home dir
         wget = ''${lib.getExe pkgs.wget} --hsts-file="${dataHome}/wget-hsts"'';
       };

@@ -100,6 +100,7 @@
         # ./modules/nix-ld.nix
         ./modules/games.nix
         ./modules/vpn.nix
+        ./modules/dns.nix
         ./modules/xdg.nix
         ./modules/ollama.nix
         ./modules/podman.nix

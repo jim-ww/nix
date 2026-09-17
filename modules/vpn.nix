@@ -2,7 +2,7 @@
 {
   services.resolved = {
     enable = true;
-    llmnr = "false";
+    settings.Resolve.LLMNR = "false";
   };
 
   networking.networkmanager.dns = "systemd-resolved";

@@ -46,6 +46,10 @@
           group = "ollama";
           user = "ollama";
         }
+        {
+          directory = "/var/cache/private/dnscrypt-proxy";
+          mode = "0700";
+        }
         "/var/lib/systemd/timers"
         "/etc/ssh"
         "/var/log"
