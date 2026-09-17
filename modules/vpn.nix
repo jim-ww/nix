@@ -1,6 +1,10 @@
 { config, pkgs, ... }:
 {
-  services.resolved.enable = true;
+  services.resolved = {
+    enable = true;
+    llmnr = "false";
+  };
+
   networking.networkmanager.dns = "systemd-resolved";
 
   sops.secrets.vpn.path = "/run/secrets/vpn.conf";

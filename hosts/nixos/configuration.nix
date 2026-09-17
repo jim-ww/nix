@@ -4,6 +4,7 @@
   ...
 }:
 {
+  services.tailscale.enable = true;
   # programs.wshowkeys.enable = true;
   # services.tailscale.enable = true;
 
@@ -27,7 +28,7 @@
     HandlePowerKeyLongPress = "poweroff";
   };
 
-  services.openssh.enable = true;
+  # services.openssh.enable = true;
   services.earlyoom.enable = true;
   systemd.oomd.enable = false;
   services.upower.enable = true;

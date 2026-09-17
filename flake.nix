@@ -99,7 +99,6 @@
         ./modules/tlp.nix
         # ./modules/nix-ld.nix
         ./modules/games.nix
-        ./modules/wireguard.nix
         ./modules/vpn.nix
         ./modules/xdg.nix
         ./modules/ollama.nix

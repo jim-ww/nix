@@ -545,11 +545,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1788793310,
-        "narHash": "sha256-HXR8uRyNEARqp8gKhJmty/Y2hJAq+KEDVR1xmrdiLaI=",
+        "lastModified": 1789743504,
+        "narHash": "sha256-Z4jP1XLxxTV6bO194rQBxTO4+sif+AJOGtlnGLYnYI8=",
         "owner": "jim-ww",
         "repo": "itpec-sensei",
-        "rev": "7c16c4a8d0025f540134be097d50503d5fd2018d",
+        "rev": "d502d5ba229c28c0a67c38d1cabc7aaf3946866a",
         "type": "github"
       },
       "original": {
