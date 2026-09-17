@@ -28,6 +28,7 @@
     shardic-providers.owner = config.user;
     tailscale-boomer.owner = config.user;
     kage-key.owner = config.user;
+    kage-acc1.owner = config.user;
     kage-acc1-passw.owner = config.user;
     kage-acc2-passw.owner = config.user;
   };
