@@ -177,7 +177,12 @@ in
               exec ${lib.getExe pkgs.mpv} "$f"
               ;;
             image/*)
-              exec ${lib.getExe pkgs.imv} "$f"
+              mapfile -t imgs <<< "$fx"
+              if [ "''${#imgs[@]}" -gt 1 ]; then
+                exec ${lib.getExe pkgs.imv} "''${imgs[@]}"
+              else
+                exec ${lib.getExe pkgs.imv} -n "$f" "$(dirname -- "$f")"
+              fi
               ;;
             application/pdf | application/epub+zip | application/vnd.comicbook+zip)
               exec ${lib.getExe pkgs.zathura} "$f"
@@ -220,7 +225,12 @@ in
               disown
               ;;
             image/*)
-              setsid -f ${lib.getExe pkgs.imv} "$f" </dev/null >/dev/null 2>&1 &
+              mapfile -t imgs <<< "$fx"
+              if [ "''${#imgs[@]}" -gt 1 ]; then
+                setsid -f ${lib.getExe pkgs.imv} "''${imgs[@]}" </dev/null >/dev/null 2>&1 &
+              else
+                setsid -f ${lib.getExe pkgs.imv} -n "$f" "$(dirname -- "$f")" </dev/null >/dev/null 2>&1 &
+              fi
               disown
               ;;
             application/pdf | application/epub+zip | application/vnd.comicbook+zip)
