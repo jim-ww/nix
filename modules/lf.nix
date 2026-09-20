@@ -174,7 +174,12 @@ in
               $EDITOR "$f"
               ;;
             image/gif | image/webp | video/* | audio/*)
-              exec ${lib.getExe pkgs.mpv} "$f"
+              mapfile -t media <<< "$fx"
+              if [ "''${#media[@]}" -gt 1 ]; then
+                exec ${lib.getExe' pkgs.mpv "umpv"} "''${media[@]}"
+              else
+                exec ${lib.getExe pkgs.mpv} "$f"
+              fi
               ;;
             image/*)
               mapfile -t imgs <<< "$fx"
@@ -221,7 +226,12 @@ in
         ''${{
           case "$(file -Lb --mime-type -- "$f")" in
             image/gif | image/webp | video/* | audio/*)
-              setsid -f ${lib.getExe pkgs.mpv} "$f" </dev/null >/dev/null 2>&1 &
+              mapfile -t media <<< "$fx"
+              if [ "''${#media[@]}" -gt 1 ]; then
+                setsid -f ${lib.getExe' pkgs.mpv "umpv"} "''${media[@]}" </dev/null >/dev/null 2>&1 &
+              else
+                setsid -f ${lib.getExe pkgs.mpv} "$f" </dev/null >/dev/null 2>&1 &
+              fi
               disown
               ;;
             image/*)
