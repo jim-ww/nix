@@ -5,6 +5,16 @@
   ...
 }:
 let
+  uniqName = pkgs.writeShellScript "lf-uniq-name" ''
+    dst="$1"
+    n=1
+    while [ -e "$dst" ]; do
+      dst="$1.$n"
+      n=$((n + 1))
+    done
+    printf '%s' "$dst"
+  '';
+
   trash = pkgs.writeShellScriptBin "trash" ''
     set -euo pipefail
     yes=0
@@ -37,12 +47,7 @@ let
       esac
       orig=$(realpath -- "$f")
       name=$(basename -- "$f")
-      dest="$trash_dir/files/$name"
-      n=1
-      while [ -e "$dest" ]; do
-        dest="$trash_dir/files/$name.$n"
-        n=$((n + 1))
-      done
+      dest=$(${uniqName} "$trash_dir/files/$name")
       mv -- "$f" "$dest" 2>/dev/null || { cp -a -- "$f" "$dest" && rm -rf -- "$f"; }
       {
         echo "[Trash Info]"
@@ -61,6 +66,20 @@ let
       *.tar) ${lib.getExe pkgs.gnutar} -xf "$1" -C "$dest" ;;
       *) ${lib.getExe pkgs._7zz-rar} x -o"$dest" "$1" ;;
     esac
+  '';
+
+  transfer = pkgs.writeShellScript "lf-transfer" ''
+    [ -z "$fx" ] && exit 0
+    dest=$(fd --type d . "$HOME" 2>/dev/null | fzf --prompt="$1 to: ")
+    [ -z "$dest" ] && exit 0
+    mapfile -t files <<< "$fx"
+    for src in "''${files[@]}"; do
+      case "$1" in
+        move) mv -- "$src" "$dest/" ;;
+        copy) cp -r -- "$src" "$dest/" ;;
+      esac
+    done
+    lf -remote "send $id reload"
   '';
 
   open = pkgs.writeShellScript "lf-open" ''
@@ -345,11 +364,8 @@ in
                 skip) continue ;;
                 overwrite) rm -rf -- "$dst" ;;
                 rename)
-                  n=1
-                  while [ -e "$PWD/$name.$n" ]; do
-                    n=$((n + 1))
-                  done
-                  read -r -e -i "$name.$n" -p "rename to: " new
+                  suggest=$(basename -- "$(${uniqName} "$PWD/$name")")
+                  read -r -e -i "$suggest" -p "rename to: " new
                   [ -z "$new" ] && continue
                   dst="$PWD/$new"
                   if [ -e "$dst" ]; then
@@ -403,29 +419,9 @@ in
           done
         }}'';
 
-      moveto = ''
-        ''${{
-          [ -z "$fx" ] && exit 0
-          dest=$(fd --type d . "$HOME" 2>/dev/null | fzf --prompt="move to: ")
-          [ -z "$dest" ] && exit 0
-          mapfile -t files <<< "$fx"
-          for src in "''${files[@]}"; do
-            mv -- "$src" "$dest/"
-          done
-          lf -remote "send $id reload"
-        }}'';
+      moveto = "$" + "${transfer} move";
 
-      copyto = ''
-        ''${{
-          [ -z "$fx" ] && exit 0
-          dest=$(fd --type d . "$HOME" 2>/dev/null | fzf --prompt="copy to: ")
-          [ -z "$dest" ] && exit 0
-          mapfile -t files <<< "$fx"
-          for src in "''${files[@]}"; do
-            cp -r -- "$src" "$dest/"
-          done
-          lf -remote "send $id reload"
-        }}'';
+      copyto = "$" + "${transfer} copy";
 
       rename-smart = ''
         ''${{
@@ -459,12 +455,7 @@ in
             newname=$(sed -n "''${i}p" "$tmpfile")
             [ -z "$newname" ] && continue
             [ "$(basename -- "$src")" = "$newname" ] && continue
-            dst="$dir/$newname"
-            n=1
-            while [ -e "$dst" ]; do
-              dst="$dir/$newname.$n"
-              n=$((n + 1))
-            done
+            dst=$(${uniqName} "$dir/$newname")
             mv -- "$src" "$dst"
           done
           rm -f "$tmpfile"
