@@ -102,7 +102,7 @@
           ".librewolf"
           ".steam"
           ".shared-ringdb"
-          ".local/share/Trash"
+          ".local/share/trash"
           ".local/share/direnv"
           ".local/share/umu"
           ".local/share/nihongo"
