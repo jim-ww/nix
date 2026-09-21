@@ -42,7 +42,7 @@ let
           fusermount3 -uz -- "$f" 2>/dev/null || umount -l -- "$f" 2>/dev/null || true
           ;;
       esac
-      orig=$(realpath -- "$f")
+      orig=$(realpath -s -- "$f")
       case "$orig" in
         "$HOME"/*) rel="''${orig#"$HOME"/}" ;;
         *) rel="_root/''${orig#/}" ;;
@@ -65,7 +65,7 @@ let
     rc=0
     for src in "$@"; do
       [ -n "$src" ] || continue
-      src=$(realpath -- "$src")
+      src=$(realpath -s -- "$src")
       case "$src" in
         "$dir"/*) ;;
         *)
