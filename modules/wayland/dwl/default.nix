@@ -197,6 +197,7 @@ let
         { MODKEY|SHIFT, XKB_KEY_r,          quit,             {0} },
         { MODKEY,       XKB_KEY_v,          togglefloating,   {0} },
         { MODKEY|SHIFT, XKB_KEY_f,          togglefullscreen, {0} },
+        { MODKEY,       XKB_KEY_Escape,     toggletouchpad,   {0} },
 
         { MODKEY,       XKB_KEY_Left,       focusdir,         {.ui = 0} },
         { MODKEY,       XKB_KEY_Right,      focusdir,         {.ui = 1} },
@@ -403,6 +404,7 @@ let
         ./swapclients-btrtile-toggle.patch
         ./floatcenter.patch
         ./cursor-warp-focus.patch
+        ./toggletouchpad.patch
       ];
   });
 in
