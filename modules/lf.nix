@@ -24,17 +24,14 @@ let
     fi
     [ "$#" -eq 0 ] && exit 0
     if [ "$yes" -ne 1 ]; then
-      if [ ! -t 0 ]; then
-        exit 0
-      fi
+      [ -t 0 ] || exit 0
       read -r -p "trash $# item(s)? [y/N] " ans
       case "$ans" in
         y | Y) ;;
         *) exit 0 ;;
       esac
     fi
-    trash_dir="''${XDG_DATA_HOME:-$HOME/.local/share}/Trash"
-    mkdir -p "$trash_dir/files" "$trash_dir/info"
+    dir="''${XDG_DATA_HOME:-$HOME/.local/share}/trash"
     for f in "$@"; do
       if [ ! -e "$f" ] && [ ! -L "$f" ]; then
         echo "trash: cannot find '$f'" >&2
@@ -46,15 +43,53 @@ let
           ;;
       esac
       orig=$(realpath -- "$f")
-      name=$(basename -- "$f")
-      dest=$(${uniqName} "$trash_dir/files/$name")
+      case "$orig" in
+        "$HOME"/*) rel="''${orig#"$HOME"/}" ;;
+        *) rel="_root/''${orig#/}" ;;
+      esac
+      dest="$dir/$rel"
+      mkdir -p -- "$(dirname -- "$dest")"
+      [ -e "$dest" ] && dest="$dest.$(date +%Y%m%d-%H%M%S)"
       mv -- "$f" "$dest" 2>/dev/null || { cp -a -- "$f" "$dest" && rm -rf -- "$f"; }
-      {
-        echo "[Trash Info]"
-        echo "Path=$orig"
-        echo "DeletionDate=$(date +%Y-%m-%dT%H:%M:%S)"
-      } > "$trash_dir/info/$(basename -- "$dest").trashinfo"
     done
+  '';
+
+  untrash = pkgs.writeShellScriptBin "untrash" ''
+    set -uo pipefail
+    dir="''${XDG_DATA_HOME:-$HOME/.local/share}/trash"
+    if [ "$#" -eq 0 ]; then
+      [ -z "''${fx:-}" ] && exit 0
+      mapfile -t args <<< "$fx"
+      set -- "''${args[@]}"
+    fi
+    rc=0
+    for src in "$@"; do
+      [ -n "$src" ] || continue
+      src=$(realpath -- "$src")
+      case "$src" in
+        "$dir"/*) ;;
+        *)
+          echo "untrash: not in trash: $src" >&2
+          rc=1
+          continue
+          ;;
+      esac
+      rel="''${src#"$dir"/}"
+      rel=$(printf '%s' "$rel" | sed -E 's/\.[0-9]{8}-[0-9]{6}$//')
+      case "$rel" in
+        _root/*) orig="/''${rel#_root/}" ;;
+        *) orig="$HOME/$rel" ;;
+      esac
+      if [ -e "$orig" ]; then
+        echo "untrash: exists: $orig" >&2
+        rc=1
+        continue
+      fi
+      mkdir -p -- "$(dirname -- "$orig")"
+      mv -- "$src" "$orig" || { rc=1; continue; }
+      rmdir -p --ignore-fail-on-non-empty -- "$(dirname -- "$src")" 2>/dev/null || true
+    done
+    exit $rc
   '';
 
   extract = pkgs.writeShellScript "lf-extract" ''
@@ -145,6 +180,7 @@ in
 {
   home.packages = with pkgs; [
     trash
+    untrash
     jq
     poppler-utils # pdftotext
     highlight
@@ -213,7 +249,7 @@ in
       i = "$less $f";
       gc = "cd ${config.flakeDir}";
       gd = "cd ~/Downloads";
-      gt = "cd ~/.local/share/Trash";
+      gt = "cd ~/.local/share/trash";
       gp = "cd ~/Archive/personal";
       gg = "top --";
       gG = "bottom --";
@@ -228,6 +264,7 @@ in
       C = "copyto";
       M = "moveto";
       r = "rename-smart";
+      u = "restore";
       T = "grid-select";
       P = "set preview!";
       "<c-c>" = "quit";
@@ -289,6 +326,12 @@ in
           for f in "''${files[@]}"; do
             ${extract} "$f" .
           done
+          lf -remote "send $id reload"
+        }}'';
+
+      restore = ''
+        ''${{
+          ${lib.getExe untrash}
           lf -remote "send $id reload"
         }}'';
 
