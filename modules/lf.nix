@@ -332,49 +332,57 @@ in
         ''${{
           lf_files="''${XDG_DATA_HOME:-$HOME/.local/share}/lf/files"
           [ -f "$lf_files" ] || exit 0
-          files=$(tail -n +2 "$lf_files")
-          [ -z "$files" ] && exit 0
-          conflict=0
-          printf '%s\n' "$files" | while IFS= read -r src; do
-            [ -z "$src" ] && continue
-            [ -e "$PWD/$(basename -- "$src")" ] && { echo conflict; break; }
-          done | grep -q conflict && conflict=1
-          if [ "$conflict" -eq 1 ]; then
-            lf -remote "send $id push :confirm-paste<space>"
-          else
-            lf -remote "send $id confirm-paste y"
-          fi
-        }}'';
-
-      confirm-paste = ''
-        ''${{
-          ans="$1"
-          case "$ans" in "" | n | N) mode_conflict=skip ;; y | Y) mode_conflict=overwrite ;; r | R) mode_conflict=rename ;; *) exit 0 ;; esac
-          lf_files="''${XDG_DATA_HOME:-$HOME/.local/share}/lf/files"
-          [ -f "$lf_files" ] || exit 0
           mode=$(head -1 "$lf_files")
-          files=$(tail -n +2 "$lf_files")
-          [ -z "$files" ] && exit 0
-          printf '%s\n' "$files" | while IFS= read -r src; do
+          mapfile -t files < <(tail -n +2 "$lf_files")
+          [ "''${#files[@]}" -eq 0 ] && exit 0
+
+          conflict=0
+          for src in "''${files[@]}"; do
+            [ -z "$src" ] && continue
+            dst="$PWD/$(basename -- "$src")"
+            [ "$src" = "$dst" ] && [ "$mode" = "move" ] && continue
+            [ -e "$dst" ] && { conflict=1; break; }
+          done
+
+          action=overwrite
+          if [ "$conflict" -eq 1 ]; then
+            action=$(printf '%s\n' rename overwrite skip | fzf --prompt="conflict: ")
+            [ -z "$action" ] && exit 0
+          fi
+
+          for src in "''${files[@]}"; do
             [ -z "$src" ] && continue
             name=$(basename -- "$src")
             dst="$PWD/$name"
+            if [ "$src" = "$dst" ] && { [ "$mode" = "move" ] || [ "$action" != "rename" ]; }; then
+              continue
+            fi
             if [ -e "$dst" ]; then
-              case "$mode_conflict" in
+              case "$action" in
                 skip) continue ;;
+                overwrite) rm -rf -- "$dst" ;;
                 rename)
                   n=1
-                  while [ -e "$dst" ]; do
-                    dst="$PWD/$name.$n"
+                  while [ -e "$PWD/$name.$n" ]; do
                     n=$((n + 1))
                   done
+                  read -r -e -i "$name.$n" -p "rename to: " new
+                  [ -z "$new" ] && continue
+                  dst="$PWD/$new"
+                  if [ -e "$dst" ]; then
+                    lf -remote "send $id echoerr '$new already exists'"
+                    continue
+                  fi
                   ;;
-                overwrite) rm -rf -- "$dst" ;;
               esac
             fi
-            [ "$mode" = "move" ] && mv -- "$src" "$dst" || cp -r -- "$src" "$dst"
+            if [ "$mode" = "move" ]; then
+              mv -- "$src" "$dst"
+            else
+              cp -r -- "$src" "$dst"
+            fi
           done
-          [ "$mode" = "move" ] && lf -remote "send clear"
+          [ "$mode" = "move" ] && lf -remote "send $id clear"
           lf -remote "send $id reload"
         }}'';
 
