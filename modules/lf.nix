@@ -284,8 +284,6 @@ in
           uri="file://$(printf '%s' "$f_abs" | jq -sRr 'split("/") | map(@uri) | join("/")')"
           printf '%s\r\n' "$uri" | ${lib.getExe' pkgs.wl-clipboard "wl-copy"} -t text/uri-list
         }}'';
-      on-init = "";
-
       on-quit = ''
         ''${{
           mount | grep -E '\.lfmount ' | awk '{print $3}' | while IFS= read -r m; do
@@ -504,8 +502,6 @@ in
           rm -f "$tmpfile"
           lf -remote "send $id reload"
         }}'';
-
-      get-mime-type = ''%xdg-mime query filetype \"$f\"'';
     };
 
     previewer.source = lib.getExe pkgs.pistol;
