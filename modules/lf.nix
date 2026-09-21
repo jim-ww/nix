@@ -51,6 +51,77 @@ let
       } > "$trash_dir/info/$(basename -- "$dest").trashinfo"
     done
   '';
+
+  extract = pkgs.writeShellScript "lf-extract" ''
+    dest="''${2:-.}"
+    case "$1" in
+      *.tar.gz | *.tgz) ${lib.getExe pkgs.gnutar} -xzf "$1" -C "$dest" ;;
+      *.tar.bz2 | *.tbz2) ${lib.getExe pkgs.gnutar} -xjf "$1" -C "$dest" ;;
+      *.tar.xz | *.txz) ${lib.getExe pkgs.gnutar} -xJf "$1" -C "$dest" ;;
+      *.tar) ${lib.getExe pkgs.gnutar} -xf "$1" -C "$dest" ;;
+      *) ${lib.getExe pkgs._7zz-rar} x -o"$dest" "$1" ;;
+    esac
+  '';
+
+  open = pkgs.writeShellScript "lf-open" ''
+    detach=0
+    [ "''${1:-}" = "-d" ] && detach=1
+
+    run() {
+      if [ "$detach" -eq 1 ]; then
+        setsid -f "$@" </dev/null >/dev/null 2>&1 &
+        disown
+      else
+        exec "$@"
+      fi
+    }
+
+    case "$(file -Lb --mime-type -- "$f")" in
+      text/* | application/json | application/x-subrip | inode/x-empty)
+        $EDITOR "$f"
+        ;;
+      image/gif | image/webp | video/* | audio/*)
+        mapfile -t media <<< "$fx"
+        if [ "''${#media[@]}" -gt 1 ]; then
+          run ${lib.getExe' pkgs.mpv "umpv"} "''${media[@]}"
+        else
+          run ${lib.getExe pkgs.mpv} "$f"
+        fi
+        ;;
+      image/*)
+        mapfile -t imgs <<< "$fx"
+        if [ "''${#imgs[@]}" -gt 1 ]; then
+          run ${lib.getExe pkgs.imv} "''${imgs[@]}"
+        else
+          run ${lib.getExe pkgs.imv} -n "$f" "$(dirname -- "$f")"
+        fi
+        ;;
+      application/pdf | application/epub+zip | application/vnd.comicbook+zip)
+        run ${lib.getExe pkgs.zathura} "$f"
+        ;;
+      application/zip | application/x-zip* | application/x-tar | application/gzip | application/x-gzip | application/x-bzip2 | application/x-bzip | application/x-xz | application/x-7z-compressed | application/vnd.rar | application/x-rar-compressed | application/x-lzma | application/x-compress)
+        mnt="$(dirname -- "$f")/.$(basename -- "$f").lfmount"
+        if ! mkdir -p "$mnt" 2>/dev/null; then
+          mnt="''${XDG_RUNTIME_DIR:-/tmp}/lf-archive-mounts/$(realpath -- "$f" | md5sum | cut -d' ' -f1)"
+          mkdir -p "$mnt"
+        fi
+        if ! mountpoint -q "$mnt"; then
+          if ! fuse-archive "$f" "$mnt" 2>>"''${XDG_RUNTIME_DIR:-/tmp}/lf-archive-mount.log"; then
+            rmdir "$mnt" 2>/dev/null
+            dest="''${XDG_RUNTIME_DIR:-/tmp}/lf-archive-extract/$(realpath -- "$f" | md5sum | cut -d' ' -f1)"
+            mkdir -p "$dest"
+            ${extract} "$f" "$dest"
+            lf -remote "send $id cd \"$dest\""
+            exit 0
+          fi
+        fi
+        lf -remote "send $id cd \"$mnt\""
+        ;;
+      *)
+        xdg-open "$f" > /dev/null 2>&1 &
+        ;;
+    esac
+  '';
 in
 {
   home.packages = with pkgs; [
@@ -167,91 +238,9 @@ in
           done
         }}'';
 
-      open = ''
-        ''${{
-          case "$(file -Lb --mime-type -- "$f")" in
-            text/* | application/json | application/x-subrip | inode/x-empty)
-              $EDITOR "$f"
-              ;;
-            image/gif | image/webp | video/* | audio/*)
-              mapfile -t media <<< "$fx"
-              if [ "''${#media[@]}" -gt 1 ]; then
-                exec ${lib.getExe' pkgs.mpv "umpv"} "''${media[@]}"
-              else
-                exec ${lib.getExe pkgs.mpv} "$f"
-              fi
-              ;;
-            image/*)
-              mapfile -t imgs <<< "$fx"
-              if [ "''${#imgs[@]}" -gt 1 ]; then
-                exec ${lib.getExe pkgs.imv} "''${imgs[@]}"
-              else
-                exec ${lib.getExe pkgs.imv} -n "$f" "$(dirname -- "$f")"
-              fi
-              ;;
-            application/pdf | application/epub+zip | application/vnd.comicbook+zip)
-              exec ${lib.getExe pkgs.zathura} "$f"
-              ;;
-            application/zip | application/x-zip* | application/x-tar | application/gzip | application/x-gzip | application/x-bzip2 | application/x-bzip | application/x-xz | application/x-7z-compressed | application/vnd.rar | application/x-rar-compressed | application/x-lzma | application/x-compress)
-              mnt="$(dirname -- "$f")/.$(basename -- "$f").lfmount"
-              if ! mkdir -p "$mnt" 2>/dev/null; then
-                mnt="''${XDG_RUNTIME_DIR:-/tmp}/lf-archive-mounts/$(realpath -- "$f" | md5sum | cut -d' ' -f1)"
-                mkdir -p "$mnt"
-              fi
-              if ! mountpoint -q "$mnt"; then
-                if ! fuse-archive "$f" "$mnt" 2>>"''${XDG_RUNTIME_DIR:-/tmp}/lf-archive-mount.log"; then
-                  rmdir "$mnt" 2>/dev/null
-                  dest="''${XDG_RUNTIME_DIR:-/tmp}/lf-archive-extract/$(realpath -- "$f" | md5sum | cut -d' ' -f1)"
-                  mkdir -p "$dest"
-                  case "$f" in
-                    *.tar.gz | *.tgz) ${lib.getExe pkgs.gnutar} -xzf "$f" -C "$dest" ;;
-                    *.tar.bz2 | *.tbz2) ${lib.getExe pkgs.gnutar} -xjf "$f" -C "$dest" ;;
-                    *.tar.xz | *.txz) ${lib.getExe pkgs.gnutar} -xJf "$f" -C "$dest" ;;
-                    *.tar) ${lib.getExe pkgs.gnutar} -xf "$f" -C "$dest" ;;
-                    *) ${lib.getExe pkgs._7zz-rar} x -o"$dest" "$f" ;;
-                  esac
-                  lf -remote "send $id cd \"$dest\""
-                  exit 0
-                fi
-              fi
-              lf -remote "send $id cd \"$mnt\""
-              ;;
-            *)
-              xdg-open "$f" > /dev/null 2>&1 &
-              ;;
-          esac
-        }}'';
+      open = "$" + "${open}";
 
-      open-detached = ''
-        ''${{
-          case "$(file -Lb --mime-type -- "$f")" in
-            image/gif | image/webp | video/* | audio/*)
-              mapfile -t media <<< "$fx"
-              if [ "''${#media[@]}" -gt 1 ]; then
-                setsid -f ${lib.getExe' pkgs.mpv "umpv"} "''${media[@]}" </dev/null >/dev/null 2>&1 &
-              else
-                setsid -f ${lib.getExe pkgs.mpv} "$f" </dev/null >/dev/null 2>&1 &
-              fi
-              disown
-              ;;
-            image/*)
-              mapfile -t imgs <<< "$fx"
-              if [ "''${#imgs[@]}" -gt 1 ]; then
-                setsid -f ${lib.getExe pkgs.imv} "''${imgs[@]}" </dev/null >/dev/null 2>&1 &
-              else
-                setsid -f ${lib.getExe pkgs.imv} -n "$f" "$(dirname -- "$f")" </dev/null >/dev/null 2>&1 &
-              fi
-              disown
-              ;;
-            application/pdf | application/epub+zip | application/vnd.comicbook+zip)
-              setsid -f ${lib.getExe pkgs.zathura} "$f" </dev/null >/dev/null 2>&1 &
-              disown
-              ;;
-            *)
-              lf -remote "send $id open"
-              ;;
-          esac
-        }}'';
+      open-detached = "$" + "${open} -d";
 
       compress = ''
         ''${{
@@ -279,13 +268,7 @@ in
           [ -z "$fx" ] && exit 0
           mapfile -t files <<< "$fx"
           for f in "''${files[@]}"; do
-            case "$f" in
-              *.tar.gz | *.tgz) ${lib.getExe pkgs.gnutar} -xzf "$f" ;;
-              *.tar.bz2 | *.tbz2) ${lib.getExe pkgs.gnutar} -xjf "$f" ;;
-              *.tar.xz | *.txz) ${lib.getExe pkgs.gnutar} -xJf "$f" ;;
-              *.tar) ${lib.getExe pkgs.gnutar} -xf "$f" ;;
-              *) ${lib.getExe pkgs._7zz-rar} x "$f" ;;
-            esac
+            ${extract} "$f" .
           done
           lf -remote "send $id reload"
         }}'';
