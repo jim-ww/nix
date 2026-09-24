@@ -230,6 +230,7 @@ in
     settings = {
       ignorecase = true;
       preview = true;
+      preload = true;
       icons = true;
       tabstop = 4;
       period = 1;
