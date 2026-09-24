@@ -204,17 +204,28 @@ rec {
     # doesn't hold the flock open forever and deadlock the next invocation.
     ${lib.getExe pkgs.swaybg} -i "$1" -m fill 9>&- &
     disown
+
+    printf '%s\n' "$1" > "''${XDG_RUNTIME_DIR:-/tmp}/wl-wallpaper.current"
   '';
 
   wallpaperSet = pkgs.writeShellScriptBin "wl-wallpaper-set" ''
     dir="${flakeDir}/wallpapers"
     fallback="${flakeDir}/wallpaper"
 
+    current=$(cat "''${XDG_RUNTIME_DIR:-/tmp}/wl-wallpaper.current" 2>/dev/null)
+
     pick="$fallback"
     if [ -d "$dir" ]; then
       mapfile -t files < <(find "$dir" -maxdepth 1 -type f)
-      if [ "''${#files[@]}" -gt 0 ]; then
-        pick="''${files[$RANDOM % ''${#files[@]}]}"
+
+      candidates=()
+      for f in "''${files[@]}"; do
+        [ "$f" = "$current" ] || candidates+=("$f")
+      done
+      [ "''${#candidates[@]}" -gt 0 ] || candidates=("''${files[@]}")
+
+      if [ "''${#candidates[@]}" -gt 0 ]; then
+        pick="''${candidates[$RANDOM % ''${#candidates[@]}]}"
       fi
     fi
 
