@@ -1,5 +1,6 @@
 {
   "webgl.disabled" = false;
+  "dom.webgpu.enabled" = true;
   "privacy.resistFingerprinting" = false;
   # "privacy.resistFingerprinting.letterboxing" = false;
   "dom.security.https_only_mode" = false;
