@@ -505,6 +505,11 @@ in
         }}'';
     };
 
-    previewer.source = lib.getExe pkgs.pistol;
+    previewer.source = pkgs.writeShellScript "lf-preview" ''
+      ${lib.getExe pkgs.pistol} "$@"
+      rc=$?
+      [ "$rc" -eq 141 ] && rc=0
+      exit $rc
+    '';
   };
 }
