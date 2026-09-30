@@ -9,7 +9,6 @@
   # services.tailscale.enable = true;
 
   programs.dconf.enable = true;
-  programs.gamemode.enable = true;
 
   security.polkit.enable = true;
   security.sudo.extraConfig = ''

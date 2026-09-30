@@ -1,5 +1,8 @@
 { pkgs, ... }:
 {
+  programs.gamemode.enable = true;
+  programs.gamescope.enable = true;
+
   hardware.graphics.enable32Bit = true;
 
   environment.variables.PROTONPATH = pkgs.proton-ge-bin.steamcompattool;

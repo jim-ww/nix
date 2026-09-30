@@ -1,3 +1,6 @@
+# TODO:
+# - use tmpfs for whole sandbox, only having /tmp with persistance?
+# - isolate network (no tailscale reachability)
 {
   pkgs,
   config,
