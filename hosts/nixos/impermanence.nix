@@ -112,6 +112,7 @@
           ".local/state/nvim"
           ".local/share/pnpm"
           ".local/share/go"
+          ".local/share/zoxide"
           ".config/distrobox"
           ".claude"
           "Downloads"
