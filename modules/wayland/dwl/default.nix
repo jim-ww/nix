@@ -401,6 +401,7 @@ let
         ./smartborders.patch
         ./togglenmaster.patch
         ./dragmfact.patch
+        ./grab-no-refocus.patch
         ./swapclients-btrtile-toggle.patch
         ./floatcenter.patch
         ./cursor-warp-focus.patch
