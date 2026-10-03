@@ -15,6 +15,8 @@ let
     printf '%s' "$dst"
   '';
 
+  zoxide = lib.getExe config.programs.zoxide.package;
+
   trash = pkgs.writeShellScriptBin "trash" ''
     set -euo pipefail
     yes=0
@@ -276,15 +278,35 @@ in
       "<esc>" = ":unselect; clear";
       "." = "set hidden!";
       R = "reload && redraw";
+      gz = "push :z<space>";
+      gi = "zi";
     };
 
     commands = {
+      on-cd = ''
+        &{{
+          ${zoxide} add "$PWD"
+        }}'';
+
+      z = ''
+        %{{
+          result="$(${zoxide} query --exclude "$PWD" "$@" | sed 's/\\/\\\\/g;s/"/\\"/g')"
+          [ -n "$result" ] && lf -remote "send $id cd \"$result\""
+        }}'';
+
+      zi = ''
+        ''${{
+          result="$(${zoxide} query -i | sed 's/\\/\\\\/g;s/"/\\"/g')"
+          [ -n "$result" ] && lf -remote "send $id cd \"$result\""
+        }}'';
+
       copy-file = ''
         ''${{
           f_abs="$(realpath "$f")"
           uri="file://$(printf '%s' "$f_abs" | jq -sRr 'split("/") | map(@uri) | join("/")')"
           printf '%s\r\n' "$uri" | ${lib.getExe' pkgs.wl-clipboard "wl-copy"} -t text/uri-list
         }}'';
+
       on-quit = ''
         ''${{
           mount | grep -E '\.lfmount ' | awk '{print $3}' | while IFS= read -r m; do
@@ -512,4 +534,6 @@ in
       exit $rc
     '';
   };
+
+  home.sessionVariables._ZO_EXCLUDE_DIRS = "*.lfmount:*.lfmount/*:/run/user/*";
 }
