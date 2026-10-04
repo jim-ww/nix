@@ -1,6 +1,7 @@
 # TODO:
 # - use tmpfs for whole sandbox, only having /tmp with persistance?
 # - isolate network (no tailscale reachability)
+# - if .git present in mounted pwd dir, then mount .git separately, read-only, to prevent code execution on pre-commit, etc
 {
   pkgs,
   config,

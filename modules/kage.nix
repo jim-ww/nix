@@ -7,6 +7,8 @@
       storage.password_cmd = "cat /run/secrets/kage-key";
       attachments_dir = "${config.xdg.configHome}/kage/attachments";
       avatars_disabled = true;
+      use_gpg = false;
+      use_keyring = false;
     };
     accounts = [
       {

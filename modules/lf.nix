@@ -1,3 +1,8 @@
+# TODO:
+# - archive previews without unpacking whole archive
+# - no leftover fuse mounts
+# - fix archive previews not working in fuse mounts, device mounts
+# - never spill out whole archive contents if there are more then 1 dir/file at archive top level
 {
   pkgs,
   config,

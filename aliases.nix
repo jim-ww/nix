@@ -57,6 +57,7 @@ in
         gps = "git push";
         gpl = "git pull";
 
+        gor = "go run";
         ani = "ani-cli";
         umu = "umu-run";
         http = "curlie";
