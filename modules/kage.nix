@@ -19,6 +19,11 @@
         jidFile = "/run/secrets/kage-acc1";
         passwordFile = "/run/secrets/kage-acc1-passw";
       }
+      {
+        alias = "oa";
+        jidFile = "/run/secrets/oa-xmpp-jid";
+        passwordFile = "/run/secrets/oa-xmpp-passw";
+      }
     ];
   };
 }

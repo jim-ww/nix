@@ -4,8 +4,6 @@
 
   sops.secrets = {
     lastfm_password.owner = config.user;
-    server1.owner = config.user;
-    server2.owner = config.user;
     server-sig.owner = config.user;
     transmission-rpc-addr.owner = config.user;
     transmission-rpc-user.owner = config.user;
@@ -18,6 +16,10 @@
     auth-payments-micro-priv-key = { };
     hcloud-token = { };
     oa-server.owner = config.user;
+    oa-domains.owner = config.user;
+    oa-xmpp-jid.owner = config.user;
+    oa-xmpp-passw.owner = config.user;
+    oa-readyz-key.owner = config.user; # TODO: check if needed
     oa-db-url = { };
     bookmarks.owner = config.user;
     wallhaven-api-key.owner = config.user;
