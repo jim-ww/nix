@@ -56,6 +56,7 @@ with pkgs;
   gcc
   gnumake
   python3Minimal
+  nodejs-slim
   pnpm
   curlie
   sqlite
