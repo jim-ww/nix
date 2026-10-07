@@ -13,14 +13,14 @@
     accounts = [
       {
         alias = "main";
-        jidFile = "/run/secrets/kage-acc";
-        passwordFile = "/run/secrets/kage-acc-passw";
-      }
-      {
-        alias = "second";
         jidFile = "/run/secrets/kage-acc1";
         passwordFile = "/run/secrets/kage-acc1-passw";
       }
+      # {
+      #   alias = "second";
+      #   jidFile = "/run/secrets/kage-acc";
+      #   passwordFile = "/run/secrets/kage-acc-passw";
+      # }
       {
         alias = "oa";
         jidFile = "/run/secrets/oa-xmpp-jid";

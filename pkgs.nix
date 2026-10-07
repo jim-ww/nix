@@ -20,6 +20,8 @@ with pkgs;
   ripgrep
   _7zz-rar
   udiskie
+  android-tools
+  go-mtpfs
 
   imv
   mpv
