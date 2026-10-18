@@ -481,6 +481,7 @@ in
       sos = "tailscale up --reset --qr --operator=${user} --hostname=${hostname} --advertise-tags=${tailscaleTag}";
     };
 
+  users.mutableUsers = false;
   users.users.${user} = {
     isNormalUser = true;
     uid = 1000;
