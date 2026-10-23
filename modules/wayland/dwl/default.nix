@@ -52,10 +52,18 @@ let
     ;
 
   calculator = [ (lib.getExe wl.calculator) ];
-  translator = [ (lib.getExe wl.translator) ];
+  translator = null; # fix and after use:  [ (lib.getExe wl.translator) ];
 
-  screenOn = [ (lib.getExe' pkgs.wlopm "wlopm") "--on" "*" ];
-  screenOff = [ (lib.getExe' pkgs.wlopm "wlopm") "--off" "*" ];
+  screenOn = [
+    (lib.getExe' pkgs.wlopm "wlopm")
+    "--on"
+    "*"
+  ];
+  screenOff = [
+    (lib.getExe' pkgs.wlopm "wlopm")
+    "--off"
+    "*"
+  ];
 
   effects = true;
 
@@ -194,7 +202,7 @@ let
             logoutCmd
           ]
         } },
-        { MODKEY|SHIFT, XKB_KEY_r,          quit,             {0} },
+        { MODKEY|SHIFT, XKB_KEY_t,          quit,             {0} },
         { MODKEY,       XKB_KEY_v,          togglefloating,   {0} },
         { MODKEY|SHIFT, XKB_KEY_f,          togglefullscreen, {0} },
         { MODKEY,       XKB_KEY_Escape,     toggletouchpad,   {0} },
@@ -332,7 +340,7 @@ let
       "exec >>\"\${XDG_RUNTIME_DIR:-/tmp}/dwl-startup.log\" 2>&1"
       "set -x"
 
-      # dwl re-spawns this on every restart (super+shift+r); make sure a
+      # dwl re-spawns this on every restart (super+shift+t); make sure a
       # previous instance that hasn't exited yet can't overlap with it.
       "lock=\"\${XDG_RUNTIME_DIR:-/tmp}/dwl-startup.lock\""
       "exec 8>\"$lock\""
