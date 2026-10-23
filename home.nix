@@ -35,6 +35,8 @@
         ./modules/theme.nix
         ./modules/kage.nix
         ./modules/zoxide.nix
+        ./modules/imv.nix
+        ./modules/mpv.nix
         ./modules/wayland
         inputs.kage.homeManagerModules.default
       ];

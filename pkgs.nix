@@ -21,7 +21,6 @@ with pkgs;
   _7zz-rar
   udiskie
   android-tools
-  go-mtpfs
 
   imv
   mpv
@@ -54,7 +53,7 @@ with pkgs;
   keepassxc
 
   # dev
-  go
+  go_1_27
   gcc
   gnumake
   python3Minimal
