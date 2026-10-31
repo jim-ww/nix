@@ -1,17 +1,15 @@
+diff -ruN a/dwl.c b/dwl.c
 --- a/dwl.c
 +++ b/dwl.c
-@@ -2456,8 +2456,8 @@ motionnotify(uint32_t time, struct wlr_input_device *device, double dx, double dy
- 				last_resize_time = time;
- 				resize_last_update_x = cursor->x;
- 				resize_last_update_y = cursor->y;
- 			}
--
-+			return;
- 		} else if (grabc && grabc->isfloating) {
- 			/* Floating resize as original */
- 			resize(grabc, (struct wlr_box){
-@@ -2475,7 +2475,8 @@ motionnotify(uint32_t time, struct wlr_input_device *device, double dx, double dy
- 		if (f >= 0.1 && f <= 0.9) {
+@@ -2527,6 +2527,7 @@
+ 			resize_last_update_x = cursor->x;
+ 			resize_last_update_y = cursor->y;
+ 		}
++		return;
+ 	} else if (cursor_mode == CurResize && grabc && grabc->isfloating) {
+ 		resize(grabc, (struct wlr_box){.x = grabc->geom.x, .y = grabc->geom.y,
+ 			.width = (int)round(cursor->x) - grabc->geom.x, .height = (int)round(cursor->y) - grabc->geom.y}, 1);
+@@ -2537,6 +2538,7 @@
  			selmon->mfact = f;
  			arrange(selmon);
  		}

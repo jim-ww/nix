@@ -1,22 +1,5 @@
-From 42e35a6a8a93f0e6d886ad69686c85c1d58536d6 Mon Sep 17 00:00:00 2001
-From: julmajustus <julmajustus@tutanota.com>
-Date: Mon, 22 Jun 2026 22:54:11 +0300
-Subject: [PATCH] btrtile: bug fixes and readability improvement
-
-- Removed client old_geom caching for simplicity fixes: https://codeberg.org/dwl/dwl-patches/issues/647
-- Improved readability of the client sanitization loop inside btrtile function
-- Removed fullscreened client's from the sanitization loop to retain their geometry
----
- btrtile.c    | 585 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
- config.def.h |  12 ++
- dwl.c        | 151 +++++++++++---
- 3 files changed, 721 insertions(+), 27 deletions(-)
- create mode 100644 btrtile.c
-
-diff --git a/btrtile.c b/btrtile.c
-new file mode 100644
-index 0000000..24bf4d9
---- /dev/null
+diff -ruN a/btrtile.c b/btrtile.c
+--- a/btrtile.c
 +++ b/btrtile.c
 @@ -0,0 +1,585 @@
 +/* ************************************************************************** */
@@ -604,19 +587,10 @@ index 0000000..24bf4d9
 +	}
 +	return closest;
 +}
-diff --git a/dwl.c b/dwl.c
-index 44f3ad9..2529e1f 100644
+diff -ruN a/dwl.c b/dwl.c
 --- a/dwl.c
 +++ b/dwl.c
-@@ -1,6 +1,7 @@
- /*
-  * See LICENSE file for copyright and license details.
-  */
-+#include <limits.h>
- #include <getopt.h>
- #include <libinput.h>
- #include <linux/input-event-codes.h>
-@@ -100,6 +101,7 @@ typedef struct {
+@@ -115,6 +115,7 @@
  	const Arg arg;
  } Button;
  
@@ -624,16 +598,16 @@ index 44f3ad9..2529e1f 100644
  typedef struct Monitor Monitor;
  typedef struct {
  	/* Must keep this field first */
-@@ -137,7 +139,7 @@ typedef struct {
+@@ -160,7 +161,7 @@
  #endif
  	unsigned int bw;
  	uint32_t tags;
 -	int isfloating, isurgent, isfullscreen;
 +	int isfloating, isurgent, isfullscreen, was_tiled;
- 	uint32_t resize; /* configure serial of a pending resize */
  } Client;
  
-@@ -205,6 +207,7 @@ struct Monitor {
+ typedef struct {
+@@ -235,6 +236,7 @@
  	int nmaster;
  	char ltsymbol[16];
  	int asleep;
@@ -641,15 +615,15 @@ index 44f3ad9..2529e1f 100644
  };
  
  typedef struct {
-@@ -247,6 +250,7 @@ static void arrangelayer(Monitor *m, struct wl_list *list,
+@@ -277,6 +279,7 @@
  		struct wlr_box *usable_area, int exclusive);
  static void arrangelayers(Monitor *m);
  static void axisnotify(struct wl_listener *listener, void *data);
 +static void btrtile(Monitor *m);
  static void buttonpress(struct wl_listener *listener, void *data);
+ static void capturerequest(struct wl_listener *listener, void *data);
  static void chvt(const Arg *arg);
- static void checkidleinhibitor(struct wlr_surface *exclude);
-@@ -329,6 +333,9 @@ static void setmon(Client *c, Monitor *m, uint32_t newtags);
+@@ -371,6 +374,9 @@
  static void setpsel(struct wl_listener *listener, void *data);
  static void setsel(struct wl_listener *listener, void *data);
  static void setup(void);
@@ -659,24 +633,24 @@ index 44f3ad9..2529e1f 100644
  static void spawn(const Arg *arg);
  static void startdrag(struct wl_listener *listener, void *data);
  static void tag(const Arg *arg);
-@@ -454,6 +461,7 @@ static struct wlr_xwayland *xwayland;
+@@ -507,6 +513,7 @@
  
  /* attempt to encapsulate suck into one file */
  #include "client.h"
 +#include "btrtile.c"
  
- /* function implementations */
- void
-@@ -624,7 +632,7 @@ buttonpress(struct wl_listener *listener, void *data)
+ #include "ime.h"
+ 
+@@ -714,7 +721,7 @@
  	struct wlr_pointer_button_event *event = data;
  	struct wlr_keyboard *keyboard;
  	uint32_t mods;
--	Client *c;
-+	Client *c, *target = NULL;
+-	Client *c = NULL;
++	Client *c = NULL, *target = NULL;
+ 	LayerSurface *l = NULL;
  	const Button *b;
  
- 	wlr_idle_notifier_v1_notify_activity(idle_notifier, seat);
-@@ -645,7 +653,7 @@ buttonpress(struct wl_listener *listener, void *data)
+@@ -741,7 +748,7 @@
  		mods = keyboard ? wlr_keyboard_get_modifiers(keyboard) : 0;
  		for (b = buttons; b < END(buttons); b++) {
  			if (CLEANMASK(mods) == CLEANMASK(b->mod) &&
@@ -685,9 +659,9 @@ index 44f3ad9..2529e1f 100644
  				b->func(&b->arg);
  				return;
  			}
-@@ -655,6 +663,21 @@ buttonpress(struct wl_listener *listener, void *data)
+@@ -750,6 +757,21 @@
+ 	case WL_POINTER_BUTTON_STATE_RELEASED:
  		/* If you released any buttons, we exit interactive move/resize mode. */
- 		/* TODO: should reset to the pointer focus's current setcursor */
  		if (!locked && cursor_mode != CurNormal && cursor_mode != CurPressed) {
 +			c = grabc;
 +			if (c && c->was_tiled && !strcmp(selmon->ltsymbol, "|w|")) {
@@ -704,10 +678,10 @@ index 44f3ad9..2529e1f 100644
 +				}
 +			}
 +			/* Default behaviour */
- 			wlr_cursor_set_xcursor(cursor, cursor_mgr, "default");
  			cursor_mode = CurNormal;
- 			/* Drop the window off on its new monitor */
-@@ -746,6 +769,7 @@ cleanupmon(struct wl_listener *listener, void *data)
+ 			/* Update the cursor */
+ 			wlr_seat_pointer_clear_focus(seat);
+@@ -869,6 +891,7 @@
  	wlr_output_layout_remove(output_layout, m->wlr_output);
  	wlr_scene_output_destroy(m->scene_output);
  
@@ -715,7 +689,7 @@ index 44f3ad9..2529e1f 100644
  	closemon(m);
  	wlr_scene_node_destroy(&m->fullscreen_bg->node);
  	free(m);
-@@ -1090,6 +1114,7 @@ createmon(struct wl_listener *listener, void *data)
+@@ -1222,6 +1245,7 @@
  
  	wl_list_insert(&mons, &m->link);
  	printstatus();
@@ -723,7 +697,7 @@ index 44f3ad9..2529e1f 100644
  
  	/* The xdg-protocol specifies:
  	 *
-@@ -1329,9 +1354,17 @@ destroynotify(struct wl_listener *listener, void *data)
+@@ -1462,9 +1486,17 @@
  {
  	/* Called when the xdg_toplevel is destroyed. */
  	Client *c = wl_container_of(listener, c, destroy);
@@ -741,80 +715,66 @@ index 44f3ad9..2529e1f 100644
  #ifdef XWAYLAND
  	if (c->type != XDGShell) {
  		wl_list_remove(&c->activate.link);
-@@ -1862,7 +1895,8 @@ void
+@@ -2225,8 +2257,8 @@
  motionnotify(uint32_t time, struct wlr_input_device *device, double dx, double dy,
  		double dx_unaccel, double dy_unaccel)
  {
+-	int nx, ny;
 -	double sx = 0, sy = 0, sx_confined, sy_confined;
-+	int tiled = 0;
++	int nx, ny, tiled = 0;
 +	double sx = 0, sy = 0, sx_confined, sy_confined, dx_total, dy_total;
  	Client *c = NULL, *w = NULL;
- 	LayerSurface *l = NULL;
+ 	LayerSurface *l = NULL, *focusedl = NULL;
  	struct wlr_surface *surface = NULL;
-@@ -1916,18 +1950,55 @@ motionnotify(uint32_t time, struct wlr_input_device *device, double dx, double d
+@@ -2280,8 +2312,13 @@
  	/* Update drag icon's position */
  	wlr_scene_node_set_position(&drag_icon->node, (int)round(cursor->x), (int)round(cursor->y));
  
--	/* If we are currently grabbing the mouse, handle and return */
 +	/* Skip if internal call */
 +	if (time == 0)
 +		goto focus;
 +
 +	tiled = grabc && !grabc->isfloating && !grabc->isfullscreen;
- 	if (cursor_mode == CurMove) {
+ 	/* If we are currently grabbing the mouse, handle and return */
+-	if (cursor_mode == CurMove) {
++	if (cursor_mode == CurMove && grabc && grabc->isfloating) {
  		/* Move the grabbed client to the new position. */
--		resize(grabc, (struct wlr_box){.x = (int)round(cursor->x) - grabcx, .y = (int)round(cursor->y) - grabcy,
--			.width = grabc->geom.width, .height = grabc->geom.height}, 1);
--		return;
-+		if (grabc && grabc->isfloating) {
-+			resize(grabc, (struct wlr_box){
-+				.x = (int)round(cursor->x) - grabcx,
-+				.y = (int)round(cursor->y) - grabcy,
-+				.width = grabc->geom.width,
-+				.height = grabc->geom.height
-+			}, 1);
-+			return;
-+		}
- 	} else if (cursor_mode == CurResize) {
--		resize(grabc, (struct wlr_box){.x = grabc->geom.x, .y = grabc->geom.y,
--			.width = (int)round(cursor->x) - grabc->geom.x, .height = (int)round(cursor->y) - grabc->geom.y}, 1);
--		return;
-+		if (tiled) {
-+			dx_total = cursor->x - resize_last_update_x;
-+			dy_total = cursor->y - resize_last_update_y;
+ 		nx = (int)round(cursor->x) - grabcx;
+ 		ny = (int)round(cursor->y) - grabcy;
+@@ -2296,12 +2333,31 @@
+ 		resize(grabc, (struct wlr_box){.x = nx, .y = ny,
+ 			.width = grabc->geom.width, .height = grabc->geom.height}, 1);
+ 		return;
+-	} else if (cursor_mode == CurResize) {
++	} else if (cursor_mode == CurResize && tiled) {
++		dx_total = cursor->x - resize_last_update_x;
++		dy_total = cursor->y - resize_last_update_y;
 +
-+			if (time - last_resize_time >= resize_interval_ms) {
-+				Arg a = {0};
-+				if (fabs(dx_total) > fabs(dy_total)) {
-+					a.f = (float)(dx_total * resize_factor);
-+					setratio_h(&a);
-+				} else {
-+					a.f = (float)(dy_total * resize_factor);
-+					setratio_v(&a);
-+				}
-+
-+				last_resize_time = time;
-+				resize_last_update_x = cursor->x;
-+				resize_last_update_y = cursor->y;
++		if (time - last_resize_time >= resize_interval_ms) {
++			Arg a = {0};
++			if (fabs(dx_total) > fabs(dy_total)) {
++				a.f = (float)(dx_total * resize_factor);
++				setratio_h(&a);
++			} else {
++				a.f = (float)(dy_total * resize_factor);
++				setratio_v(&a);
 +			}
 +
-+		} else if (grabc && grabc->isfloating) {
-+			/* Floating resize as original */
-+			resize(grabc, (struct wlr_box){
-+				.x = grabc->geom.x,
-+				.y = grabc->geom.y,
-+				.width = (int)round(cursor->x) - grabc->geom.x,
-+				.height = (int)round(cursor->y) - grabc->geom.y
-+			}, 1);
-+			return;
++			last_resize_time = time;
++			resize_last_update_x = cursor->x;
++			resize_last_update_y = cursor->y;
 +		}
++	} else if (cursor_mode == CurResize && grabc && grabc->isfloating) {
+ 		resize(grabc, (struct wlr_box){.x = grabc->geom.x, .y = grabc->geom.y,
+ 			.width = (int)round(cursor->x) - grabc->geom.x, .height = (int)round(cursor->y) - grabc->geom.y}, 1);
+ 		return;
  	}
  
 +focus:
  	/* If there's no client surface under the cursor, set the cursor image to a
  	 * default. This is what makes the cursor image appear when you move it
  	 * off of a client or over its border. */
-@@ -1961,22 +2032,40 @@ moveresize(const Arg *arg)
+@@ -2335,22 +2391,40 @@
  	if (!grabc || client_is_unmanaged(grabc) || grabc->isfullscreen)
  		return;
  
@@ -871,7 +831,7 @@ index 44f3ad9..2529e1f 100644
  	}
  }
  
-@@ -2826,6 +2915,14 @@ unmapnotify(struct wl_listener *listener, void *data)
+@@ -3215,6 +3289,14 @@
  			focusclient(focustop(selmon), 1);
  		}
  	} else {
@@ -886,6 +846,3 @@ index 44f3ad9..2529e1f 100644
  		wl_list_remove(&c->link);
  		setmon(c, NULL, 0);
  		wl_list_remove(&c->flink);
--- 
-2.53.0
-

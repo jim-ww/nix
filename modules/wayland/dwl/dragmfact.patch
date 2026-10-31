@@ -1,27 +1,29 @@
+diff -ruN a/dwl.c b/dwl.c
 --- a/dwl.c
 +++ b/dwl.c
-@@ -91,7 +91,7 @@
+@@ -92,7 +92,7 @@
  #define BORDERPX(C)             (borderpx + ((C)->swallowing ? (int)ceilf(swallowborder * (C)->swallowing->bw) : 0))
  
  /* enums */
 -enum { CurNormal, CurPressed, CurMove, CurResize }; /* cursor */
 +enum { CurNormal, CurPressed, CurMove, CurResize, Curmfact }; /* cursor */
  enum { XDGShell, LayerShell, X11 }; /* client types */
- enum { LyrBg, LyrBlur, LyrBottom, LyrTile, LyrFloat, LyrTop, LyrFS, LyrOverlay, LyrBlock, NUM_LAYERS }; /* scene layers */
- 
-@@ -744,7 +744,7 @@
+ enum { LyrBg, LyrBottom, LyrTile, LyrFloat, LyrTop, LyrFS, LyrUnmanaged, LyrOverlay,
+ 	LyrIMPopup, LyrBlock, NUM_LAYERS }; /* scene layers */
+@@ -810,7 +810,8 @@
+ 		break;
  	case WL_POINTER_BUTTON_STATE_RELEASED:
  		/* If you released any buttons, we exit interactive move/resize mode. */
- 		/* TODO: should reset to the pointer focus's current setcursor */
 -		if (!locked && cursor_mode != CurNormal && cursor_mode != CurPressed) {
-+		if (!locked && cursor_mode != CurNormal && cursor_mode != CurPressed && cursor_mode != Curmfact) {
++		if (!locked && cursor_mode != CurNormal && cursor_mode != CurPressed
++				&& cursor_mode != Curmfact) {
  			c = grabc;
  			if (c && c->was_tiled && !strcmp(selmon->ltsymbol, "|w|")) {
  				if (cursor_mode == CurMove && c->isfloating) {
-@@ -2396,6 +2396,12 @@
- 			}, 1);
- 			return;
- 		}
+@@ -2530,6 +2531,12 @@
+ 		resize(grabc, (struct wlr_box){.x = grabc->geom.x, .y = grabc->geom.y,
+ 			.width = (int)round(cursor->x) - grabc->geom.x, .height = (int)round(cursor->y) - grabc->geom.y}, 1);
+ 		return;
 +	} else if (cursor_mode == Curmfact) {
 +		float f = (float)((cursor->x - selmon->w.x) / selmon->w.width);
 +		if (f >= 0.1 && f <= 0.9) {
@@ -31,7 +33,7 @@
  	}
  
  focus:
-@@ -2433,6 +2439,12 @@
+@@ -2567,6 +2574,12 @@
  		return;
  
  	cursor_mode = arg->ui;

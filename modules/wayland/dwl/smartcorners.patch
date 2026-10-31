@@ -1,14 +1,15 @@
+diff -ruN a/dwl.c b/dwl.c
 --- a/dwl.c
 +++ b/dwl.c
-@@ -417,6 +417,7 @@
+@@ -432,6 +432,7 @@
  static void client_set_shadow_blur_sigma(Client *c, int blur_sigma);
  static void update_client_corner_radius(Client *c);
  static void update_client_shadow_color(Client *c);
 +static int nvisible_on(Monitor *m);
  static void update_client_focus_decorations(Client *c, int focused, int urgent);
- static void update_client_blur(Client *c);
  static void update_buffer_corner_radius(Client *c, struct wlr_scene_buffer *buffer);
-@@ -613,6 +613,13 @@
+ 
+@@ -645,6 +646,13 @@
  
  	strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, LENGTH(m->ltsymbol));
  
@@ -22,7 +23,7 @@
  	/* We move all clients (except fullscreen and unmanaged) to LyrTile while
  	 * in floating layout to avoid "real" floating clients be always on top */
  	wl_list_for_each(c, &clients, link) {
-@@ -2710,10 +2718,11 @@
+@@ -2803,10 +2811,11 @@
  	wlr_scene_subsurface_tree_set_clip(&c->scene_surface->node, &clip);
  
  	if (corner_radius > 0 && c->round_border) {
@@ -30,12 +31,12 @@
  		wlr_scene_node_set_position(&c->round_border->node, 0, 0);
  		wlr_scene_rect_set_size(c->round_border, c->geom.width, c->geom.height);
  		wlr_scene_rect_set_clipped_region(c->round_border, (struct clipped_region) {
--			.corner_radius = c->corner_radius,
-+			.corner_radius = radius,
- 			.corners = CORNER_LOCATION_ALL,
+-			.corners = corner_radii_all(c->corner_radius),
++			.corners = corner_radii_all(radius),
  			.area = { c->bw, c->bw, c->geom.width - c->bw * 2, c->geom.height - c->bw * 2 }
  		});
-@@ -3969,11 +3971,28 @@
+ 	}
+@@ -4043,11 +4052,28 @@
  	c->has_shadow_enabled = has_shadow_enabled;
  }
  
@@ -65,4 +66,3 @@
  	}
  	if (shadow && c->shadow) {
  		client_set_shadow_blur_sigma(c, (int)round(focused ? shadow_blur_sigma_focus : shadow_blur_sigma));
- 

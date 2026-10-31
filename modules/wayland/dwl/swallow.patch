@@ -1,8 +1,7 @@
-diff --git a/client.h b/client.h
-index d9f90bb..83e1c57 100644
+diff -ruN a/client.h b/client.h
 --- a/client.h
 +++ b/client.h
-@@ -131,6 +131,18 @@ client_get_appid(Client *c)
+@@ -157,6 +157,18 @@
  	return c->surface.xdg->toplevel->app_id ? c->surface.xdg->toplevel->app_id : "broken";
  }
  
@@ -21,11 +20,10 @@ index d9f90bb..83e1c57 100644
  static inline void
  client_get_clip(Client *c, struct wlr_box *clip)
  {
-diff --git a/config.def.h b/config.def.h
-index 8a6eda0..1a82020 100644
+diff -ruN a/config.def.h b/config.def.h
 --- a/config.def.h
 +++ b/config.def.h
-@@ -13,6 +13,8 @@ static const float focuscolor[]            = COLOR(0x005577ff);
+@@ -14,6 +14,8 @@
  static const float urgentcolor[]           = COLOR(0xff0000ff);
  /* This conforms to the xdg-protocol. Set the alpha to zero to restore the old behavior */
  static const float fullscreen_bg[]         = {0.0f, 0.0f, 0.0f, 1.0f}; /* You can also use glsl colors */
@@ -34,7 +32,7 @@ index 8a6eda0..1a82020 100644
  
  /* tagging - TAGCOUNT must be no greater than 31 */
  #define TAGCOUNT (9)
-@@ -21,9 +23,10 @@ static const float fullscreen_bg[]         = {0.0f, 0.0f, 0.0f, 1.0f}; /* You ca
+@@ -22,9 +24,10 @@
  static int log_level = WLR_ERROR;
  
  static const Rule rules[] = {
@@ -48,27 +46,24 @@ index 8a6eda0..1a82020 100644
      /* default/example rule: can be changed but cannot be eliminated; at least one rule must exist */
  };
  
-@@ -138,6 +141,8 @@ static const Key keys[] = {
+@@ -138,6 +141,8 @@
  	{ MODKEY,                    XKB_KEY_space,       setlayout,        {0} },
  	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_space,       togglefloating,   {0} },
  	{ MODKEY,                    XKB_KEY_e,           togglefullscreen, {0} },
 +	{ MODKEY,                    XKB_KEY_a,           toggleswallow,    {0} },
 +	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_A,           toggleautoswallow,{0} },
  	{ MODKEY,                    XKB_KEY_0,           view,             {.ui = ~0} },
- 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_parenright,  tag,              {.ui = ~0} },
+ 	{ MODKEY|WLR_MODIFIER_SHIFT, XKB_KEY_0,           tag,              {.ui = ~0} },
  	{ MODKEY,                    XKB_KEY_comma,       focusmon,         {.i = WLR_DIRECTION_LEFT} },
-diff --git a/dwl.c b/dwl.c
-index df2a4fe..cdb2705 100644
+diff -ruN a/dwl.c b/dwl.c
 --- a/dwl.c
 +++ b/dwl.c
-@@ -77,12 +77,13 @@
- #define MIN(A, B)               ((A) < (B) ? (A) : (B))
+@@ -82,10 +82,11 @@
+ /* macros */
  #define LOCKED                  (1u << 31) /* keybinding also works while locked */
  #define CLEANMASK(mask)         (mask & ~(WLR_MODIFIER_CAPS | LOCKED))
 -#define VISIBLEON(C, M)         ((M) && (C)->mon == (M) && ((C)->tags & (M)->tagset[(M)->seltags]))
 +#define VISIBLEON(C, M)         ((M) && (C)->mon == (M) && ((C)->tags & (M)->tagset[(M)->seltags]) && !(C)->swallowedby)
- #define LENGTH(X)               (sizeof X / sizeof X[0])
- #define END(A)                  ((A) + LENGTH(A))
  #define TAGMASK                 ((1u << TAGCOUNT) - 1)
  #define LISTEN(E, L, H)         wl_signal_add((E), ((L)->notify = (H), (L)))
  #define LISTEN_STATIC(E, H)     do { struct wl_listener *_l = ecalloc(1, sizeof(*_l)); _l->notify = (H); wl_signal_add((E), _l); } while (0)
@@ -76,7 +71,7 @@ index df2a4fe..cdb2705 100644
  
  /* enums */
  enum { CurNormal, CurPressed, CurMove, CurResize }; /* cursor */
-@@ -105,7 +106,8 @@ typedef struct {
+@@ -117,7 +118,8 @@
  
  typedef struct LayoutNode LayoutNode;
  typedef struct Monitor Monitor;
@@ -86,13 +81,12 @@ index df2a4fe..cdb2705 100644
  	/* Must keep this field first */
  	unsigned int type; /* XDGShell or X11* */
  
-@@ -142,8 +144,12 @@ typedef struct {
+@@ -162,7 +164,11 @@
  	unsigned int bw;
  	uint32_t tags;
  	int isfloating, isurgent, isfullscreen, was_tiled;
-+	int isterm, noswallow;
- 	uint32_t resize; /* configure serial of a pending resize */
 -} Client;
++	int isterm, noswallow;
 +	pid_t pid;
 +	Client *swallowing;  /* client being hidden */
 +	Client *swallowedby;
@@ -100,7 +94,7 @@ index df2a4fe..cdb2705 100644
  
  typedef struct {
  	struct wl_list link;
-@@ -240,6 +246,8 @@ typedef struct {
+@@ -259,6 +265,8 @@
  	const char *title;
  	uint32_t tags;
  	int isfloating;
@@ -109,15 +103,15 @@ index df2a4fe..cdb2705 100644
  	int monitor;
  } Rule;
  
-@@ -334,6 +342,7 @@ static void moveresize(const Arg *arg);
+@@ -354,6 +362,7 @@
  static void outputmgrapply(struct wl_listener *listener, void *data);
  static void outputmgrapplyortest(struct wlr_output_configuration_v1 *config, int test);
  static void outputmgrtest(struct wl_listener *listener, void *data);
 +static pid_t parentpid(pid_t pid);
- static void pointerfocus(Client *c, struct wlr_surface *surface,
+ static void pointerfocus(Client *c, LayerSurface* l, struct wlr_surface *surface,
  		double sx, double sy, uint32_t time);
  static void printstatus(void);
-@@ -360,13 +369,17 @@ static void setratio_v(const Arg *arg);
+@@ -380,13 +389,17 @@
  static void swapclients(const Arg *arg);
  static void spawn(const Arg *arg);
  static void startdrag(struct wl_listener *listener, void *data);
@@ -135,7 +129,7 @@ index df2a4fe..cdb2705 100644
  static void toggletag(const Arg *arg);
  static void toggleview(const Arg *arg);
  static void unlocksession(struct wl_listener *listener, void *data);
-@@ -521,11 +534,15 @@ applyrules(Client *c)
+@@ -562,11 +575,15 @@
  	appid = client_get_appid(c);
  	title = client_get_title(c);
  
@@ -151,7 +145,7 @@ index df2a4fe..cdb2705 100644
  			i = 0;
  			wl_list_for_each(m, &mons, link) {
  				if (r->monitor == i++)
-@@ -535,6 +552,12 @@ applyrules(Client *c)
+@@ -576,6 +593,12 @@
  	}
  
  	c->isfloating |= client_is_float_type(c);
@@ -164,8 +158,8 @@ index df2a4fe..cdb2705 100644
  	setmon(c, mon, newtags);
  }
  
-@@ -2406,6 +2429,20 @@ outputmgrtest(struct wl_listener *listener, void *data)
- 	outputmgrapplyortest(config, 1);
+@@ -2465,6 +2488,20 @@
+ 	}
  }
  
 +pid_t
@@ -183,9 +177,9 @@ index df2a4fe..cdb2705 100644
 +}
 +
  void
- pointerfocus(Client *c, struct wlr_surface *surface, double sx, double sy,
- 		uint32_t time)
-@@ -2671,7 +2708,7 @@ setfullscreen(Client *c, int fullscreen)
+ outputmgrapply(struct wl_listener *listener, void *data)
+ {
+@@ -2813,7 +2850,7 @@
  	c->isfullscreen = fullscreen;
  	if (!c->mon || !client_surface(c)->mapped)
  		return;
@@ -194,7 +188,7 @@ index df2a4fe..cdb2705 100644
  	client_set_fullscreen(c, fullscreen);
  	wlr_scene_node_reparent(&c->scene->node, layers[c->isfullscreen
  			? LyrFS : c->isfloating ? LyrFloat : LyrTile]);
-@@ -2740,6 +2777,9 @@ setmon(Client *c, Monitor *m, uint32_t newtags)
+@@ -2882,6 +2919,9 @@
  		setfloating(c, c->isfloating);
  	}
  	focusclient(focustop(selmon), 1);
@@ -204,11 +198,10 @@ index df2a4fe..cdb2705 100644
  }
  
  void
-@@ -3012,6 +3052,44 @@ startdrag(struct wl_listener *listener, void *data)
- 	LISTEN_STATIC(&drag->icon->events.destroy, destroydragicon);
+@@ -3168,6 +3208,44 @@
  }
  
-+void
+ void
 +swallow(Client *c, Client *toswallow)
 +{
 +	/* Do not allow a client to swallow itself */
@@ -246,10 +239,11 @@ index df2a4fe..cdb2705 100644
 +	}
 +}
 +
- void
++void
  tag(const Arg *arg)
  {
-@@ -3033,6 +3111,40 @@ tagmon(const Arg *arg)
+ 	Client *sel = focustop(selmon);
+@@ -3188,6 +3266,40 @@
  		setmon(sel, dirtomon(arg->i), 0);
  }
  
@@ -290,11 +284,10 @@ index df2a4fe..cdb2705 100644
  void
  tile(Monitor *m)
  {
-@@ -3105,6 +3217,32 @@ togglegaps(const Arg *arg)
- 	arrange(selmon);
+@@ -3261,6 +3373,32 @@
  }
  
-+void
+ void
 +toggleswallow(const Arg *arg)
 +{
 +	Client *c, *sel = focustop(selmon);
@@ -320,12 +313,13 @@ index df2a4fe..cdb2705 100644
 +	enableautoswallow = !enableautoswallow;
 +}
 +
- void
++void
  toggletag(const Arg *arg)
  {
-@@ -3165,6 +3303,12 @@ unmapnotify(struct wl_listener *listener, void *data)
- 		grabc = NULL;
- 	}
+ 	uint32_t newtags;
+@@ -3322,6 +3460,12 @@
+ 	if (c == focused_client)
+ 		focused_client = NULL;
  
 +	if (c->swallowing) {
 +		swallow(c, NULL);

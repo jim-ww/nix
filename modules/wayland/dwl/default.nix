@@ -91,6 +91,7 @@ let
     static const int sloppyfocus               = 1;
     static const int bypass_surface_visibility = 0;
     static const unsigned int borderpx         = 3;
+    static const unsigned int snap             = 32;
     static const unsigned int gappx            = 4;
     static int gaps                            = 1;
     static const int smartgaps                 = 1;
@@ -123,18 +124,6 @@ let
       static const int corner_radius = 10;
       static const int corner_radius_inner = 9;
       static const int corner_radius_only_floating = 0;
-
-      static const int blur = 0;
-      static const int blur_xray = 0;
-      static const int blur_ignore_transparent = 1;
-      static const struct blur_data blur_data = {
-          .radius = 5,
-          .num_passes = 3,
-          .noise = (float)0.02,
-          .brightness = (float)0.9,
-          .contrast = (float)0.9,
-          .saturation = (float)1.1,
-      };
     ''}
 
     #define TAGCOUNT (10)
@@ -322,6 +311,10 @@ let
         CHVT(7), CHVT(8), CHVT(9), CHVT(10), CHVT(11), CHVT(12),
     };
 
+    static const Axis axes[] = {
+        { 0, AxisUp, NULL, {0} },
+    };
+
     static const Button buttons[] = {
         { MODKEY, BTN_LEFT,   moveresize,     {.ui = CurMove} },
         { MODKEY, BTN_MIDDLE, togglefloating, {0} },
@@ -367,24 +360,11 @@ let
     ]
   );
 
-  scenefx = pkgs.scenefx.overrideAttrs (old: rec {
-    version = "0.4.1";
-
-    src = pkgs.fetchFromGitHub {
-      owner = "wlrfx";
-      repo = "scenefx";
-      tag = version;
-      hash = "sha256-XD5EcquaHBg5spsN06fPHAjVCb1vOMM7oxmjZZ/PxIE=";
-    };
-
-    buildInputs = (old.buildInputs or [ ]) ++ [ pkgs.wlroots_0_19 ];
-  });
-
   dwl = (pkgs.dwl.override { inherit configH; }).overrideAttrs (old: {
     buildInputs =
       (old.buildInputs or [ ])
       ++ lib.optionals effects [
-        scenefx
+        pkgs.scenefx
         pkgs.libGL
       ];
 
