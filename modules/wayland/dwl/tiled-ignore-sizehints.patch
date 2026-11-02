@@ -1,0 +1,11 @@
+--- a/dwl.c
++++ b/dwl.c
+@@ -573,7 +573,7 @@
+ 	c->geom.width = MAX(1 + 2 * (int)c->bw, c->geom.width);
+ 	c->geom.height = MAX(1 + 2 * (int)c->bw, c->geom.height);
+ 
+-	if (!c->isfullscreen) {
++	if (!c->isfullscreen && c->isfloating) {
+ 		struct wlr_box min = {0}, max = {0};
+ 		client_get_size_hints(c, &max, &min);
+ 		c->geom.width = MAX(min.width + 2 * (int)c->bw, c->geom.width);

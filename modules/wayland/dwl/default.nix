@@ -394,6 +394,7 @@ let
         ./floatcenter.patch
         ./cursor-warp-focus.patch
         ./toggletouchpad.patch
+        ./tiled-ignore-sizehints.patch
       ];
   });
 in
