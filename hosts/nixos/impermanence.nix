@@ -47,6 +47,10 @@
           user = "ollama";
         }
         {
+          directory = "/var/lib/tailscale";
+          mode = "0700";
+        }
+        {
           directory = "/var/cache/private/dnscrypt-proxy";
           mode = "0700";
         }

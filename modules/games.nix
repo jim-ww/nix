@@ -1,7 +1,12 @@
 { pkgs, ... }:
 {
   programs.gamemode.enable = true;
-  programs.gamescope.enable = true;
+  programs.gpu-screen-recorder.enable = true;
+
+  programs.gamescope = {
+    enable = true;
+    capSysNice = true;
+  };
 
   hardware.graphics.enable32Bit = true;
 

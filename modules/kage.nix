@@ -9,6 +9,8 @@
       avatars_disabled = true;
       use_gpg = false;
       use_keyring = false;
+      # screen_recorder = "wf-recorder";
+      debug = true;
     };
     accounts = [
       {

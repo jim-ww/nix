@@ -64,7 +64,7 @@ in
         "7z" = "7zz";
         transcribe-translate-jp = "whisperx --device cpu --model base --compute_type int8 --language ja --output_format srt --output_dir . --no_align --task translate";
         busybox = lib.getExe pkgs.busybox;
-        wf-record = ''wf-recorder -a --audio-backend=pipewire --codec h264_vaapi --device /dev/dri/renderD128 -p preset=ultrafast -f "${videosDir}/rec_$(date +%d-%m-%Y-T%H-%M-%S).mkv"''; # preset=fast
+        record = ''gpu-screen-recorder -w screen -f 60 -s 1280x720 -k h264 -q medium -a default_output -ac opus -ab 64 -o "${videosDir}/rec_$(date +%d-%m-%Y-T%H-%M-%S).mkv"''; # ''wf-recorder -a --audio-backend=pipewire -c hevc_vaapi -d /dev/dri/renderD128 -p qp=28 -C libopus -f "${videosDir}/rec_$(date +%d-%m-%Y-T%H-%M-%S).mkv"'';
         mount-personal = "mkdir -p ~/Archive/personal && gocryptfs ~/Archive/personal_enc ~/Archive/personal";
         umount-personal = "umount ~/Archive/personal";
         backup-personal = ''tmux new -s backup "set -o pipefail; tar -cf - ${home}/Archive/personal | zstd -9 -T0 | ${lib.getExe pkgs.pv} | age -p -o ${home}/Downloads/backup-$(date +%Y%m%d).tar.zst.age && echo 'backup completed successfully' || echo 'backup FAILED'; read"'';
@@ -94,6 +94,8 @@ in
         jrnl = ''SOPS_AGE_KEY="$(sudo cat $SOPS_AGE_KEY_FILE)" sops ${home}/Documents/journal.md.age'';
         dns-fallback = "resolvectl dns wlo1 1.1.1.1";
         gorelease = "GITHUB_TOKEN=$(sudo cat /run/secrets/gh-token) goreleaser release --clean";
+        compress = ''sh -c 'd=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$1"); b=$(awk "BEGIN{print int(19*8192/$d-64)}"); ffmpeg -y -i "$1" -map 0:v:0 -c:v libx265 -b:v "$b"k -x265-params pass=1 -an -f null /dev/null && ffmpeg -i "$1" -map 0:v:0 -map 0:a:0 -c:v libx265 -b:v "$b"k -x265-params pass=2 -c:a libopus -b:a 64k "''${1%.*}_small.mkv"' _'';
+        wormhole = "wormhole-william";
 
         # unclutter home dir
         wget = ''${lib.getExe pkgs.wget} --hsts-file="${dataHome}/wget-hsts"'';

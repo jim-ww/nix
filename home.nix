@@ -43,6 +43,7 @@
 
       stylix.targets.fzf.enable = false;
       stylix.targets.qt.enable = false;
+      stylix.targets.rofi.enable = false;
       programs.btop.enable = true;
 
       home.sessionVariables = config.env;
