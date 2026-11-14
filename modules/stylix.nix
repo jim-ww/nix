@@ -3,6 +3,7 @@
   stylix.targets.qt.enable = false;
   stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-night-terminal-dark.yaml"; # -dark / -terminal-dark
   stylix.polarity = "dark";
+  stylix.targets.grub.enable = false;
   stylix.cursor = {
     name = "Bibata-Modern-Classic";
     package = pkgs.bibata-cursors.overrideAttrs (_: {
@@ -25,9 +26,13 @@
       terminal = opacity;
     };
   stylix.fonts = {
+    # monospace = {
+    #   name = "JetBrains Mono";
+    #   package = pkgs.jetbrains-mono;
+    # };
     monospace = {
-      name = "JetBrains Mono";
-      package = pkgs.jetbrains-mono;
+      name = "Cozette";
+      package = pkgs.cozette;
     };
     sansSerif = {
       name = "DejaVu Sans";
@@ -45,7 +50,7 @@
       applications = 16; # 18; # 16
       desktop = 16; # 18; # 12;
       popups = 12;
-      terminal = 8; # 10;
+      terminal = 13; # 8; # 10;
     };
   };
 
