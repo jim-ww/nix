@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "alda-player": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1795200438,
+        "narHash": "sha256-LD9Yzwcr+MEC3tZBzs/FgOdbhREGwwcKNrrxmEamRdo=",
+        "owner": "jim-ww",
+        "repo": "alda-player",
+        "rev": "862773ec99fbbcdca44967099d499fa4008ac9aa",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jim-ww",
+        "repo": "alda-player",
+        "type": "github"
+      }
+    },
     "ani-cli": {
       "inputs": {
         "ani-cli-src": "ani-cli-src",
@@ -567,11 +587,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793953551,
-        "narHash": "sha256-jOucOu//7ObSQjloJ1x0/uT5mfXcdo7vWaPcZGeLVxc=",
+        "lastModified": 1794818525,
+        "narHash": "sha256-0uu6YDuqjwxdJWEy+Z1azA48xp++xXdOk0QVpWhpN44=",
         "owner": "jim-ww",
         "repo": "kage",
-        "rev": "e8ec554c9d6d7eb91813c50a530057215eaab66c",
+        "rev": "35c6cf5eea7d86934ade20b731f6afe203eb42cf",
         "type": "github"
       },
       "original": {
@@ -764,6 +784,7 @@
     },
     "root": {
       "inputs": {
+        "alda-player": "alda-player",
         "ani-cli": "ani-cli",
         "anitui": "anitui",
         "bdraw": "bdraw",

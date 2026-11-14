@@ -60,6 +60,10 @@
       url = "github:jim-ww/todo";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    alda-player = {
+      url = "github:jim-ww/alda-player";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs =
     {
@@ -138,6 +142,7 @@
           nixpkgs.overlays = [
             nur.overlays.default
             inputs.ani-cli.overlays.default
+            inputs.alda-player.overlays.default
           ];
         }
       ];

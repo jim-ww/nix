@@ -28,6 +28,7 @@ with pkgs;
   yt-dlp # or spotdl
   rmpc
   ani-cli
+  alda
 
   gitMinimal
   git-remote-gcrypt
